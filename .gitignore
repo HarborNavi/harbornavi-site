@@ -9,3 +9,5 @@ pnpm-debug.log*
 yarn-debug.log*
 preview.out.log
 preview.err.log
+
+.vercel
