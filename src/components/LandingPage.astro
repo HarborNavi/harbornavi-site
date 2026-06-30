@@ -1,0 +1,290 @@
+---
+import SiteHeader from "./SiteHeader.astro";
+import { demoOptions, faqItems, type LandingPageContent } from "../data/landingPages";
+import "../styles/global.css";
+
+interface Props {
+  page: LandingPageContent;
+}
+
+const { page } = Astro.props;
+const demoEntries = Object.values(demoOptions);
+const structuredData = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  name: page.metaTitle,
+  description: page.metaDescription,
+  url: `https://harbornavi.com${page.path}`
+});
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{page.metaTitle} | HarborNavi</title>
+    <meta name="description" content={page.metaDescription} />
+    <link rel="canonical" href={`https://harbornavi.com${page.path}`} />
+    <meta property="og:title" content={`${page.metaTitle} | HarborNavi`} />
+    <meta property="og:description" content={page.metaDescription} />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content={page.heroImage} />
+    <script is:inline type="application/ld+json" set:html={structuredData}></script>
+  </head>
+  <body data-route={page.route}>
+    <SiteHeader activeRoute={page.route} />
+    <main>
+      <section class="hero section-shell" aria-labelledby="hero-title">
+        <div class="hero-copy">
+          <p class="eyebrow">{page.eyebrow}</p>
+          <h1 id="hero-title">{page.headline}</h1>
+          <p class="hero-body">{page.body}</p>
+          <p class="hero-support">{page.supportLine}</p>
+          <div class="hero-actions">
+            <a class="primary-button" href="#waitlist" data-track="waitlist_start">{page.cta}</a>
+            <a class="secondary-link" href="#demo">Try the concept demo</a>
+          </div>
+        </div>
+        <figure class="hero-media">
+          <img src={page.heroImage} alt={page.heroAlt} width="1600" height="900" loading="eager" />
+          <figcaption>Concept storyboard for early testing. Final beta behavior may change.</figcaption>
+        </figure>
+      </section>
+
+      <section class="use-cases section-shell" aria-label="Use cases">
+        {page.useCases.map((useCase) => (
+          <article class="use-case-card">
+            <h2>{useCase.title}</h2>
+            <p>{useCase.body}</p>
+          </article>
+        ))}
+      </section>
+
+      <section id="demo" class="demo-section section-shell" aria-labelledby="demo-title">
+        <div class="section-heading">
+          <p class="eyebrow">Promptable demo</p>
+          <h2 id="demo-title">What do you want HarborNavi to catch?</h2>
+        </div>
+        <div class="demo-grid">
+          <div class="demo-options" role="tablist" aria-label="Demo options">
+            {demoEntries.map((demo) => (
+              <button
+                class:list={["demo-option", { active: demo.key === page.defaultDemo }]}
+                type="button"
+                role="tab"
+                aria-selected={demo.key === page.defaultDemo ? "true" : "false"}
+                aria-controls={`demo-panel-${demo.key}`}
+                id={`demo-tab-${demo.key}`}
+                data-demo-key={demo.key}
+              >
+                {demo.label}
+              </button>
+            ))}
+          </div>
+          <div class="demo-panels">
+            {demoEntries.map((demo) => (
+              <article
+                class:list={["timeline-panel", { active: demo.key === page.defaultDemo }]}
+                id={`demo-panel-${demo.key}`}
+                role="tabpanel"
+                aria-labelledby={`demo-tab-${demo.key}`}
+                data-demo-panel={demo.key}
+                hidden={demo.key !== page.defaultDemo}
+              >
+                <ol>
+                  {demo.timeline.map((item) => <li>{item}</li>)}
+                </ol>
+                <a class="primary-button timeline-cta" href="#waitlist" data-track="waitlist_start">{demo.cta}</a>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section class="how-section section-shell" aria-labelledby="how-title">
+        <div class="section-heading">
+          <p class="eyebrow">How it works</p>
+          <h2 id="how-title">Simple enough for a first beta.</h2>
+        </div>
+        <div class="steps">
+          <div class="step">
+            <span>1</span>
+            <p>Connect your home camera.</p>
+          </div>
+          <div class="step">
+            <span>2</span>
+            <p>Choose what matters.</p>
+          </div>
+          <div class="step">
+            <span>3</span>
+            <p>Get useful alerts and saved clips.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="trust-section section-shell" aria-labelledby="trust-title">
+        <div>
+          <p class="eyebrow">Privacy direction</p>
+          <h2 id="trust-title">Built for useful events, not constant noise.</h2>
+        </div>
+        <div class="trust-copy">
+          <p>
+            HarborNavi is being designed as a local-first home video AI system. The goal is to help you
+            choose the events that matter, review what was found, and avoid turning every camera moment
+            into another notification.
+          </p>
+          <p>
+            No home camera can guarantee prevention or recovery. HarborNavi is intended to help detect,
+            summarize, and save useful moments so you can respond faster.
+          </p>
+        </div>
+      </section>
+
+      <section id="waitlist" class="waitlist-section section-shell" aria-labelledby="waitlist-title">
+        <div class="form-intro">
+          <p class="eyebrow">Early access</p>
+          <h2 id="waitlist-title">Join the early access list.</h2>
+          <p>
+            Help shape HarborNavi before launch. We will use your answers to decide which beta flows to
+            test first.
+          </p>
+          <p class="placeholder-note">
+            V0 placeholder: this form does not store submissions yet. Replace it with Tally before traffic tests.
+          </p>
+        </div>
+        <form class="waitlist-form" data-waitlist-form>
+          <label>
+            Email
+            <input name="email" type="email" autocomplete="email" placeholder="you@example.com" required />
+          </label>
+          <label>
+            Country
+            <input name="country" type="text" autocomplete="country-name" placeholder="United States" required />
+          </label>
+          <label>
+            Current camera brand or setup
+            <input name="camera_setup" type="text" placeholder="Ring, Nest, Eufy, Wyze, RTSP, none yet" />
+          </label>
+          <label>
+            Main interest
+            <select name="main_interest" required>
+              <option value="">Choose one</option>
+              <option value="package_alerts">Package alerts</option>
+              <option value="pet_highlights">Pet highlights</option>
+              <option value="both">Both</option>
+              <option value="other_home_events">Other home events</option>
+            </select>
+          </label>
+          <fieldset>
+            <legend>Beta willingness</legend>
+            <label class="radio-row">
+              <input type="radio" name="beta_willingness" value="own_footage" />
+              Join beta with my own footage
+            </label>
+            <label class="radio-row">
+              <input type="radio" name="beta_willingness" value="updates_only" />
+              Updates only
+            </label>
+            <label class="radio-row">
+              <input type="radio" name="beta_willingness" value="curious" />
+              Just curious
+            </label>
+          </fieldset>
+          <label>
+            What do you wish your home camera could catch for you?
+            <textarea name="pain_point" rows="4" placeholder="Tell us the moment you keep missing."></textarea>
+          </label>
+          <button class="primary-button form-button" type="submit">Join early access</button>
+          <p class="form-success" data-form-success hidden>
+            You are on the list. We will follow up when the first HarborNavi beta flow is ready to test.
+          </p>
+        </form>
+      </section>
+
+      <section class="faq-section section-shell" aria-labelledby="faq-title">
+        <div class="section-heading">
+          <p class="eyebrow">FAQ</p>
+          <h2 id="faq-title">Plain answers for the first test.</h2>
+        </div>
+        <div class="faq-list">
+          {faqItems.map((item) => (
+            <details>
+              <summary>{item.question}</summary>
+              <p>{item.answer}</p>
+            </details>
+          ))}
+        </div>
+      </section>
+    </main>
+    <footer class="site-footer">
+      <span>HarborNavi</span>
+      <a href="/privacy">Privacy</a>
+    </footer>
+
+    <script is:inline>
+      window.harborTrack =
+        window.harborTrack ||
+        function harborTrack(eventName, properties) {
+          window.harborEvents = window.harborEvents || [];
+          window.harborEvents.push({
+            eventName,
+            properties: properties || {},
+            timestamp: new Date().toISOString()
+          });
+        };
+
+      const route = document.body.dataset.route || "unknown";
+      window.harborTrack("page_view", { route });
+
+      document.querySelectorAll("[data-track]").forEach((element) => {
+        element.addEventListener("click", () => {
+          window.harborTrack(element.getAttribute("data-track"), { route });
+        });
+      });
+
+      document.querySelectorAll("[data-demo-key]").forEach((tab) => {
+        tab.addEventListener("click", () => {
+          const key = tab.getAttribute("data-demo-key");
+          document.querySelectorAll("[data-demo-key]").forEach((button) => {
+            const isActive = button.getAttribute("data-demo-key") === key;
+            button.classList.toggle("active", isActive);
+            button.setAttribute("aria-selected", isActive ? "true" : "false");
+          });
+          document.querySelectorAll("[data-demo-panel]").forEach((panel) => {
+            const isActive = panel.getAttribute("data-demo-panel") === key;
+            panel.hidden = !isActive;
+            panel.classList.toggle("active", isActive);
+          });
+          const eventName = key === "package" ? "demo_option_package" : key === "pet" ? "demo_option_pet" : "demo_option_unusual";
+          window.harborTrack(eventName, { route });
+        });
+      });
+
+      const form = document.querySelector("[data-waitlist-form]");
+      if (form) {
+        form.addEventListener("submit", (event) => {
+          event.preventDefault();
+          const data = new FormData(form);
+          const betaWillingness = data.get("beta_willingness");
+          window.harborTrack("waitlist_submit", {
+            route,
+            main_interest: data.get("main_interest") || "",
+            has_camera_setup: Boolean(data.get("camera_setup")),
+            beta_willingness: betaWillingness || ""
+          });
+          if (betaWillingness === "own_footage" || data.get("pain_point")) {
+            window.harborTrack("qualified_lead", { route });
+          }
+          if (betaWillingness === "own_footage") {
+            window.harborTrack("beta_interview_request", { route });
+          }
+          const success = document.querySelector("[data-form-success]");
+          if (success) {
+            success.hidden = false;
+          }
+        });
+      }
+    </script>
+  </body>
+</html>

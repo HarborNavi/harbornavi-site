@@ -1,0 +1,35 @@
+---
+import type { RouteKey } from "../data/landingPages";
+
+interface Props {
+  activeRoute?: RouteKey | "privacy";
+}
+
+const { activeRoute } = Astro.props;
+const ctaHref = activeRoute === "privacy" ? "/home#waitlist" : "#waitlist";
+const navItems: Array<{ href: string; label: string; key: RouteKey | "privacy" }> = [
+  { href: "/home", label: "Home", key: "home" },
+  { href: "/package", label: "Packages", key: "package" },
+  { href: "/pets", label: "Pets", key: "pets" },
+  { href: "/privacy", label: "Privacy", key: "privacy" }
+];
+---
+
+<header class="site-header">
+  <a class="brand" href="/home" aria-label="HarborNavi home">
+    <span class="brand-mark" aria-hidden="true">HN</span>
+    <span>HarborNavi</span>
+  </a>
+  <nav class="site-nav" aria-label="Main navigation">
+    {navItems.map((item) => (
+      <a
+        href={item.href}
+        class:list={[{ active: activeRoute === item.key }]}
+        aria-current={activeRoute === item.key ? "page" : undefined}
+      >
+        {item.label}
+      </a>
+    ))}
+  </nav>
+  <a class="header-cta" href={ctaHref} data-track="waitlist_start">Join early access</a>
+</header>
