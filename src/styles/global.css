@@ -977,6 +977,123 @@ h3 {
   padding: 24px;
 }
 
+.admin-page {
+  min-height: 76vh;
+  padding: 54px 0 76px;
+}
+
+.admin-head {
+  display: flex;
+  align-items: start;
+  justify-content: space-between;
+  gap: 24px;
+  margin-bottom: 24px;
+}
+
+.admin-head h1 {
+  margin-bottom: 0;
+  font-size: 3.35rem;
+}
+
+.admin-settings {
+  display: grid;
+  grid-template-columns: minmax(240px, 1fr) minmax(240px, 1fr) auto;
+  gap: 14px;
+  align-items: end;
+  padding: 20px;
+  border: 1px solid var(--line);
+  background: #fbfcfa;
+}
+
+.admin-settings label,
+.admin-asset-body label {
+  display: grid;
+  gap: 8px;
+  font-size: 0.92rem;
+  font-weight: 760;
+}
+
+.admin-settings input,
+.admin-asset-body input {
+  min-height: 46px;
+  width: 100%;
+  border: 1px solid var(--line);
+  border-radius: 0;
+  padding: 0 12px;
+  background: var(--surface);
+  color: var(--text);
+}
+
+.admin-status {
+  min-height: 48px;
+  margin: 16px 0 22px;
+  padding: 14px 16px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  color: var(--muted);
+  line-height: 1.45;
+}
+
+.admin-status[data-tone="success"] {
+  border-color: #b8dbcd;
+  background: var(--accent-soft);
+  color: var(--accent-dark);
+  font-weight: 720;
+}
+
+.admin-status[data-tone="error"] {
+  border-color: #e5b7b7;
+  background: #fff1f1;
+  color: #8b1f1f;
+  font-weight: 720;
+}
+
+.admin-assets {
+  display: grid;
+  gap: 18px;
+}
+
+.admin-asset {
+  display: grid;
+  grid-template-columns: minmax(320px, 0.9fr) minmax(0, 1.1fr);
+  gap: 20px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  padding: 20px;
+}
+
+.admin-preview {
+  border: 1px solid var(--line);
+  background: #fbfcfa;
+}
+
+.admin-preview img {
+  display: block;
+  width: 100%;
+  height: 100%;
+  min-height: 240px;
+  aspect-ratio: 16 / 9;
+  object-fit: cover;
+}
+
+.admin-asset-body {
+  display: grid;
+  gap: 14px;
+  align-content: start;
+}
+
+.admin-asset-body h2 {
+  margin-bottom: 0;
+  font-size: 1.45rem;
+}
+
+.admin-asset-meta {
+  margin: 0;
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.45;
+}
+
 .site-footer {
   display: flex;
   justify-content: space-between;
@@ -1018,7 +1135,9 @@ h3 {
   .hero-capture,
   .demo-grid,
   .trust-section,
-  .waitlist-section {
+  .waitlist-section,
+  .admin-settings,
+  .admin-asset {
     grid-template-columns: 1fr;
   }
 
@@ -1166,7 +1285,16 @@ h3 {
   .waitlist-form,
   .timeline-panel,
   .use-case-card,
-  .privacy-grid article {
+  .privacy-grid article,
+  .admin-asset {
     padding: 20px;
+  }
+
+  .admin-head {
+    display: grid;
+  }
+
+  .admin-head h1 {
+    font-size: 2.55rem;
   }
 }
