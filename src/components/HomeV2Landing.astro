@@ -1,0 +1,475 @@
+---
+import "../styles/home-v2.css";
+
+const discordUrl = "https://discord.gg/tC2bktRWWj";
+const heroImage = "/assets/home-v2-hero.png";
+
+const breakdownItems = [
+  {
+    eyebrow: "Know your space",
+    title: "Bring household context into one local view.",
+    body:
+      "Cameras, sensors, screens, and smart-home states already describe your space. HarborNavi is designed to organize selected signals into a local timeline you can understand at a glance.",
+    chips: ["Camera events", "Device states", "Local timeline"]
+  },
+  {
+    eyebrow: "Keep your moments",
+    title: "Save the parts of home life that usually disappear.",
+    body:
+      "A child coming home, a pet doing something funny, a quiet studio routine, a visitor at the door. HarborNavi helps turn short household moments into clips and summaries worth keeping.",
+    chips: ["Family memories", "Pet highlights", "Reviewable clips"]
+  },
+  {
+    eyebrow: "Connect your devices",
+    title: "Describe the workflow instead of building every rule.",
+    body:
+      "Home automation should start with plain language: what you want your space to do, when it should happen, and what needs approval. HarborNavi turns that intent into reviewable local workflows.",
+    chips: ["Plain language", "Approvals", "Home Assistant ready"]
+  }
+];
+
+const productSlides = [
+  {
+    title: "Desk-first industrial design",
+    body: "A compact form factor for living rooms, family desks, and small studios.",
+    label: "Concept render 01"
+  },
+  {
+    title: "Quiet local compute",
+    body: "A thermal path planned for everyday spaces, not server rooms.",
+    label: "Concept render 02"
+  },
+  {
+    title: "Home device hub",
+    body: "Ports and wireless integrations reserved for cameras, storage, sensors, and local controls.",
+    label: "Concept render 03"
+  }
+];
+
+const scenarioItems = [
+  {
+    event: "scenario_family_memory",
+    title: "Private family memory",
+    body:
+      "Keep selected home moments in your own space: short clips, event summaries, and context around the people and pets you care about.",
+    action: "Explore memory workflows"
+  },
+  {
+    event: "scenario_studio_workflow",
+    title: "Home and small studio workflows",
+    body:
+      "Describe what should happen across lights, screens, sensors, cameras, and routines. HarborNavi is designed to make device coordination feel natural.",
+    action: "Explore device workflows"
+  }
+];
+
+const specRows = [
+  ["SoC direction", "RISC-V target platform with 8 high-performance compute cores and 8 wide-parallel AI cores"],
+  ["AI acceleration", "Target configuration for up to 60 TOPS-class local AI acceleration"],
+  ["General compute", "130 KDMIPS-class planning target for local orchestration and device workflows"],
+  ["Model workflow", "Designed to evaluate 30B-class local model workflows as thermal and memory SKUs mature"],
+  ["Storage", "Local storage-first architecture with product SKUs to be confirmed"],
+  ["Interfaces", "Planned support for LAN devices, cameras, storage, sensors, and smart-home bridges"]
+];
+
+const comparisonRows = [
+  [
+    "Data direction",
+    "Local-first storage for selected household data, with user-approved sharing added only where needed.",
+    "Often routes personal context through third-party cloud services."
+  ],
+  [
+    "Network dependency",
+    "Designed for LAN-first household workflows and lower-latency local responses.",
+    "Often depends on public internet, account sessions, and remote service queues."
+  ],
+  [
+    "Setup burden",
+    "Plain-language setup for everyday scenes, device coordination, and reviewable actions.",
+    "Often requires API keys, dashboards, manual rules, and network workarounds."
+  ],
+  [
+    "Cost model",
+    "Hardware-led local compute for selected workflows, with pricing still to be finalized.",
+    "Often tied to recurring plans, token metering, or cloud storage limits."
+  ]
+];
+
+const structuredData = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  name: "Know your space. Keep your moments. Connect your devices.",
+  description:
+    "A preview landing page for HarborNavi, a local-first AI hardware concept for private household context, moments, and device workflows.",
+  url: "https://harbornavi.com/home-v2"
+});
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>Know your space. Keep your moments. Connect your devices. | HarborNavi</title>
+    <meta
+      name="description"
+      content="Preview HarborNavi, a local-first AI hardware concept for private household context, moments, and device workflows."
+    />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta property="og:title" content="Know your space. Keep your moments. Connect your devices. | HarborNavi" />
+    <meta
+      property="og:description"
+      content="A local-first AI hardware concept for private space, family moments, and natural device workflows."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content={heroImage} />
+    <script is:inline type="application/ld+json" set:html={structuredData}></script>
+  </head>
+  <body class="home-v2-page" data-route="home-v2">
+    <header class="v2-header" aria-label="HarborNavi preview navigation">
+      <a class="v2-brand" href="/home" aria-label="HarborNavi home">
+        <span class="v2-brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 64 34" focusable="false">
+            <defs>
+              <linearGradient id="home-v2-mark" x1="0" y1="34" x2="64" y2="0" gradientUnits="userSpaceOnUse">
+                <stop offset="0" stop-color="#0f766e" />
+                <stop offset="0.58" stop-color="#4f46e5" />
+                <stop offset="1" stop-color="#b7c8ff" />
+              </linearGradient>
+            </defs>
+            <path d="M0 34C18.8 34 31.1 21.6 31.1 2.7V0H20.8v2.3C20.8 15.8 12.8 23.5 0 23.5V34Z" fill="url(#home-v2-mark)" />
+            <path d="M35.7 34C40.8 20.3 50.5 11.1 64 7.8V0C45.1 2.4 31.2 14.5 25.3 34H35.7Z" fill="url(#home-v2-mark)" opacity="0.88" />
+          </svg>
+        </span>
+        <span>HarborNavi</span>
+      </a>
+      <a class="v2-header-link" href="#early-access" data-track="early_bird_start">Early access</a>
+    </header>
+
+    <main>
+      <section class="v2-hero" aria-labelledby="v2-hero-title">
+        <img class="v2-hero-image" src={heroImage} alt="" width="1792" height="1024" loading="eager" />
+        <div class="v2-hero-scrim" aria-hidden="true"></div>
+        <div class="v2-hero-content">
+          <p class="v2-kicker">Local AI hardware for private spaces</p>
+          <h1 id="v2-hero-title">
+            <span>Know your space.</span>
+            <span>Keep your moments.</span>
+            <span>Connect your devices.</span>
+          </h1>
+          <p class="v2-hero-copy">
+            HarborNavi is a local-first AI device concept for households and small studios that want useful AI
+            without turning private space into cloud data.
+          </p>
+          <form class="v2-email-form" data-early-form data-form-location="hero">
+            <label class="v2-sr-only" for="hero-email">Email</label>
+            <input id="hero-email" name="email" type="email" autocomplete="email" placeholder="Enter your email for Early Bird access" required />
+            <button type="submit">Get Early Bird Access</button>
+          </form>
+          <div class="v2-form-success" data-form-success hidden>
+            <p>Thanks. Join Discord to continue the early access conversation.</p>
+            <a href={discordUrl} data-discord-link>Join the Discord</a>
+          </div>
+          <p class="v2-concept-note">Concept visualization. Final hardware, specs, and availability may change.</p>
+        </div>
+      </section>
+
+      <section class="v2-section v2-contrast" aria-labelledby="contrast-title">
+        <div class="v2-section-inner">
+          <div class="v2-section-heading">
+            <p class="v2-eyebrow">From cloud friction to local calm</p>
+            <h2 id="contrast-title">AI should feel as natural as switching on a light.</h2>
+          </div>
+          <div class="v2-compare-panels">
+            <article>
+              <p class="v2-card-label">Cloud AI complexity</p>
+              <h3>Useful, but often too far from the room.</h3>
+              <p>
+                Account sprawl, API keys, remote queues, subscriptions, and uncertain data reuse make AI feel
+                powerful but distant from ordinary family life.
+              </p>
+            </article>
+            <article>
+              <p class="v2-card-label">HarborNavi local calm</p>
+              <h3>Local-first AI for the space you actually live in.</h3>
+              <p>
+                HarborNavi is designed to keep selected household context on local hardware, then turn it into
+                useful memory, summaries, and device workflows.
+              </p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section class="v2-section v2-breakdown" aria-labelledby="breakdown-title">
+        <div class="v2-section-inner">
+          <div class="v2-section-heading centered">
+            <p class="v2-eyebrow">The line becomes the product</p>
+            <h2 id="breakdown-title">Three promises, three jobs in the home.</h2>
+          </div>
+          <div class="v2-breakdown-grid">
+            {breakdownItems.map((item) => (
+              <article class="v2-breakdown-card">
+                <p class="v2-card-label">{item.eyebrow}</p>
+                <h3>{item.title}</h3>
+                <p>{item.body}</p>
+                <div class="v2-chip-row" aria-label={`${item.eyebrow} examples`}>
+                  {item.chips.map((chip) => <span>{chip}</span>)}
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section class="v2-section v2-product" aria-labelledby="product-title">
+        <div class="v2-section-inner">
+          <div class="v2-product-head">
+            <div>
+              <p class="v2-eyebrow">Industrial design and architecture</p>
+              <h2 id="product-title">A device made for the desk, powered for the edge.</h2>
+            </div>
+            <p>
+              Official product renders and the internal exploded view will replace these concept slots when ready.
+            </p>
+          </div>
+
+          <div class="v2-product-stage" data-carousel>
+            <button class="v2-carousel-control prev" type="button" aria-label="Previous product concept" data-carousel-prev>
+              <span aria-hidden="true">&#8592;</span>
+            </button>
+            <div class="v2-carousel-viewport">
+              {productSlides.map((slide, index) => (
+                <article class:list={["v2-product-slide", { active: index === 0 }]} data-product-slide={index} hidden={index !== 0}>
+                  <div class:list={["v2-device-render", `variant-${index + 1}`]} aria-hidden="true">
+                    <span></span>
+                    <i></i>
+                    <b></b>
+                  </div>
+                  <div class="v2-slide-copy">
+                    <p class="v2-card-label">{slide.label}</p>
+                    <h3>{slide.title}</h3>
+                    <p>{slide.body}</p>
+                  </div>
+                </article>
+              ))}
+            </div>
+            <button class="v2-carousel-control next" type="button" aria-label="Next product concept" data-carousel-next>
+              <span aria-hidden="true">&#8594;</span>
+            </button>
+            <div class="v2-carousel-dots" aria-label="Product concept slides">
+              {productSlides.map((_, index) => (
+                <button class:list={{ active: index === 0 }} type="button" aria-label={`Show product concept ${index + 1}`} data-carousel-dot={index}></button>
+              ))}
+            </div>
+          </div>
+
+          <figure class="v2-exploded">
+            <div class="v2-exploded-visual" aria-hidden="true">
+              <span class="layer shell">Top shell</span>
+              <span class="layer compute">RISC-V compute board</span>
+              <span class="layer thermal">Quiet thermal path</span>
+              <span class="layer storage">Local storage bay</span>
+              <span class="layer base">Base enclosure</span>
+            </div>
+            <figcaption>
+              <strong>Exploded-view placeholder.</strong> Reserved for the official internal structure visual:
+              modular craft, local AI compute, storage, and quiet cooling.
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="v2-section v2-scenarios" aria-labelledby="scenarios-title">
+        <div class="v2-section-inner">
+          <div class="v2-section-heading">
+            <p class="v2-eyebrow">Life needs, not feature lists</p>
+            <h2 id="scenarios-title">What local AI can quietly help with.</h2>
+          </div>
+          <div class="v2-scenario-grid">
+            {scenarioItems.map((scenario) => (
+              <article class="v2-scenario">
+                <h3>{scenario.title}</h3>
+                <p>{scenario.body}</p>
+                <a href="#early-access" data-scenario-event={scenario.event}>{scenario.action}</a>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section class="v2-section v2-specs" aria-labelledby="specs-title">
+        <div class="v2-section-inner">
+          <div class="v2-section-heading centered">
+            <p class="v2-eyebrow">Target hardware configuration</p>
+            <h2 id="specs-title">Local compute, designed for real spaces.</h2>
+            <p>
+              These are planning specs for the landing preview. Final SoC, memory, storage, and IO SKUs should be
+              confirmed from the official hardware specification.
+            </p>
+          </div>
+
+          <div class="v2-spec-grid">
+            {specRows.map(([label, value]) => (
+              <article>
+                <p>{label}</p>
+                <strong>{value}</strong>
+              </article>
+            ))}
+          </div>
+
+          <div class="v2-table-wrap" aria-label="HarborNavi comparison with traditional AI and network storage devices">
+            <table>
+              <thead>
+                <tr>
+                  <th>Parameter</th>
+                  <th>HarborNavi</th>
+                  <th>Traditional AI / network storage devices</th>
+                </tr>
+              </thead>
+              <tbody>
+                {comparisonRows.map(([parameter, harborNavi, traditional]) => (
+                  <tr>
+                    <th scope="row">{parameter}</th>
+                    <td>{harborNavi}</td>
+                    <td>{traditional}</td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="early-access" class="v2-section v2-final-cta" aria-labelledby="final-title">
+        <div class="v2-section-inner">
+          <div class="v2-final-copy">
+            <p class="v2-eyebrow">Build the future of data sovereignty with us</p>
+            <h2 id="final-title">Early users should help decide what local AI does first.</h2>
+            <p>
+              We are not only building a piece of hardware. We are testing a calmer way for private spaces to use
+              intelligence without giving up ownership of everyday context.
+            </p>
+          </div>
+          <form class="v2-email-form final" data-early-form data-form-location="final">
+            <label class="v2-sr-only" for="final-email">Email</label>
+            <input id="final-email" name="email" type="email" autocomplete="email" placeholder="Enter your email for Early Bird access" required />
+            <button type="submit">Get Early Bird Access</button>
+          </form>
+          <div class="v2-form-success final" data-form-success hidden>
+            <p>Thanks. Join Discord to continue the early access conversation.</p>
+            <a href={discordUrl} data-discord-link>Join the Discord</a>
+          </div>
+          <a class="v2-discord-secondary" href={discordUrl} data-discord-link>Enter Discord channel</a>
+        </div>
+      </section>
+    </main>
+
+    <footer class="v2-footer">
+      <span>HarborNavi</span>
+      <span>Local-first AI hardware preview</span>
+      <a href="/privacy">Privacy</a>
+    </footer>
+
+    <script is:inline>
+      window.harborTrack =
+        window.harborTrack ||
+        function harborTrack(eventName, properties) {
+          window.harborEvents = window.harborEvents || [];
+          window.harborEvents.push({
+            eventName,
+            properties: properties || {},
+            timestamp: new Date().toISOString()
+          });
+        };
+
+      const route = "home-v2";
+      window.harborTrack("page_view_home_v2", { route });
+
+      document.querySelectorAll("[data-track]").forEach((element) => {
+        element.addEventListener("click", () => {
+          window.harborTrack(element.getAttribute("data-track"), { route });
+        });
+      });
+
+      document.querySelectorAll("[data-early-form]").forEach((form) => {
+        const input = form.querySelector("input[type='email']");
+        let started = false;
+        input?.addEventListener("focus", () => {
+          if (!started) {
+            started = true;
+            window.harborTrack("early_bird_start", {
+              route,
+              form_location: form.dataset.formLocation || "unknown"
+            });
+          }
+        });
+
+        form.addEventListener("submit", (event) => {
+          event.preventDefault();
+          const data = new FormData(form);
+          window.harborTrack("early_bird_submit", {
+            route,
+            form_location: form.dataset.formLocation || "unknown",
+            has_email: Boolean(data.get("email"))
+          });
+          form.classList.add("submitted");
+          const success = form.nextElementSibling;
+          if (success?.matches("[data-form-success]")) {
+            success.hidden = false;
+          }
+        });
+      });
+
+      document.querySelectorAll("[data-discord-link]").forEach((link) => {
+        link.addEventListener("click", () => {
+          window.harborTrack("discord_click", { route });
+        });
+      });
+
+      document.querySelectorAll("[data-scenario-event]").forEach((link) => {
+        link.addEventListener("click", () => {
+          window.harborTrack(link.getAttribute("data-scenario-event"), { route });
+        });
+      });
+
+      const carousel = document.querySelector("[data-carousel]");
+      if (carousel) {
+        const slides = Array.from(carousel.querySelectorAll("[data-product-slide]"));
+        const dots = Array.from(carousel.querySelectorAll("[data-carousel-dot]"));
+        let activeIndex = 0;
+
+        const showSlide = (index, eventName) => {
+          activeIndex = (index + slides.length) % slides.length;
+          slides.forEach((slide, slideIndex) => {
+            const active = slideIndex === activeIndex;
+            slide.hidden = !active;
+            slide.classList.toggle("active", active);
+          });
+          dots.forEach((dot, dotIndex) => {
+            dot.classList.toggle("active", dotIndex === activeIndex);
+          });
+          if (eventName) {
+            window.harborTrack(eventName, {
+              route,
+              slide_index: activeIndex
+            });
+          }
+        };
+
+        carousel.querySelector("[data-carousel-prev]")?.addEventListener("click", () => {
+          showSlide(activeIndex - 1, "product_carousel_next");
+        });
+        carousel.querySelector("[data-carousel-next]")?.addEventListener("click", () => {
+          showSlide(activeIndex + 1, "product_carousel_next");
+        });
+        dots.forEach((dot) => {
+          dot.addEventListener("click", () => {
+            showSlide(Number(dot.getAttribute("data-carousel-dot") || 0), "product_carousel_next");
+          });
+        });
+      }
+    </script>
+  </body>
+</html>
