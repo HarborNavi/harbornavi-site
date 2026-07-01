@@ -7,29 +7,25 @@ interface Props {
 
 const { activeRoute } = Astro.props;
 const ctaHref = activeRoute === "privacy" ? "/home#waitlist" : "#waitlist";
-const navItems: Array<{ href: string; label: string; key: RouteKey | "privacy" }> = [
-  { href: "/home", label: "Home", key: "home" },
-  { href: "/package", label: "Packages", key: "package" },
-  { href: "/pets", label: "Pets", key: "pets" },
-  { href: "/privacy", label: "Privacy", key: "privacy" }
-];
 ---
 
 <header class="site-header">
   <a class="brand" href="/home" aria-label="HarborNavi home">
-    <span class="brand-mark" aria-hidden="true">HN</span>
+    <span class="brand-mark" aria-hidden="true">
+      <svg viewBox="0 0 64 34" focusable="false">
+        <defs>
+          <linearGradient id="harbor-mark-gradient" x1="0" y1="34" x2="64" y2="0" gradientUnits="userSpaceOnUse">
+            <stop offset="0" stop-color="#651fff" />
+            <stop offset="0.52" stop-color="#8d5cff" />
+            <stop offset="1" stop-color="#d9c8ff" />
+          </linearGradient>
+        </defs>
+        <path d="M0 34C18.8 34 31.1 21.6 31.1 2.7V0H20.8v2.3C20.8 15.8 12.8 23.5 0 23.5V34Z" fill="url(#harbor-mark-gradient)" />
+        <path d="M35.7 34C40.8 20.3 50.5 11.1 64 7.8V0C45.1 2.4 31.2 14.5 25.3 34H35.7Z" fill="url(#harbor-mark-gradient)" opacity="0.88" />
+      </svg>
+    </span>
     <span>HarborNavi</span>
   </a>
-  <nav class="site-nav" aria-label="Main navigation">
-    {navItems.map((item) => (
-      <a
-        href={item.href}
-        class:list={[{ active: activeRoute === item.key }]}
-        aria-current={activeRoute === item.key ? "page" : undefined}
-      >
-        {item.label}
-      </a>
-    ))}
-  </nav>
-  <a class="header-cta" href={ctaHref} data-track="waitlist_start">Join early access</a>
+  <p class="header-note">Private beta list</p>
+  <a class="header-cta" href={ctaHref} data-track="waitlist_start">Join waitlist</a>
 </header>

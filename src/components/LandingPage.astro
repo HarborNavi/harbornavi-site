@@ -9,6 +9,19 @@ interface Props {
 
 const { page } = Astro.props;
 const demoEntries = Object.values(demoOptions);
+const isHome = page.route === "home";
+const narrativeStages = page.narrativeStages ?? [];
+const sourceChips =
+  page.route === "home"
+    ? ["Selected cameras", "Home Assistant", "Zigbee", "IR", "Local timeline"]
+    : page.route === "package"
+      ? ["Front door camera", "Package timeline", "Useful alert", "Local-first direction"]
+      : ["Indoor camera", "Pet highlights", "Home timeline", "Clips worth keeping"];
+const headlineParts = page.headline
+  .split(".")
+  .map((part) => part.trim())
+  .filter(Boolean)
+  .map((part) => `${part}.`);
 const structuredData = JSON.stringify({
   "@context": "https://schema.org",
   "@type": "WebPage",
@@ -25,6 +38,7 @@ const structuredData = JSON.stringify({
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{page.metaTitle} | HarborNavi</title>
     <meta name="description" content={page.metaDescription} />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
     <link rel="canonical" href={`https://harbornavi.com${page.path}`} />
     <meta property="og:title" content={`${page.metaTitle} | HarborNavi`} />
     <meta property="og:description" content={page.metaDescription} />
@@ -35,36 +49,158 @@ const structuredData = JSON.stringify({
   <body data-route={page.route}>
     <SiteHeader activeRoute={page.route} />
     <main>
-      <section class="hero section-shell" aria-labelledby="hero-title">
-        <div class="hero-copy">
-          <p class="eyebrow">{page.eyebrow}</p>
-          <h1 id="hero-title">{page.headline}</h1>
-          <p class="hero-body">{page.body}</p>
-          <p class="hero-support">{page.supportLine}</p>
-          <div class="hero-actions">
-            <a class="primary-button" href="#waitlist" data-track="waitlist_start">{page.cta}</a>
-            <a class="secondary-link" href="#demo">Try the concept demo</a>
-          </div>
-        </div>
-        <figure class="hero-media">
-          <img src={page.heroImage} alt={page.heroAlt} width="1600" height="900" loading="eager" />
-          <figcaption>Concept storyboard for early testing. Final beta behavior may change.</figcaption>
-        </figure>
-      </section>
+      {isHome ? (
+        <>
+          <section class="slogan-hero section-shell" aria-labelledby="slogan-title">
+            <div class="slogan-visuals" aria-hidden="true">
+              <img class="slogan-visual slogan-visual-top" src="/assets/hero-home.png" alt="" width="1600" height="900" />
+              <img class="slogan-visual slogan-visual-bottom" src="/assets/hero-pets.png" alt="" width="1600" height="900" />
+            </div>
+            <div class="slogan-lockup">
+              <p class="eyebrow">{page.eyebrow}</p>
+              <h1 id="slogan-title" class="slogan-title">
+                {headlineParts.map((part) => <span>{part}</span>)}
+              </h1>
+              <div class="hero-capture" aria-label="Early access waitlist form">
+                <div>
+                  <h2>Join the early access list.</h2>
+                  <p>Leave an email for package context, pet moments, and plain-language device workflows.</p>
+                </div>
+                <form class="quick-waitlist-form" data-waitlist-form data-form-kind="hero">
+                  <label>
+                    Email
+                    <input name="email" type="email" autocomplete="email" placeholder="you@example.com" required />
+                  </label>
+                  <button class="primary-button" type="submit">Join the email list</button>
+                  <p class="form-success" data-form-success hidden>
+                    Thanks. We will follow up when early access opens.
+                  </p>
+                </form>
+              </div>
+            </div>
+          </section>
 
-      <section class="use-cases section-shell" aria-label="Use cases">
-        {page.useCases.map((useCase) => (
-          <article class="use-case-card">
-            <h2>{useCase.title}</h2>
-            <p>{useCase.body}</p>
-          </article>
-        ))}
-      </section>
+          <section class="slogan-afterword section-shell" aria-label="HarborNavi product direction">
+            <div class="slogan-floor">
+              <p>{page.supportLine}</p>
+              <a class="secondary-link" href="#know-space">Start with space</a>
+            </div>
+          </section>
+
+          <section class="slogan-breakdown" aria-label="Slogan breakdown">
+            {narrativeStages.map((stage) => (
+              <article id={stage.id} class="narrative-stage">
+                <div class="section-shell narrative-stage-grid">
+                  <div class="stage-lockup">
+                    <p class="eyebrow">{stage.eyebrow}</p>
+                    <h2>{stage.phrase}</h2>
+                  </div>
+                  <div class="stage-detail">
+                    <div class="stage-copy">
+                      <h3>{stage.title}</h3>
+                      <p>{stage.problem}</p>
+                      <p>{stage.product}</p>
+                      <div class="stage-signals" aria-label={`${stage.phrase} signals`}>
+                        {stage.signals.map((signal) => <span>{signal}</span>)}
+                      </div>
+                    </div>
+                    <figure class="stage-visual">
+                      <img src={stage.image} alt={stage.imageAlt} width="1600" height="900" loading="lazy" />
+                      <figcaption>Storyboard preview. Product experience may change.</figcaption>
+                    </figure>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </section>
+
+          <section class="home-scenarios section-shell" aria-labelledby="home-scenarios-title">
+            <div class="section-heading">
+              <p class="eyebrow">Choose what matters</p>
+              <h2 id="home-scenarios-title">Tell us which home workflow you want first.</h2>
+              <p>
+                Your interest helps us prioritize package context, pet moments, and plain-language device
+                workflows.
+              </p>
+            </div>
+            <div class="use-case-grid">
+              {page.useCases.map((useCase) => (
+                <article class="use-case-card">
+                  {useCase.label && <p class="card-label">{useCase.label}</p>}
+                  <h3>{useCase.title}</h3>
+                  <p>{useCase.body}</p>
+                </article>
+              ))}
+            </div>
+          </section>
+        </>
+      ) : (
+        <>
+          <section class="hero section-shell" aria-labelledby="hero-title">
+            <div class="hero-copy">
+              <p class="eyebrow">{page.eyebrow}</p>
+              <h1 id="hero-title" class="hero-title">
+                {headlineParts.map((part) => <span>{part}</span>)}
+              </h1>
+              <p class="hero-body">{page.body}</p>
+              <p class="hero-support">{page.supportLine}</p>
+              <div class="source-chips" aria-label="HarborNavi source coverage">
+                {sourceChips.map((chip) => <span>{chip}</span>)}
+              </div>
+              <div class="hero-actions">
+                <a class="primary-button" href="#waitlist" data-track="waitlist_start">{page.cta}</a>
+                <a class="secondary-link" href="#demo">Try the workflow preview</a>
+              </div>
+            </div>
+            <figure class="hero-media">
+              <div class="hero-frame">
+                <div class="hero-frame-top" aria-hidden="true">
+                  <span>Home timeline</span>
+                  <span>Selected events</span>
+                </div>
+                <img src={page.heroImage} alt={page.heroAlt} width="1600" height="900" loading="eager" />
+              </div>
+              <figcaption>Storyboard preview. Product experience may change.</figcaption>
+            </figure>
+          </section>
+
+          <section class="proof-strip section-shell" aria-labelledby="proof-title">
+            <div class="proof-heading">
+              <p class="eyebrow">Why this line matters</p>
+              <h2 id="proof-title">Each part maps to a real home problem.</h2>
+            </div>
+            {page.proofPoints.map((point) => (
+              <article>
+                <p>{point.label}</p>
+                <h2>{point.title}</h2>
+                <span>{point.body}</span>
+              </article>
+            ))}
+          </section>
+
+          <section class="use-cases section-shell" aria-labelledby="use-cases-title">
+            <div class="section-heading">
+              <p class="eyebrow">Real home scenarios</p>
+              <h2 id="use-cases-title">Start with scenes people already understand.</h2>
+            </div>
+            <div class="use-case-grid">
+              {page.useCases.map((useCase) => (
+                <article class="use-case-card">
+                  {useCase.label && <p class="card-label">{useCase.label}</p>}
+                  <h3>{useCase.title}</h3>
+                  <p>{useCase.body}</p>
+                </article>
+              ))}
+            </div>
+          </section>
+        </>
+      )}
 
       <section id="demo" class="demo-section section-shell" aria-labelledby="demo-title">
         <div class="section-heading">
-          <p class="eyebrow">Promptable demo</p>
-          <h2 id="demo-title">What do you want HarborNavi to catch?</h2>
+          <p class="eyebrow">Workflow preview</p>
+          <h2 id="demo-title">Describe what you want your home to do.</h2>
+          <p>Choose a scene and see the kind of timeline HarborNavi is designed to create.</p>
         </div>
         <div class="demo-grid">
           <div class="demo-options" role="tablist" aria-label="Demo options">
@@ -102,42 +238,45 @@ const structuredData = JSON.stringify({
         </div>
       </section>
 
-      <section class="how-section section-shell" aria-labelledby="how-title">
-        <div class="section-heading">
-          <p class="eyebrow">How it works</p>
-          <h2 id="how-title">Simple enough for a first beta.</h2>
-        </div>
-        <div class="steps">
-          <div class="step">
-            <span>1</span>
-            <p>Connect your home camera.</p>
+      {!isHome && (
+        <section class="how-section section-shell" aria-labelledby="how-title">
+          <div class="section-heading">
+            <p class="eyebrow">How it works</p>
+            <h2 id="how-title">From household signal to reviewable workflow.</h2>
           </div>
-          <div class="step">
-            <span>2</span>
-            <p>Choose what matters.</p>
+          <div class="steps">
+            {page.workflowSteps.map((step, index) => (
+              <div class="step">
+                <span>{index + 1}</span>
+                <div>
+                  <h3>{step.title}</h3>
+                  <p>{step.body}</p>
+                </div>
+              </div>
+            ))}
           </div>
-          <div class="step">
-            <span>3</span>
-            <p>Get useful alerts and saved clips.</p>
-          </div>
-        </div>
-      </section>
+        </section>
+      )}
 
       <section class="trust-section section-shell" aria-labelledby="trust-title">
         <div>
-          <p class="eyebrow">Privacy direction</p>
-          <h2 id="trust-title">Built for useful events, not constant noise.</h2>
+          <p class="eyebrow">Private by design</p>
+          <h2 id="trust-title">Useful home AI needs clear boundaries.</h2>
         </div>
         <div class="trust-copy">
           <p>
-            HarborNavi is being designed as a local-first home video AI system. The goal is to help you
-            choose the events that matter, review what was found, and avoid turning every camera moment
-            into another notification.
+            HarborNavi is being designed around selected household workflows: useful events, moments worth
+            keeping, and device actions that stay reviewable.
           </p>
           <p>
-            No home camera can guarantee prevention or recovery. HarborNavi is intended to help detect,
-            summarize, and save useful moments so you can respond faster.
+            The direction is local-first, authorized cloud fallback only when needed, and no prevention or
+            recovery promises.
           </p>
+          <ul class="trust-list">
+            <li>Camera credentials and device state are designed to stay local by default.</li>
+            <li>Cloud fallback should be authorized, redacted, and auditable.</li>
+            <li>Device workflows should stay reviewable before sensitive actions run.</li>
+          </ul>
         </div>
       </section>
 
@@ -146,11 +285,7 @@ const structuredData = JSON.stringify({
           <p class="eyebrow">Early access</p>
           <h2 id="waitlist-title">Join the early access list.</h2>
           <p>
-            Help shape HarborNavi before launch. We will use your answers to decide which beta flows to
-            test first.
-          </p>
-          <p class="placeholder-note">
-            V0 placeholder: this form does not store submissions yet. Replace it with Tally before traffic tests.
+            Tell us which home workflow matters most to you. We will follow up as early access opens.
           </p>
         </div>
         <form class="waitlist-form" data-waitlist-form>
@@ -197,7 +332,7 @@ const structuredData = JSON.stringify({
           </label>
           <button class="primary-button form-button" type="submit">Join early access</button>
           <p class="form-success" data-form-success hidden>
-            You are on the list. We will follow up when the first HarborNavi beta flow is ready to test.
+            Thanks. We will follow up when early access opens.
           </p>
         </form>
       </section>
@@ -205,7 +340,7 @@ const structuredData = JSON.stringify({
       <section class="faq-section section-shell" aria-labelledby="faq-title">
         <div class="section-heading">
           <p class="eyebrow">FAQ</p>
-          <h2 id="faq-title">Plain answers for the first test.</h2>
+          <h2 id="faq-title">Plain answers before launch.</h2>
         </div>
         <div class="faq-list">
           {faqItems.map((item) => (
@@ -261,14 +396,15 @@ const structuredData = JSON.stringify({
         });
       });
 
-      const form = document.querySelector("[data-waitlist-form]");
-      if (form) {
+      document.querySelectorAll("[data-waitlist-form]").forEach((form) => {
         form.addEventListener("submit", (event) => {
           event.preventDefault();
           const data = new FormData(form);
           const betaWillingness = data.get("beta_willingness");
           window.harborTrack("waitlist_submit", {
             route,
+            form_kind: form.dataset.formKind || "full",
+            has_email: Boolean(data.get("email")),
             main_interest: data.get("main_interest") || "",
             has_camera_setup: Boolean(data.get("camera_setup")),
             beta_willingness: betaWillingness || ""
@@ -279,12 +415,12 @@ const structuredData = JSON.stringify({
           if (betaWillingness === "own_footage") {
             window.harborTrack("beta_interview_request", { route });
           }
-          const success = document.querySelector("[data-form-success]");
+          const success = form.querySelector("[data-form-success]");
           if (success) {
             success.hidden = false;
           }
         });
-      }
+      });
     </script>
   </body>
 </html>
