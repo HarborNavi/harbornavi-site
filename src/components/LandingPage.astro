@@ -14,7 +14,6 @@ const isHome = page.route === "home";
 const heroAsset = landingAssets[page.heroAsset];
 const homeHeroAsset = landingAssets.homeHero;
 const petHeroAsset = landingAssets.petHero;
-const landingContentUrl = `${(import.meta.env.PUBLIC_HARBORNAVI_API_BASE_URL ?? "https://harbornavi-api.vercel.app").replace(/\/+$/g, "")}/api/content/landing`;
 const narrativeStages = page.narrativeStages ?? [];
 const sourceChips =
   page.route === "home"
@@ -60,7 +59,6 @@ const structuredData = JSON.stringify({
             <div class="slogan-visuals" aria-hidden="true">
               <img
                 class="slogan-visual slogan-visual-top"
-                data-asset-key={homeHeroAsset.key}
                 src={homeHeroAsset.url}
                 alt=""
                 width={homeHeroAsset.width}
@@ -68,7 +66,6 @@ const structuredData = JSON.stringify({
               />
               <img
                 class="slogan-visual slogan-visual-bottom"
-                data-asset-key={petHeroAsset.key}
                 src={petHeroAsset.url}
                 alt=""
                 width={petHeroAsset.width}
@@ -127,7 +124,6 @@ const structuredData = JSON.stringify({
                     </div>
                     <figure class="stage-visual">
                       <img
-                        data-asset-key={stageAsset.key}
                         src={stageAsset.url}
                         alt={stageAsset.alt}
                         width={stageAsset.width}
@@ -188,7 +184,6 @@ const structuredData = JSON.stringify({
                   <span>Selected events</span>
                 </div>
                 <img
-                  data-asset-key={heroAsset.key}
                   src={heroAsset.url}
                   alt={heroAsset.alt}
                   width={heroAsset.width}
@@ -393,43 +388,7 @@ const structuredData = JSON.stringify({
       <a href="/privacy">Privacy</a>
     </footer>
 
-    <script is:inline define:vars={{ landingContentUrl }}>
-      async function applyRemoteLandingAssets() {
-        try {
-          const response = await fetch(landingContentUrl, {
-            headers: {
-              accept: "application/json"
-            }
-          });
-          if (!response.ok) {
-            return;
-          }
-          const content = await response.json();
-          const assets = content && content.assets ? content.assets : {};
-          document.querySelectorAll("img[data-asset-key]").forEach((image) => {
-            const key = image.getAttribute("data-asset-key");
-            const asset = key ? assets[key] : null;
-            if (!asset || !asset.url) {
-              return;
-            }
-            image.setAttribute("src", asset.url);
-            if (asset.alt && image.getAttribute("alt") !== "") {
-              image.setAttribute("alt", asset.alt);
-            }
-            if (asset.width) {
-              image.setAttribute("width", String(asset.width));
-            }
-            if (asset.height) {
-              image.setAttribute("height", String(asset.height));
-            }
-          });
-        } catch (_error) {
-          // Keep the static fallback images if the content API is unavailable.
-        }
-      }
-
-      applyRemoteLandingAssets();
-
+    <script is:inline>
       window.harborTrack =
         window.harborTrack ||
         function harborTrack(eventName, properties) {

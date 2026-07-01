@@ -3,25 +3,23 @@ import SiteHeader from "../components/SiteHeader.astro";
 import { landingAssets } from "../data/landingAssets";
 import "../styles/global.css";
 
-const apiBaseUrl = (import.meta.env.PUBLIC_HARBORNAVI_API_BASE_URL ?? "https://harbornavi-api.vercel.app").replace(
-  /\/+$/g,
-  ""
-);
+const githubAssetsUrl = "https://github.com/HarborNavi/harbornavi-site/tree/main/public/assets";
+const vercelDeploymentsUrl = "https://vercel.com/bebebeabeanbeans-projects/harbornavi-site";
 const assetSlots = [
   {
-    key: landingAssets.homeHero.key,
     label: "Home hero",
-    defaultAsset: landingAssets.homeHero
+    path: "public/assets/hero-home.png",
+    asset: landingAssets.homeHero
   },
   {
-    key: landingAssets.packageHero.key,
     label: "Package hero",
-    defaultAsset: landingAssets.packageHero
+    path: "public/assets/hero-package.png",
+    asset: landingAssets.packageHero
   },
   {
-    key: landingAssets.petHero.key,
     label: "Pet hero",
-    defaultAsset: landingAssets.petHero
+    path: "public/assets/hero-pets.png",
+    asset: landingAssets.petHero
   }
 ];
 ---
@@ -32,7 +30,7 @@ const assetSlots = [
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex,nofollow" />
-    <title>Landing Assets Admin | HarborNavi</title>
+    <title>Landing Asset Updates | HarborNavi</title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   </head>
   <body data-route="admin">
@@ -41,53 +39,56 @@ const assetSlots = [
       <section class="admin-page section-shell" aria-labelledby="admin-title">
         <div class="admin-head">
           <div>
-            <p class="eyebrow">Admin</p>
-            <h1 id="admin-title">Landing assets</h1>
+            <p class="eyebrow">Asset workflow</p>
+            <h1 id="admin-title">Update landing images through GitHub.</h1>
           </div>
           <a class="secondary-link" href="/home">View site</a>
         </div>
 
-        <form class="admin-settings" id="admin-settings">
-          <label>
-            API base URL
-            <input id="api-base" name="api_base" type="url" value={apiBaseUrl} required />
-          </label>
-          <label>
-            Admin token
-            <input id="admin-token" name="admin_token" type="password" autocomplete="off" required />
-          </label>
-          <button class="primary-button" type="submit">Load assets</button>
-        </form>
+        <div class="admin-guide">
+          <article>
+            <p class="card-label">Current flow</p>
+            <h2>Replace the same files, keep the same names.</h2>
+            <p>
+              Upload the new images in GitHub under <code>public/assets</code>. Keep the filenames below unchanged so
+              the landing page updates without code edits.
+            </p>
+          </article>
+          <article>
+            <p class="card-label">Deploy</p>
+            <h2>Commit to main and Vercel will redeploy.</h2>
+            <p>
+              After GitHub receives the commit, Vercel rebuilds the static site. Use the deployment page to confirm the
+              latest production build.
+            </p>
+          </article>
+        </div>
 
-        <p class="admin-status" id="admin-status" role="status">Enter the admin token to load editable assets.</p>
+        <div class="admin-actions">
+          <a class="primary-button" href={githubAssetsUrl}>Open GitHub assets</a>
+          <a class="secondary-link" href={vercelDeploymentsUrl}>View Vercel deployments</a>
+        </div>
 
-        <div class="admin-assets" id="admin-assets">
+        <div class="admin-assets" aria-label="Landing image files">
           {assetSlots.map((slot) => (
-            <article class="admin-asset" data-slot={slot.key}>
+            <article class="admin-asset">
               <div class="admin-preview">
                 <img
-                  src={slot.defaultAsset.url}
-                  alt={slot.defaultAsset.alt}
-                  width={slot.defaultAsset.width}
-                  height={slot.defaultAsset.height}
-                  data-preview
+                  src={slot.asset.url}
+                  alt={slot.asset.alt}
+                  width={slot.asset.width}
+                  height={slot.asset.height}
                 />
               </div>
               <div class="admin-asset-body">
                 <div>
                   <p class="card-label">{slot.label}</p>
-                  <h2>{slot.key}</h2>
+                  <h2>{slot.path}</h2>
                 </div>
-                <label>
-                  Alt text
-                  <input type="text" value={slot.defaultAsset.alt} data-alt />
-                </label>
-                <label>
-                  Image file
-                  <input type="file" accept="image/png,image/jpeg,image/webp,image/avif,image/svg+xml" data-file />
-                </label>
-                <p class="admin-asset-meta" data-meta>Static fallback</p>
-                <button class="primary-button" type="button" data-upload>Upload and publish</button>
+                <p class="admin-asset-meta">Recommended format: 1600 x 900 PNG, JPG, or WebP.</p>
+                <p class="admin-asset-meta">
+                  Keep visual content calm, real-home oriented, and consistent with the HarborNavi page style.
+                </p>
               </div>
             </article>
           ))}
@@ -98,195 +99,5 @@ const assetSlots = [
       <span>HarborNavi</span>
       <a href="/home">Home</a>
     </footer>
-
-    <script is:inline define:vars={{ apiBaseUrl }}>
-      const tokenStorageKey = "harbornavi-admin-token";
-      const apiBaseInput = document.querySelector("#api-base");
-      const tokenInput = document.querySelector("#admin-token");
-      const settingsForm = document.querySelector("#admin-settings");
-      const statusElement = document.querySelector("#admin-status");
-
-      if (tokenInput) {
-        tokenInput.value = sessionStorage.getItem(tokenStorageKey) || "";
-      }
-
-      function getApiBase() {
-        return (apiBaseInput?.value || apiBaseUrl).replace(/\/+$/g, "");
-      }
-
-      function getAdminToken() {
-        return tokenInput?.value || "";
-      }
-
-      function setStatus(message, tone = "neutral") {
-        if (!statusElement) {
-          return;
-        }
-        statusElement.textContent = message;
-        statusElement.dataset.tone = tone;
-      }
-
-      async function requestJson(path, options = {}) {
-        const headers = new Headers(options.headers || {});
-        headers.set("accept", "application/json");
-        if (options.body) {
-          headers.set("content-type", "application/json");
-        }
-        if (options.admin) {
-          const token = getAdminToken();
-          if (!token) {
-            throw new Error("Admin token is required.");
-          }
-          headers.set("authorization", `Bearer ${token}`);
-        }
-
-        const response = await fetch(`${getApiBase()}${path}`, {
-          ...options,
-          headers
-        });
-        const payload = await response.json().catch(() => null);
-        if (!response.ok) {
-          throw new Error(payload?.detail || payload?.error || `Request failed: ${response.status}`);
-        }
-        return payload;
-      }
-
-      function resolveAssetUrl(url) {
-        if (!url) {
-          return "";
-        }
-        return url.startsWith("/") ? url : url;
-      }
-
-      function renderAssets(content) {
-        const assets = content?.assets || {};
-        document.querySelectorAll("[data-slot]").forEach((card) => {
-          const slot = card.getAttribute("data-slot");
-          const asset = slot ? assets[slot] : null;
-          if (!asset) {
-            return;
-          }
-          const preview = card.querySelector("[data-preview]");
-          const altInput = card.querySelector("[data-alt]");
-          const meta = card.querySelector("[data-meta]");
-          if (preview && asset.url) {
-            preview.src = resolveAssetUrl(asset.url);
-            preview.alt = asset.alt || preview.alt;
-          }
-          if (altInput && asset.alt) {
-            altInput.value = asset.alt;
-          }
-          if (meta) {
-            meta.textContent = `${asset.contentType || "image"} · ${asset.updatedAt || content.version || "current"}`;
-          }
-        });
-      }
-
-      async function loadContent() {
-        setStatus("Loading assets...");
-        const content = await requestJson("/api/content/landing");
-        renderAssets(content);
-        setStatus(`Loaded ${content.source || "content"} · ${content.version || "current"}`, "success");
-      }
-
-      async function getImageDimensions(file) {
-        if (file.type === "image/svg+xml") {
-          return {};
-        }
-        const objectUrl = URL.createObjectURL(file);
-        try {
-          const image = new Image();
-          const loaded = new Promise((resolve, reject) => {
-            image.onload = () => resolve({ width: image.naturalWidth, height: image.naturalHeight });
-            image.onerror = reject;
-          });
-          image.src = objectUrl;
-          return await loaded;
-        } finally {
-          URL.revokeObjectURL(objectUrl);
-        }
-      }
-
-      async function uploadSlot(card) {
-        const slot = card.getAttribute("data-slot");
-        const fileInput = card.querySelector("[data-file]");
-        const altInput = card.querySelector("[data-alt]");
-        const file = fileInput?.files?.[0];
-        if (!slot || !file) {
-          throw new Error("Choose an image file first.");
-        }
-
-        const dimensions = await getImageDimensions(file);
-        setStatus(`Signing upload for ${slot}...`);
-        const presign = await requestJson("/api/uploads/presign", {
-          method: "POST",
-          admin: true,
-          body: JSON.stringify({
-            fileName: file.name,
-            contentType: file.type,
-            sizeBytes: file.size,
-            use: slot
-          })
-        });
-
-        setStatus(`Uploading ${file.name}...`);
-        const uploadResponse = await fetch(presign.upload.url, {
-          method: presign.upload.method,
-          headers: presign.upload.headers,
-          body: file
-        });
-        if (!uploadResponse.ok) {
-          throw new Error(`Upload failed: ${uploadResponse.status}`);
-        }
-
-        const asset = {
-          ...presign.asset,
-          alt: altInput?.value || "",
-          width: dimensions.width,
-          height: dimensions.height
-        };
-
-        setStatus(`Publishing ${slot}...`);
-        const content = await requestJson("/api/content/landing", {
-          method: "PUT",
-          admin: true,
-          body: JSON.stringify({
-            assets: {
-              [slot]: asset
-            }
-          })
-        });
-        renderAssets(content);
-        setStatus(`${slot} updated. The public page will refresh from the content API.`, "success");
-      }
-
-      settingsForm?.addEventListener("submit", async (event) => {
-        event.preventDefault();
-        sessionStorage.setItem(tokenStorageKey, getAdminToken());
-        try {
-          await loadContent();
-        } catch (error) {
-          setStatus(error instanceof Error ? error.message : "Unable to load assets.", "error");
-        }
-      });
-
-      document.querySelectorAll("[data-upload]").forEach((button) => {
-        button.addEventListener("click", async () => {
-          const card = button.closest("[data-slot]");
-          if (!card) {
-            return;
-          }
-          button.setAttribute("disabled", "disabled");
-          try {
-            sessionStorage.setItem(tokenStorageKey, getAdminToken());
-            await uploadSlot(card);
-          } catch (error) {
-            setStatus(error instanceof Error ? error.message : "Unable to upload asset.", "error");
-          } finally {
-            button.removeAttribute("disabled");
-          }
-        });
-      });
-    </script>
   </body>
 </html>

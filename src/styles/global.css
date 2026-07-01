@@ -995,6 +995,51 @@ h3 {
   font-size: 3.35rem;
 }
 
+.admin-guide {
+  display: grid;
+  grid-template-columns: repeat(2, minmax(0, 1fr));
+  gap: 18px;
+  margin-bottom: 22px;
+}
+
+.admin-guide article {
+  min-height: 210px;
+  border: 1px solid var(--line);
+  background: var(--surface);
+  padding: 24px;
+}
+
+.admin-guide h2 {
+  margin-bottom: 14px;
+  font-size: 1.65rem;
+}
+
+.admin-guide p:not(.card-label),
+.admin-asset-meta {
+  color: var(--muted);
+  line-height: 1.58;
+}
+
+.admin-guide code,
+.admin-asset-body h2 {
+  overflow-wrap: anywhere;
+}
+
+.admin-guide code {
+  border: 1px solid var(--line);
+  padding: 2px 5px;
+  background: #fbfcfa;
+  color: var(--text);
+}
+
+.admin-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  align-items: center;
+  margin: 0 0 24px;
+}
+
 .admin-settings {
   display: grid;
   grid-template-columns: minmax(240px, 1fr) minmax(240px, 1fr) auto;
@@ -1136,6 +1181,7 @@ h3 {
   .demo-grid,
   .trust-section,
   .waitlist-section,
+  .admin-guide,
   .admin-settings,
   .admin-asset {
     grid-template-columns: 1fr;
