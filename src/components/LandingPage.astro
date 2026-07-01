@@ -1,5 +1,6 @@
 ---
 import SiteHeader from "./SiteHeader.astro";
+import { landingAssets } from "../data/landingAssets";
 import { demoOptions, faqItems, type LandingPageContent } from "../data/landingPages";
 import "../styles/global.css";
 
@@ -10,6 +11,9 @@ interface Props {
 const { page } = Astro.props;
 const demoEntries = Object.values(demoOptions);
 const isHome = page.route === "home";
+const heroAsset = landingAssets[page.heroAsset];
+const homeHeroAsset = landingAssets.homeHero;
+const petHeroAsset = landingAssets.petHero;
 const narrativeStages = page.narrativeStages ?? [];
 const sourceChips =
   page.route === "home"
@@ -43,7 +47,7 @@ const structuredData = JSON.stringify({
     <meta property="og:title" content={`${page.metaTitle} | HarborNavi`} />
     <meta property="og:description" content={page.metaDescription} />
     <meta property="og:type" content="website" />
-    <meta property="og:image" content={page.heroImage} />
+    <meta property="og:image" content={heroAsset.url} />
     <script is:inline type="application/ld+json" set:html={structuredData}></script>
   </head>
   <body data-route={page.route}>
@@ -53,8 +57,20 @@ const structuredData = JSON.stringify({
         <>
           <section class="slogan-hero section-shell" aria-labelledby="slogan-title">
             <div class="slogan-visuals" aria-hidden="true">
-              <img class="slogan-visual slogan-visual-top" src="/assets/hero-home.png" alt="" width="1600" height="900" />
-              <img class="slogan-visual slogan-visual-bottom" src="/assets/hero-pets.png" alt="" width="1600" height="900" />
+              <img
+                class="slogan-visual slogan-visual-top"
+                src={homeHeroAsset.url}
+                alt=""
+                width={homeHeroAsset.width}
+                height={homeHeroAsset.height}
+              />
+              <img
+                class="slogan-visual slogan-visual-bottom"
+                src={petHeroAsset.url}
+                alt=""
+                width={petHeroAsset.width}
+                height={petHeroAsset.height}
+              />
             </div>
             <div class="slogan-lockup">
               <p class="eyebrow">{page.eyebrow}</p>
@@ -88,7 +104,9 @@ const structuredData = JSON.stringify({
           </section>
 
           <section class="slogan-breakdown" aria-label="Slogan breakdown">
-            {narrativeStages.map((stage) => (
+            {narrativeStages.map((stage) => {
+              const stageAsset = landingAssets[stage.imageAsset];
+              return (
               <article id={stage.id} class="narrative-stage">
                 <div class="section-shell narrative-stage-grid">
                   <div class="stage-lockup">
@@ -105,13 +123,20 @@ const structuredData = JSON.stringify({
                       </div>
                     </div>
                     <figure class="stage-visual">
-                      <img src={stage.image} alt={stage.imageAlt} width="1600" height="900" loading="lazy" />
+                      <img
+                        src={stageAsset.url}
+                        alt={stageAsset.alt}
+                        width={stageAsset.width}
+                        height={stageAsset.height}
+                        loading="lazy"
+                      />
                       <figcaption>Storyboard preview. Product experience may change.</figcaption>
                     </figure>
                   </div>
                 </div>
               </article>
-            ))}
+              );
+            })}
           </section>
 
           <section class="home-scenarios section-shell" aria-labelledby="home-scenarios-title">
@@ -158,7 +183,13 @@ const structuredData = JSON.stringify({
                   <span>Home timeline</span>
                   <span>Selected events</span>
                 </div>
-                <img src={page.heroImage} alt={page.heroAlt} width="1600" height="900" loading="eager" />
+                <img
+                  src={heroAsset.url}
+                  alt={heroAsset.alt}
+                  width={heroAsset.width}
+                  height={heroAsset.height}
+                  loading="eager"
+                />
               </div>
               <figcaption>Storyboard preview. Product experience may change.</figcaption>
             </figure>

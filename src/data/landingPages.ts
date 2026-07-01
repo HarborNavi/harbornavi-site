@@ -1,3 +1,5 @@
+import type { LandingAssetKey } from "./landingAssets";
+
 export type DemoKey = "package" | "pet" | "unusual";
 export type RouteKey = "home" | "package" | "pets";
 
@@ -32,8 +34,7 @@ export interface NarrativeStage {
   title: string;
   problem: string;
   product: string;
-  image: string;
-  imageAlt: string;
+  imageAsset: LandingAssetKey;
   signals: string[];
 }
 
@@ -42,8 +43,7 @@ export interface LandingPageContent {
   path: string;
   metaTitle: string;
   metaDescription: string;
-  heroImage: string;
-  heroAlt: string;
+  heroAsset: LandingAssetKey;
   eyebrow: string;
   headline: string;
   body: string;
@@ -239,9 +239,7 @@ const homeNarrativeStages: NarrativeStage[] = [
       "A front door camera sees a delivery. A sensor knows the door opened. Home Assistant knows the porch light state. Today those facts usually stay in separate apps.",
     product:
       "HarborNavi brings selected camera events, sensor changes, and device state into one local timeline, so the space becomes easier to understand.",
-    image: "/assets/hero-home.png",
-    imageAlt:
-      "Concept storyboard of a home timeline combining camera events, device state, and household context.",
+    imageAsset: "homeHero",
     signals: ["Camera event", "Door sensor", "HA state", "Zigbee", "IR device", "Local timeline"]
   },
   {
@@ -253,9 +251,7 @@ const homeNarrativeStages: NarrativeStage[] = [
       "A pet jump, a visitor, a package leaving the frame, a small household change: each one is short. The camera records it, then it gets buried.",
     product:
       "HarborNavi keeps the useful part with the context around it, so moments can be found later without replaying the day.",
-    image: "/assets/hero-pets.png",
-    imageAlt:
-      "Concept storyboard of a pet highlight kept as a short household moment.",
+    imageAsset: "petHero",
     signals: ["Pet highlight", "Visitor moment", "Package change", "Short clip", "Context kept"]
   },
   {
@@ -267,9 +263,7 @@ const homeNarrativeStages: NarrativeStage[] = [
       "People think in scenes: if the package is gone, remind me; when the pet is on the sofa for a while, keep a clip; movie mode should lower lights and quiet noisy alerts.",
     product:
       "HarborNavi turns plain language into readable conditions, actions, exceptions, and approval steps before anything sensitive runs.",
-    image: "/assets/hero-home.png",
-    imageAlt:
-      "Concept storyboard of smart-home actions connected to a reviewable local workflow.",
+    imageAsset: "homeHero",
     signals: ["Plain language", "Conditions", "Actions", "Exceptions", "Approval step"]
   }
 ];
@@ -311,9 +305,7 @@ export const pages: Record<RouteKey, LandingPageContent> = {
     metaTitle: "Know your space. Keep your moments. Connect your devices.",
     metaDescription:
       "Join the HarborNavi early access list for package alerts, pet highlights, unusual-event summaries, home moments worth keeping, and plain-language smart-home workflows.",
-    heroImage: "/assets/hero-home.png",
-    heroAlt:
-      "Storyboard of a home dashboard with camera events, moments worth keeping, and smart-home action suggestions.",
+    heroAsset: "homeHero",
     eyebrow: "Private beta",
     headline: "Know your space. Keep your moments. Connect your devices.",
     body:
@@ -333,9 +325,7 @@ export const pages: Record<RouteKey, LandingPageContent> = {
     metaTitle: "Know when a package goes missing",
     metaDescription:
       "Join the HarborNavi package alert beta list for local-first home video AI focused on front door package events.",
-    heroImage: "/assets/hero-package.png",
-    heroAlt:
-      "Storyboard of a front porch camera view with a delivered package and an event timeline.",
+    heroAsset: "packageHero",
     eyebrow: "Package alert beta",
     headline: "Know when a package goes missing.",
     body:
@@ -354,9 +344,7 @@ export const pages: Record<RouteKey, LandingPageContent> = {
     metaTitle: "Keep your pet's best moments automatically",
     metaDescription:
       "Join the HarborNavi pet highlights beta list for local-first home video AI focused on moments worth keeping.",
-    heroImage: "/assets/hero-pets.png",
-    heroAlt:
-      "Storyboard of a pet moment captured by a home camera and organized into highlight clips.",
+    heroAsset: "petHero",
     eyebrow: "Pet highlights beta",
     headline: "Keep your pet's best moments automatically.",
     body:
