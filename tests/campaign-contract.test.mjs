@@ -71,6 +71,29 @@ test("home-v6 keeps exactly two email-only waitlist forms with honeypots", async
   assert.match(homeV6, /email_confirmation_complete/);
 });
 
+test("home-v6 uses optimized runtime images without changing its social preview", async () => {
+  const homeV6 = await source("src/components/HomeV6Landing.astro");
+  const runtimeImages = [
+    "home-v6-memory-hero-id.webp",
+    "home-v6-family-moment-id.webp",
+    "home-v6-homecoming-briefing-id.webp",
+    "home-v4-package-response.webp",
+    "home-v6-movie-night-id.webp",
+    "home-v6-trust-boundary-id.webp",
+    "home-v6-hardware-id.webp"
+  ];
+
+  assert.match(homeV6, /const heroImage = "\/assets\/home-v6-memory-hero-id\.webp"/);
+  assert.match(homeV6, /const heroSocialImage = "\/assets\/home-v6-memory-hero-id\.png"/);
+  assert.match(homeV6, /<img src=\{heroImage\}[^>]*fetchpriority="high"/);
+  for (const filename of runtimeImages) {
+    assert.match(homeV6, new RegExp(`/assets/${filename.replace(".", "\\.")}`));
+    const bytes = await readFile(new URL(`public/assets/${filename}`, root));
+    assert.equal(bytes.subarray(0, 4).toString("ascii"), "RIFF");
+    assert.equal(bytes.subarray(8, 12).toString("ascii"), "WEBP");
+  }
+});
+
 test("home-v4 and home-v5 remain no-index historical comparisons", async () => {
   for (const version of ["4", "5"]) {
     const archived = await source(`src/components/HomeV${version}Landing.astro`);
@@ -128,6 +151,8 @@ test("privacy copy documents the V6 double-opt-in and historical-page boundary",
   assert.match(privacy, /signed confirmation link\s+expires after seven days/);
   assert.match(privacy, /one Resend Topic for\s+HarborNavi Kickstarter pre-launch updates/);
   assert.match(privacy, /An unconfirmed V6 lead is deleted from Neon after 30 days/);
+  assert.match(privacy, /voluntary product survey hosted by SurveyMonkey/);
+  assert.match(privacy, /Survey answers are separate from launch-list\s+consent/);
 });
 
 test("campaign analytics events are allowlisted and unknown events stay ignored", () => {
