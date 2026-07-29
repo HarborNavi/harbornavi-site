@@ -28,7 +28,7 @@
   "crons": [
     {
       "path": "/api/cron/retry-waitlist",
-      "schedule": "23 2 * * *"
+      "schedule": "0 2 * * *"
     },
     {
       "path": "/api/cron/refund-reservations",
