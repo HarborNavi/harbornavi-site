@@ -22,6 +22,10 @@ Status: current V6 product pre-launch and 15 Homes campaign cockpit
 
 The public site remains static. Vercel serves API functions from the same project, so no extra backend server is required.
 
+Production and Preview are intentionally isolated. Vercel Production uses the Neon `main` branch; Vercel Preview uses
+the schema-only Neon `preview` branch. Do not point Preview back to the production connection string. Schema changes must
+be applied to both branches before an API change is merged, while Preview smoke data must be removed after testing.
+
 ## Environment Variables
 
 Required for waitlist persistence:
@@ -258,6 +262,13 @@ Dashboard metric definitions:
 The funnel table groups events by `route`, `utm_source`, `utm_campaign`, and `form_location`.
 
 ## Smoke Test
+
+The production V6 flow was accepted on 2026-07-29 with a controlled `@resend.dev` address. Submission returned
+`pending_confirmation`; the confirmation email and signed link succeeded; Neon recorded confirmed consent, a synced
+Resend Contact in the single Kickstarter Topic, and a sent operator alert; an injected confirmation-email failure was
+recovered by the authenticated retry worker. Production retry candidates returned to zero and the Neon smoke records
+were removed. One clearly synthetic Resend Contact is retained as a provider-side monitoring record and must not be
+treated as a real subscriber when reviewing audience counts.
 
 After Vercel env vars and both database tables are ready, use a controlled Preview environment and an inbox that the
 tester owns. Do not use a third party's address:

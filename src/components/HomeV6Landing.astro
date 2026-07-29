@@ -3,7 +3,8 @@ import "../styles/home-v6.css";
 
 const discordUrl = "https://discord.gg/tC2bktRWWj";
 const surveyUrl = "https://www.surveymonkey.com/r/harbornavi";
-const heroImage = "/assets/home-v6-memory-hero-id.png";
+const heroImage = "/assets/home-v6-memory-hero-id.webp";
+const heroSocialImage = "/assets/home-v6-memory-hero-id.png";
 
 const memoryLayers = [
   {
@@ -92,7 +93,7 @@ const structuredData = JSON.stringify({
   slogan: "Home is where the heart is. And where your memories live.",
   description: "HarborNavi keeps the moments that define your home private and forever.",
   url: "https://harbornavi.com/home-v6",
-  image: `https://harbornavi.com${heroImage}`,
+  image: `https://harbornavi.com${heroSocialImage}`,
   brand: {
     "@type": "Brand",
     name: "HarborNavi"
@@ -114,11 +115,11 @@ const structuredData = JSON.stringify({
     <meta property="og:description" content="HarborNavi keeps the moments that define your home private and forever." />
     <meta property="og:type" content="website" />
     <meta property="og:url" content="https://harbornavi.com/home-v6" />
-    <meta property="og:image" content={`https://harbornavi.com${heroImage}`} />
+    <meta property="og:image" content={`https://harbornavi.com${heroSocialImage}`} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="Home is where the heart is. And where your memories live." />
     <meta name="twitter:description" content="HarborNavi keeps the moments that define your home private and forever." />
-    <meta name="twitter:image" content={`https://harbornavi.com${heroImage}`} />
+    <meta name="twitter:image" content={`https://harbornavi.com${heroSocialImage}`} />
     <script is:inline type="application/ld+json" set:html={structuredData}></script>
   </head>
   <body class="home-v6-page" data-route="home-v6">
@@ -157,13 +158,13 @@ const structuredData = JSON.stringify({
             <p id="v6-hero-note" class="form-note">Confirm by email to receive HarborNavi Kickstarter pre-launch updates. Unsubscribe anytime. <a href="/privacy">Privacy</a></p>
           </div>
           <figure class="hero-visual">
-            <img src={heroImage} alt="A child sharing a drawing with family as a pet runs beside HarborNavi and selected home memories gather locally" width="1536" height="1024" loading="eager" />
+            <img src={heroImage} alt="A child sharing a drawing with family as a pet runs beside HarborNavi and selected home memories gather locally" width="1536" height="1024" loading="eager" fetchpriority="high" />
           </figure>
         </section>
 
         <section id="memory" class="memory-story" aria-labelledby="memory-title" data-scenario-event="scenario_family_memory">
           <figure class="memory-visual">
-            <img src="/assets/home-v6-family-moment-id.png" alt="A child's small achievement becoming an easy-to-find family memory" width="1536" height="1024" loading="lazy" />
+            <img src="/assets/home-v6-family-moment-id.webp" alt="A child's small achievement becoming an easy-to-find family memory" width="1536" height="1024" loading="lazy" />
           </figure>
           <div class="memory-copy">
             <p class="eyebrow">The life already happening at home</p>
@@ -189,7 +190,7 @@ const structuredData = JSON.stringify({
             </div>
           </div>
           <figure>
-            <img src="/assets/home-v6-homecoming-briefing-id.png" alt="A family member coming home to a dog, with HarborNavi ready to share the short version of the day" width="1536" height="1024" loading="lazy" />
+            <img src="/assets/home-v6-homecoming-briefing-id.webp" alt="A family member coming home to a dog, with HarborNavi ready to share the short version of the day" width="1536" height="1024" loading="lazy" />
           </figure>
         </section>
 
@@ -223,11 +224,11 @@ const structuredData = JSON.stringify({
               <p>A delivery at 2:14 PM is routine. Someone carrying it away at 2:31 is not. HarborNavi can connect the door camera and presence signals, notify you, save the key clip, and prepare an allowed response through a supported speaker, siren, or doorbell. Any further escalation still belongs to you.</p>
               <blockquote>Package removed after delivery. Owner notified. Supported porch warning ready.</blockquote>
             </div>
-            <figure><img src="/assets/home-v4-package-response.png" alt="A package-removal event prompting an immediate owner notification and supported porch response" width="1536" height="1024" loading="lazy" /></figure>
+            <figure><img src="/assets/home-v4-package-response.webp" alt="A package-removal event prompting an immediate owner notification and supported porch response" width="1536" height="1024" loading="lazy" /></figure>
           </article>
 
           <article class="proof-story movie-story" data-scenario-event="scenario_natural_language_action">
-            <figure><img src="/assets/home-v6-movie-night-id.png" alt="A movie-night request coordinating lighting, television, and climate devices" width="1536" height="1024" loading="lazy" /></figure>
+            <figure><img src="/assets/home-v6-movie-night-id.webp" alt="A movie-night request coordinating lighting, television, and climate devices" width="1536" height="1024" loading="lazy" /></figure>
             <div class="proof-copy">
               <p class="eyebrow">Memory makes language useful</p>
               <h2>&quot;Movie night&quot; should be enough.</h2>
@@ -247,7 +248,7 @@ const structuredData = JSON.stringify({
               <h2>Sensitive changes still wait for you.</h2>
               <p>Adding a member, expanding room permissions, or pairing a Bluetooth or Zigbee device changes who can see or control the home. Planned fingerprint confirmation keeps those setup changes at the box. Everyday questions and ordinary routines stay easy.</p>
             </div>
-            <figure><img src="/assets/home-v6-trust-boundary-id.png" alt="Local fingerprint confirmation on HarborNavi for a sensitive household access change" width="1536" height="1024" loading="lazy" /></figure>
+            <figure><img src="/assets/home-v6-trust-boundary-id.webp" alt="Local fingerprint confirmation on HarborNavi for a sensitive household access change" width="1536" height="1024" loading="lazy" /></figure>
           </aside>
         </section>
 
@@ -268,7 +269,7 @@ const structuredData = JSON.stringify({
             <p>A dedicated box gives family memory, local intelligence, device links, and trust boundaries a stable place to live. Optional cloud models can help without becoming the owner of the home's full history.</p>
           </div>
           <div class="hardware-body">
-            <figure class="hardware-visual"><img src="/assets/home-v6-hardware-id.png" alt="HarborNavi local home hardware with a glossy black top, fingerprint control, and purple status light" width="1536" height="1024" loading="lazy" /></figure>
+            <figure class="hardware-visual"><img src="/assets/home-v6-hardware-id.webp" alt="HarborNavi local home hardware with a glossy black top, fingerprint control, and purple status light" width="1536" height="1024" loading="lazy" /></figure>
             <div class="hardware-grid">
               {hardwareValues.map(([title, body], index) => <article><span>{String(index + 1).padStart(2, "0")}</span><h3>{title}</h3><p>{body}</p></article>)}
             </div>

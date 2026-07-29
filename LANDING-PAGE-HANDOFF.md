@@ -289,9 +289,11 @@ Preview API 验收：
 - [x] 将当前线上前后端代码整理成可复现的 GitHub `main` 基线。
 - [x] Fiona 获得 GitHub `Write` 权限，可以直接 push `main`。
 - [x] 建立 Fiona `main` push 到 Vercel Production 的 GitHub Actions 自动发布。
-- [ ] 在生产环境完成真实受控邮箱的端到端验证：提交、确认、Topic opt-in、运营提醒、cron 恢复和正式域名 smoke test。
-- [ ] 为 Preview 配置独立数据库，并执行 `db/waitlist.sql`、`db/analytics.sql`。
-- [ ] 优化大体积 PNG，并重新检查首屏 LCP 与移动流量。
-- [ ] 验证 SurveyMonkey、Discord 和 comparison source 链接。
-- [ ] 完成 1440/1280/390/360 截图和表单/API smoke test。
+- [x] 2026-07-29 在生产环境完成受控端到端验证：提交、确认、Topic opt-in、运营提醒、注入失败后的 cron 恢复和正式域名 smoke test；Neon 测试记录已清理，Resend 保留一个明确的 `@resend.dev` 合成监测联系人。
+- [x] 为 Vercel Preview 配置独立的 Neon `preview` schema-only 分支，并验证 Preview 测试 lead 不会进入 Production `main`。
+- [x] 将 V6 七张运行时 PNG 转为高质量 WebP，总体积从 14,855,930 bytes 降到 1,877,434 bytes；Hero 增加高优先级加载，社交预览继续使用 PNG。
+- [x] 2026-07-29 验证 HarborNavi SurveyMonkey collector 和 V6 十个 comparison source 链接均可访问，并在隐私页补充可选产品调研说明。
+- [ ] 确认 Discord 邀请中的 `Harbor Inn` 是 HarborNavi 正式社区，并记录社区管理员。
+- [ ] 15 Homes、Kickstarter 和 YouTube 正式 URL 及对应隐私/发布资料齐备后，再解除 `PUBLIC_*` 配置门控。
+- [x] 2026-07-29 完成 1440/1280/390/360 Chrome 截图、布局指标和 Production/Preview 表单/API smoke test；无横向溢出、图片失败或 slogan 裁切。
 - [ ] 由产品负责人签字确认硬件、兼容性、隐私、订阅和众筹表述。
