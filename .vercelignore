@@ -1,1 +1,12 @@
 docs/
+.astro/
+.env*
+.git/
+.neon
+.tmp/
+.vercel/
+dist/
+node_modules/
+LANDING-PAGE-HANDOFF.md
+preview.err.log
+preview.out.log
