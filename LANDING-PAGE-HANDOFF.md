@@ -58,7 +58,8 @@ npm run dev
 | `src/components/HomeV6Landing.astro` | 页面内容、SEO、JSON-LD、表单、弹窗和前端 analytics |
 | `src/styles/home-v6.css` | V6 独立样式与响应式断点 |
 | `public/assets/` | 页面使用的图像素材 |
-| `vercel.json` | 根路径重定向和每小时 waitlist retry cron |
+| `vercel.json` | 根路径重定向和每日 waitlist retry 兜底 cron |
+| `.github/workflows/retry-waitlist.yml` | 每小时调用受保护的 waitlist retry endpoint |
 
 页面自上而下为：
 
@@ -129,7 +130,7 @@ V6 有 Hero 和页尾两个 email 表单。它们共享同一套浏览器逻辑�
 3. Resend Email API 发送带 HMAC 签名的确认链接。链接七天后失效；未点击前不会创建营销 Topic 订阅。
 4. `/api/waitlist/confirm` 验签、检查有效期和 consent version，确认后才将联系人明确设为单一 Kickstarter Topic 的 `opt_in`，随后发送运营提醒。
 5. 确认邮件、Contact sync 和运营提醒的 status、attempt count、时间、provider/topic id 和错误记录在 `waitlist_leads.metadata`。
-6. `/api/cron/retry-waitlist` 每小时重试符合条件的失败任务。没有配置 Topic ID 时，它会查找或创建 `default_subscription=opt_out` 的 Kickstarter Topic；未确认 V6 lead 超过 30 天会从 Neon 清理。
+6. GitHub Actions 每小时调用 `/api/cron/retry-waitlist` 重试符合条件的失败任务，Vercel 每日兜底。没有配置 Topic ID 时，它会查找或创建 `default_subscription=opt_out` 的 Kickstarter Topic；未确认 V6 lead 超过 30 天会从 Neon 清理。
 
 Resend Topic 的 `opt_out` 是 Topic 的默认策略；确认后的单个联系人仍由代码明确写成 `opt_in`。V6 不依赖 Road Topic，也不会在初次 POST 后直接把邮箱加入营销名单。Kickstarter 营销邮件必须用 Resend Broadcast 和 Topic 退订能力发送，不能用事务性 Email API 绕过退订。
 
@@ -179,7 +180,7 @@ RESEND_KICKSTARTER_TOPIC_NAME
 
 `WAITLIST_PUBLIC_ORIGIN` 默认 `https://harbornavi.com`。`RESEND_KICKSTARTER_TOPIC_ID` 未配置时，cron 会按环境查找或创建 Topic；Preview 默认使用独立名称，避免混入生产受众。V6 没有 `RESEND_ROAD_TOPIC_ID` 依赖。
 
-其他 campaign 和 Stripe 变量与 V6 Landing Page 修改不是同一发布范围。`CRON_SECRET` 同时保护 waitlist retry 和现有的 reservation refund cron。不要因为变量存在于 `.env.example` 就给 Landing Page 维护者开放生产密钥。
+其他 campaign 和 Stripe 变量与 V6 Landing Page 修改不是同一发布范围。`CRON_SECRET` 同时保护 waitlist retry 和现有的 reservation refund cron；Vercel Production/Preview 环境变量和 GitHub Actions Secret 必须使用同一个值，轮换时一起更新。不要因为变量存在于 `.env.example` 就给 Landing Page 维护者开放生产密钥。
 
 执行原则：
 
@@ -251,7 +252,7 @@ Preview API 验收：
 - 有效 email 保存为 `pending_confirmation` 并收到确认邮件；无效 email 返回 400；honeypot 不写入 lead。
 - 有效链接确认后只进入一个 Kickstarter Topic，联系人为显式 `opt_in`，运营提醒只在确认后发送。
 - 无效/过期链接、成功、发送失败、重复提交、网络断开和慢请求状态都可理解。
-- 人为制造一次 provider 失败后，验证每小时 cron 能恢复任务；验证 30 天未确认清理逻辑。
+- 人为制造一次 provider 失败后，验证每小时 GitHub 调度能恢复任务，并验证每日 Vercel 兜底和 30 天未确认清理逻辑。
 - email 不进入 analytics 表。
 - 只用测试邮箱和 Preview 数据库，测试完成后清理数据。
 - 退订使用 Broadcast 的 Topic unsubscribe；不要用事务性 Email API 做营销 smoke test。
@@ -282,7 +283,7 @@ Preview API 验收：
 - [x] 将 `/home-v6` 设为唯一当前 Landing Page，并让 `/`、`/home` 永久重定向到 V6。
 - [x] 将 V4/V5 标记为 `noindex` 历史页并停用旧表单。
 - [x] 实现 V6 Neon pending lead、七天签名确认、单一 Kickstarter Topic 显式 opt-in 和确认后运营提醒。
-- [x] 实现 waitlist metadata 状态、每小时失败重试、Topic 自动初始化和 30 天未确认清理。
+- [x] 实现 waitlist metadata 状态、每小时 GitHub 重试、每日 Vercel 兜底、Topic 自动初始化和 30 天未确认清理。
 - [x] 更新 V6 表单状态、隐私说明、环境变量模板和后端操作文档。
 - [x] 将 `.tmp/` 和 `.neon` 规则纳入远端 `.gitignore`。
 - [x] 将当前线上前后端代码整理成可复现的 GitHub `main` 基线。

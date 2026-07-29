@@ -110,7 +110,8 @@ export async function GET(request: Request) {
     },
     waitlist_retry: {
       configured: configured("CRON_SECRET"),
-      schedule: "hourly"
+      schedule: "hourly_github_actions",
+      fallback_schedule: "daily_vercel"
     },
     reservations: {
       enabled: reservations.enabled,

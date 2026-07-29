@@ -1,0 +1,42 @@
+name: Retry waitlist integrations
+
+on:
+  schedule:
+    - cron: "17 * * * *"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: harbornavi-waitlist-retry
+  cancel-in-progress: false
+
+jobs:
+  retry:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Process pending waitlist email work
+        env:
+          CRON_SECRET: ${{ secrets.CRON_SECRET }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ -z "${CRON_SECRET:-}" ]]; then
+            echo "CRON_SECRET is not configured."
+            exit 1
+          fi
+
+          response="$(curl \
+            --fail-with-body \
+            --silent \
+            --show-error \
+            --max-time 60 \
+            --retry 2 \
+            --retry-all-errors \
+            --header "Authorization: Bearer ${CRON_SECRET}" \
+            https://harbornavi.com/api/cron/retry-waitlist)"
+
+          jq -e '.ok == true' <<<"$response" >/dev/null
+          jq '{ok, topic, candidates, processed, purged}' <<<"$response"

@@ -813,7 +813,7 @@ import "../styles/admin.css";
           setStatusCard(
             "waitlistRetry",
             body.waitlist_retry?.configured ? "Configured" : "Missing",
-            body.waitlist_retry?.configured ? "Runs hourly in Production." : "CRON_SECRET is missing.",
+            body.waitlist_retry?.configured ? "GitHub runs hourly; Vercel runs a daily fallback." : "CRON_SECRET is missing.",
             body.waitlist_retry?.configured ? "success" : "error"
           );
         } catch (error) {

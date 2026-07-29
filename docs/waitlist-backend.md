@@ -15,7 +15,7 @@ Status: current V6 product pre-launch and 15 Homes campaign cockpit
 - Admin APIs: `/api/admin/login`, `/api/admin/health`, `/api/admin/leads`, `/api/admin/update-lead`, `/api/admin/analytics`
 - Reservation APIs: `/api/reservations/status`, `/api/reservations/checkout`, `/api/reservations/session`
 - Stripe webhook and refund worker: `/api/stripe/webhook`, `/api/cron/refund-reservations`
-- Waitlist retry worker: `/api/cron/retry-waitlist`, scheduled hourly by `vercel.json`
+- Waitlist retry worker: `/api/cron/retry-waitlist`, called hourly by GitHub Actions with a daily Vercel Cron fallback
 - Database: Neon Postgres tables `waitlist_leads`, `analytics_events`, and `founder_reservations`
 - Subscriber confirmation and operator notification: Resend Email API
 - Confirmed marketing-contact sync: Resend Contacts with one Kickstarter Topic
@@ -49,6 +49,9 @@ CRON_SECRET
 `WAITLIST_CONFIRMATION_FROM_EMAIL` is preferred and falls back to `NOTIFY_FROM_EMAIL`. The sender must be accepted by
 the configured Resend account.
 
+The `CRON_SECRET` value must match in Vercel Production/Preview and the GitHub repository Actions secret. Rotate all
+copies together; never put the value in source, workflow logs, or handoff notes.
+
 The post-confirmation operator alert also needs both values below. `NOTIFY_TO_EMAIL` is also used as the confirmation
 message reply-to address for deletion requests when configured.
 
@@ -66,7 +69,7 @@ RESEND_KICKSTARTER_TOPIC_NAME
 ```
 
 `WAITLIST_PUBLIC_ORIGIN` defaults to `https://harbornavi.com` for the retry worker. If
-`RESEND_KICKSTARTER_TOPIC_ID` is empty, the hourly worker finds or creates a Topic named
+`RESEND_KICKSTARTER_TOPIC_ID` is empty, the retry worker finds or creates a Topic named
 `HarborNavi Kickstarter Updates` in Production and `HarborNavi Preview Kickstarter Updates` outside Production.
 The Topic must use `default_subscription=opt_out`; confirmed contacts are explicitly synced as `opt_in`. The optional
 name override is useful for isolated test resources. There is no V6 Road Topic dependency.
@@ -155,7 +158,7 @@ A delivery failure leaves the Neon lead saved, records a failed status, and retu
 sets `consent_status=confirmed`, records `consent_confirmed_at`, and independently starts Resend Contact sync and the
 operator alert. The Contact adapter resolves one Kickstarter Topic, creates or updates the contact, and explicitly sets
 the Topic subscription to `opt_in`. A contact-sync failure redirects back with a recoverable status and remains eligible
-for the hourly retry job.
+for the retry job.
 
 Operational state lives in `waitlist_leads.metadata`, including:
 
@@ -163,8 +166,9 @@ Operational state lives in `waitlist_leads.metadata`, including:
 - `contact_sync_status`, attempt count, timestamps, Topic ID, and last error
 - `operator_notification_status`, attempt count, timestamps, and last error
 
-The hourly authenticated `/api/cron/retry-waitlist` worker resolves or creates the Kickstarter Topic, processes eligible
-confirmation/contact/operator failures in bounded batches, and purges unconfirmed V6 leads older than 30 days. A
+The authenticated `/api/cron/retry-waitlist` worker resolves or creates the Kickstarter Topic, processes eligible
+confirmation/contact/operator failures in bounded batches, and purges unconfirmed V6 leads older than 30 days. GitHub
+Actions calls it hourly; Vercel Cron calls it daily as a Hobby-plan-compatible fallback. A
 confirmed lead remains in Neon until a deletion request is handled. Reply-to can be routed to `NOTIFY_TO_EMAIL` so a
 recipient can request deletion by replying to the confirmation message.
 
