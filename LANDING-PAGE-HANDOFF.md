@@ -1,0 +1,319 @@
+# HarborNavi Landing Page V6 交接说明
+
+更新时间：2026-07-29
+
+## 1. 交接目标与责任边界
+
+本交接以 `/home-v6` 为当前 Landing Page 工作版本。同事负责页面设计、前端实现、响应式适配、素材更新、SEO 元信息、Preview 验证和 Vercel 发布；产品负责人负责最终文案、产品承诺、价格、发布日期、众筹口径、硬件规格、兼容性范围和隐私/营销同意口径的审批。
+
+不要把当前整个工作区直接提交。它同时包含 V2-V6 页面、后台、数据库、活动页、支付和本地浏览器临时数据等多批尚未归档的工作，必须按下面的 staging 清单拆分。
+
+## 2. 仓库与当前状态
+
+| 项目 | 当前值 |
+| --- | --- |
+| GitHub | `https://github.com/HarborNavi/harbornavi-site` |
+| 可见性 | Public |
+| 默认分支 | `main` |
+| 当前基线 | `db36818` (`Add HarborNavi home v2 landing page`) |
+| 本地分支 | `main`，与 `origin/main` 同步 |
+| Vercel 本地链接项目 | `harbornavi-site` |
+| 正式站点 | `https://harbornavi.com` |
+| V6 路由 | `https://harbornavi.com/home-v6` |
+
+仓库已经存在，不要再创建同名或重复仓库。当前 `main` 没有启用 GitHub branch protection；在同事开始独立负责前，应开启“必须通过 Pull Request 合并”，并禁止直接 push 到 `main`。
+
+当前工作树是混合状态。尤其注意：
+
+- `.env.local` 已被忽略，任何时候都不要提交、粘贴或截图其中的值。
+- `.vercel/` 是本地项目链接信息，已被忽略，不提交。
+- `.tmp/` 可能包含浏览器 profile、缓存、Cookie/登录数据等本地状态。当前本地 `.gitignore` 已新增 `.tmp/`，但这项保护尚未进入远端基线；不要 stage 目录内容。
+- `.neon` 可能包含本地 Neon 链接状态。当前本地 `.gitignore` 已新增 `.neon`，但这项保护尚未进入远端基线；不要读取或提交该文件。
+- 不要使用 `git add -A`、`git add .` 或 Git 客户端的“Stage All”。只按明确文件路径 stage。
+
+## 3. 本地运行
+
+项目是 Astro 静态站点，Vercel 在同一项目中提供 Serverless API。
+
+```powershell
+git clone https://github.com/HarborNavi/harbornavi-site.git
+cd harbornavi-site
+npm ci
+npm run dev
+```
+
+页面地址：`http://127.0.0.1:4321/home-v6`
+
+`npm run dev` 可以验证页面和浏览器端交互，但 Astro dev server 本身不等于完整 Vercel 环境。`/api/waitlist` 和 `/api/events` 的端到端验证应在配置好 Preview 环境变量和 Preview 数据库的 Vercel deployment 上进行，或由有权限的维护者使用 Vercel 本地开发流程验证。
+
+不要把生产数据库凭据拉给不需要生产权限的人。开发和 Preview 应使用独立的数据库分支或测试数据库。
+
+## 4. `/home-v6` 文件结构
+
+| 文件 | 作用 |
+| --- | --- |
+| `src/pages/home-v6.astro` | 路由入口，仅挂载 V6 组件 |
+| `src/components/HomeV6Landing.astro` | 页面内容、SEO、JSON-LD、表单、弹窗和前端 analytics |
+| `src/styles/home-v6.css` | V6 独立样式与响应式断点 |
+| `public/assets/` | 页面使用的图像素材 |
+
+页面自上而下为：
+
+1. Header：Memory / How it works / Compatibility / Hardware / Compare 锚点和 Join CTA。
+2. Hero：主 slogan、两段产品描述、首屏 waitlist 表单和主图。
+3. Memory story：家庭片段如何成为可查询的本地记忆。
+4. Home briefing：回家后获得当天的简要连接信息。
+5. Remember / Understand / Respond：本地存储、Home Agent 和设备动作三层。
+6. Proof stories：包裹事件和 Movie night 场景。
+7. Trust boundary：敏感操作等待用户确认。
+8. Compatibility：Home Assistant、RTSP/ONVIF、selected integrations、planned Zigbee/IR。
+9. Hardware：本地硬件价值和计划规格。
+10. Compare：与 Camera AI、Cloud home AI、本地自动化和专业全屋系统的对比。
+11. FAQ。
+12. Final CTA、Footer 和成功弹窗。
+
+当前 Hero 定稿方向：
+
+```text
+Home is where the heart is. And where your memories live.
+```
+
+```text
+HarborNavi: Keeping the moments that define your home, private and forever.
+```
+
+Hero 的两段描述也已按产品负责人提供的截图更新。桌面宽屏下 slogan 设计为一长行；`home-v6.css` 在较窄断点恢复换行。任何修改都要同时检查 1440px/1280px 桌面、平板和 390px/360px 手机，不能依靠隐藏溢出来掩盖文字被裁切。
+
+SEO 元信息、Open Graph、Twitter Card、canonical 和 Product JSON-LD 当前都直接写在 `HomeV6Landing.astro`。修改主 slogan、描述、主图或最终正式路由时，需要同步更新这些字段。
+
+## 5. 当前页面引用的素材
+
+以下图像都是 1536 x 1024 PNG：
+
+| 素材 | 使用位置 |
+| --- | --- |
+| `public/assets/home-v6-memory-hero-id.png` | Hero 主图和社交分享图 |
+| `public/assets/home-v6-family-moment-id.png` | Memory story |
+| `public/assets/home-v6-homecoming-briefing-id.png` | Home briefing |
+| `public/assets/home-v4-package-response.png` | Package proof story，共用 V4 素材 |
+| `public/assets/home-v6-movie-night-id.png` | Movie night proof story |
+| `public/assets/home-v6-trust-boundary-id.png` | Trust boundary |
+| `public/assets/home-v6-hardware-id.png` | Hardware |
+
+素材更新规则：
+
+- 新版本使用新文件名，例如 `home-v6-memory-hero-v2.webp`，不要静默覆盖旧图。
+- 同步修改组件中的路径、`width`/`height`、准确的 `alt` 和社交分享图引用。
+- 每张图都应展示实际产品、家庭场景或真实界面含义，不使用与产品无关的气氛图。
+- 当前 PNG 单张约 1.8-2.5MB，上线前应评估 WebP/AVIF 和响应式图片，避免首屏与长页面流量过大。
+- `home-v6-memory-hero.png` 和 `home-v6-sleeping-child-card.png` 当前没有被 V6 组件引用，不应仅因为位于目录中就自动 stage。
+
+## 6. Waitlist 与 API 边界
+
+V6 有 Hero 和页尾两个 email 表单。它们共享同一套浏览器逻辑：
+
+- 必填字段：`email`。
+- Honeypot：隐藏的 `company` 字段；真人应留空。
+- POST `/api/waitlist`：提交 email、`route=home-v6`、表单位置、path、referrer 和 UTM。
+- POST `/api/events`：记录 page view、表单开始/提交/成功/失败、场景曝光、survey 和 Discord 点击。
+- UTM 保存在 `sessionStorage`；analytics session id 也只在浏览器 session 内使用。
+- 成功后清空表单并打开感谢弹窗；弹窗链接到 SurveyMonkey 和 Discord。
+
+服务端边界：
+
+- `/api/waitlist` 校验 email、忽略 honeypot、按 email upsert 到 Neon，并增加 `submission_count`。
+- 数据库保存成功后，Resend 联系人同步和运营通知以 best-effort 方式运行，失败不回滚 lead。
+- `/api/events` 只接受 allowlist 事件，并清理 analytics properties 中的 PII-like key；email 不应进入 analytics 表。
+- V6 当前不调用 `/api/waitlist/profile`、reservation、Stripe 或 admin API。不要为了改 Landing Page 表现而修改这些接口。
+
+### 当前发布阻断：V6 营销同意范围不一致
+
+`src/server/waitlist-consent.ts` 当前只为 `home-v5` 和 `home-v4` 返回 Resend consent scope；`home-v6` 返回 `none`。因此 V6 email 可以保存进数据库，但不会同步到 Resend Topic。页面却写着 Kickstarter pre-launch updates。
+
+在正式收集 V6 email 前，产品/隐私负责人必须选择并批准以下一种做法：
+
+1. 明确将 `home-v6` 加入正确的 Topic 和 consent version，并补充自动测试；或
+2. 修改页面文案，使其准确反映只保存 waitlist lead、不订阅营销 Topic 的事实。
+
+在这个决策完成前，不要把 V6 表单称为已完成的营销订阅流程。
+
+## 7. 环境变量与密钥原则
+
+变量名以 `.env.example` 为唯一可提交模板。`.env.example` 只能放空值或明显占位符，绝不放真实凭据。
+
+V6 waitlist/analytics 的最低服务端依赖：
+
+```text
+DATABASE_URL
+```
+
+后台登录所需，但不是 V6 页面渲染所需：
+
+```text
+ADMIN_PASSWORD
+ADMIN_SESSION_SECRET
+```
+
+可选的运营通知和 Resend Contact 同步：
+
+```text
+RESEND_API_KEY
+NOTIFY_TO_EMAIL
+NOTIFY_FROM_EMAIL
+RESEND_KICKSTARTER_TOPIC_ID
+RESEND_ROAD_TOPIC_ID
+```
+
+其他 campaign、Stripe、cron 变量与 V6 Landing Page 修改不是同一发布范围。不要因为它们存在于 `.env.example` 就给 Landing Page 维护者开放生产密钥。
+
+执行原则：
+
+- 在 Vercel Project Settings 中分别配置 Preview 和 Production；Preview 使用测试资源。
+- 生产密钥只授予确有需要的维护者，优先使用最小权限和可轮换凭据。
+- 不通过 Git、PR、issue、聊天、截图或交接文档传递密钥。
+- 一旦凭据误入 Git 或聊天，不能只删除文件；应立即在提供方轮换并检查使用记录。
+- `PUBLIC_*` 会进入浏览器构建产物，不得存放秘密。
+
+## 8. Git 分支与 PR 流程
+
+1. 从最新 `origin/main` 创建独立分支，例如 `landing/v6-hero-copy` 或 `landing/v6-responsive`。
+2. 一次 PR 只负责一个清楚的范围；不要把后台、支付、旧版页面和 V6 视觉修改混在一起。
+3. 用明确路径 `git add <file...>`，然后再次运行 `git diff --cached --stat` 和 `git diff --cached`。
+4. 推送分支并创建 Draft PR；PR 中附 Vercel Preview URL、桌面/手机截图和验证结果。
+5. 产品负责人先审产品承诺与文案，再审视觉；至少一名工程维护者审 API、隐私和部署变更。
+6. 检查通过后再将 Draft 转为 Ready，并 squash/merge 到 `main`。
+7. Production 部署后做真实域名 smoke test；确认无回归再删除分支。
+
+建议为 `main` 开启：Require pull request、至少 1 个 approval、Require conversation resolution、禁止 force push。仓库目前没有可确认的自动 CI，因此在把 checks 设为 required 前，应先添加可靠的 GitHub Actions workflow。
+
+## 9. 精确 staging 清单
+
+### PR A：V6 页面与交接文档
+
+只 stage 下列文件：
+
+```text
+.gitignore
+LANDING-PAGE-HANDOFF.md
+src/pages/home-v6.astro
+src/components/HomeV6Landing.astro
+src/styles/home-v6.css
+public/assets/home-v6-memory-hero-id.png
+public/assets/home-v6-family-moment-id.png
+public/assets/home-v6-homecoming-briefing-id.png
+public/assets/home-v4-package-response.png
+public/assets/home-v6-movie-night-id.png
+public/assets/home-v6-trust-boundary-id.png
+public/assets/home-v6-hardware-id.png
+```
+
+这份 PR 足以评审 V6 静态页面，但 `main` 当前没有 V6 所依赖的 API 代码。合并或发布前，PR B 必须先完成，或已经存在等价且验证过的后端。
+
+### PR B：V6 waitlist/analytics 最小后端
+
+必须由工程维护者单独审查，不能随视觉 PR 自动一起提交。建议范围：
+
+```text
+.env.example
+package.json
+package-lock.json
+tsconfig.json
+api/events.ts
+api/waitlist.ts
+src/server/analytics-events.ts
+src/server/analytics-sanitize.ts
+src/server/analytics.ts
+src/server/config.ts
+src/server/db.ts
+src/server/notify.ts
+src/server/resend-contacts.ts
+src/server/waitlist-consent.ts
+src/server/waitlist.ts
+db/analytics.sql
+db/waitlist.sql
+tests/analytics-sanitize.test.mjs
+tests/waitlist-consent.test.mjs
+```
+
+注意：当前 `package.json` 的 `npm test` 还引用 `tests/campaign-contract.test.mjs`。提交 PR B 前要么把该测试及其直接依赖 `src/data/campaign.ts` 一并作为经过确认的范围提交，要么在 PR B 中将测试脚本收窄；不能留下引用不存在文件的 test script。这个决定需要在 staged diff 中明确，不能靠全量 stage 解决。
+
+### 绝对不要 stage
+
+```text
+.env.local
+.vercel/
+.tmp/
+.neon
+preview.out.log
+preview.err.log
+node_modules/
+dist/
+.astro/
+```
+
+V2-V5、`/15-homes`、admin、reservation/Stripe、cron、其他数据库 migration 和大范围 README 修改都不属于 PR A；除非负责人另外确认，不应混入。
+
+## 10. 验证与发布
+
+每个 PR 至少执行：
+
+```powershell
+npm ci
+npm run build
+npm run typecheck
+npm test
+```
+
+视觉验收：
+
+- Chrome 桌面 1440 x 900 和 1280 x 800。
+- 手机 390 x 844 和 360 x 800。
+- Hero slogan 在宽屏是一行，在不足空间时自然换行，不裁切、不覆盖主图。
+- Header、CTA、表单、比较表、FAQ、弹窗和 footer 无横向页面溢出。
+- 键盘可完成表单和弹窗操作，焦点可见，Escape 可关闭弹窗。
+- `prefers-reduced-motion` 下无强制动画。
+- 所有图片成功加载，alt 与画面一致，布局不因图片加载而跳动。
+
+Preview API 验收：
+
+- `/api/events` 的 `page_view` 和表单事件写入 Preview analytics 表。
+- 有效 email 保存成功；无效 email 返回 400；honeypot 不写入 lead。
+- 成功、失败、重复提交、网络断开和慢请求状态都可理解。
+- email 不进入 analytics 表。
+- 只用测试邮箱和 Preview 数据库，测试完成后清理数据。
+- 根据已批准的 V6 consent 决策验证 Resend Topic 行为。
+
+发布流程：
+
+1. 确认 GitHub-Vercel 集成确实为 PR 生成 Preview；本地 `.vercel/project.json` 只能证明本地链接，不能替代 Dashboard 检查。
+2. 在 Preview 完成视觉、功能、SEO、隐私和产品承诺审批。
+3. 合并到 `main` 后确认 Production deployment 成功。
+4. 在正式域名检查 canonical、OG 图、robots、API、表单和 analytics。
+5. `/home-v6` 变成根路径 `/` 或替换当前首页是独立产品/SEO决策，未经批准不要修改 `src/pages/index.astro`。
+
+## 11. 需要产品负责人审批的内容
+
+以下内容不能由页面维护者自行“润色”为确定承诺：
+
+- 产品价格、众筹档位、发货时间、上市日期、地区和数量。
+- 128GB eMMC、双 M.2、K3-class compute、双 2.5GbE、HDMI、Zigbee、IR、指纹、secure element 等规格。
+- 支持的 Home Assistant、RTSP/ONVIF、相机、设备品牌和型号。
+- “local”“private”“forever”“without a required subscription”“optional cloud”等隐私、数据路径和商业模式表述。
+- HarborNavi 可以自动执行的动作、需要确认的敏感动作和安全边界。
+- 对竞品能力、订阅、安装和数据路径的比较；来源链接和比较日期必须可核验。
+- Kickstarter、SurveyMonkey、Discord、YouTube、15 Homes 等外部链接和收集目的。
+- waitlist 的营销同意、Topic、unsubscribe 文案、privacy policy 和数据保留规则。
+
+## 12. 当前待办
+
+- [ ] 明确并实现 `home-v6` 的 consent scope/version，或改正表单文案。
+- [ ] 将本地 `.gitignore` 中新增的 `.tmp/` 和 `.neon` 规则纳入经过审查的提交，确保远端基线也不会收录本地状态。
+- [ ] 从混合工作树拆出 PR A 和经过后端审查的 PR B。
+- [ ] 为 `main` 开启 branch protection，并建立可靠 CI。
+- [ ] 确认同事具有 GitHub repo 与 Vercel 项目所需的最小权限。
+- [ ] 为 Preview 配置独立数据库，并执行 `db/waitlist.sql`、`db/analytics.sql`。
+- [ ] 优化大体积 PNG，并重新检查首屏 LCP 与移动流量。
+- [ ] 验证 SurveyMonkey、Discord 和 comparison source 链接。
+- [ ] 更新 sitemap/正式入口策略；决定 `/home-v6` 是否只做候选页或替换 `/`。
+- [ ] 完成 1440/1280/390/360 截图和表单/API smoke test。
+- [ ] 由产品负责人签字确认硬件、兼容性、隐私、订阅和众筹表述。
