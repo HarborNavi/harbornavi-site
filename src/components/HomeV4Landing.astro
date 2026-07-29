@@ -1,0 +1,825 @@
+---
+import "../styles/home-v4.css";
+
+const discordUrl = "https://discord.gg/tC2bktRWWj";
+const heroImage = "/assets/home-v4-return-home-hero.png";
+
+const momentNotes = [
+  ["Now", "Only what really needs you"],
+  ["Keep", "The moments worth saving"],
+  ["At home", "One calm recap"]
+];
+
+const agentFlow = [
+  ["Notice", "Device state, sensor changes, and selected events"],
+  ["Remember", "Local context keeps the day from becoming isolated alerts"],
+  ["Choose the moment", "Your priorities decide what needs you now and what can wait"],
+  ["Respond", "HarborNavi catches you up, takes follow-ups, and builds actions around your choices"]
+];
+
+const connections = [
+  {
+    marker: "HA",
+    title: "Home Assistant",
+    body: "Use the entities, states, and automations already in your setup."
+  },
+  {
+    marker: "ZB",
+    title: "Native Zigbee",
+    body: "Planned for supported sensors and devices. The exact tested list will be published before launch."
+  },
+  {
+    marker: "IR",
+    title: "IR devices",
+    body: "Designed to bring familiar TVs and climate devices into the same workflow."
+  },
+  {
+    marker: "S",
+    title: "Sensors",
+    body: "Door, motion, presence, and environmental changes add context."
+  },
+  {
+    marker: "C",
+    title: "Selected cameras",
+    body: "Useful events, snapshots, or local streams can support an answer when available."
+  }
+];
+
+const interfaces = [
+  ["Messages", "Ask, follow up, and build a workflow in plain language."],
+  ["HarborDock for Android", "A family dashboard for a phone or tablet."],
+  ["WebUI", "Advanced setup, device mapping, policy, and diagnostics."],
+  ["HDMI playback", "Saved moments and live streams on a TV, with control elsewhere."]
+];
+
+const hardwareValues = [
+  ["Local AI", "The planned K3 platform targets up to 60 TOPS-class local compute for context, vision, and on-device AI workloads."],
+  ["Local memory", "The base target pairs 16GB LPDDR5X with 128GB eMMC. Optional SSD configurations support longer retention."],
+  ["Device connections", "Dual 2.5GbE, HDMI, and planned native Zigbee and IR paths keep HarborNavi close to the space."],
+  ["Physical trust", "Planned fingerprint confirmation and an embedded secure element give sensitive setup changes a local boundary."]
+];
+
+const launchSpecs = [
+  ["Compute", "SpacemiT K3 platform; up to 60 TOPS-class target"],
+  ["Memory", "16GB LPDDR5X base target; 24GB configuration planned"],
+  ["Base storage", "128GB eMMC target"],
+  ["Expansion", "Two M.2 slots for optional SSD configurations"],
+  ["Network", "Dual 2.5GbE"],
+  ["Display", "HDMI output for playback and streaming"],
+  ["Device links", "Native Zigbee and IR planned for launch hardware; final support follows device testing"],
+  ["Trust hardware", "Fingerprint confirmation and embedded secure element planned for Kickstarter hardware"]
+];
+
+const comparisonProducts = [
+  { name: "HarborNavi", note: "Planned launch hardware", featured: true },
+  { name: "Homey Pro", note: "2026" },
+  { name: "Google Home Speaker", note: "+ Google Home Premium" },
+  { name: "Aqara Hub M3", note: "Current US model" }
+];
+
+const comparisonRows = [
+  {
+    label: "Primary job",
+    values: [
+      "Local intelligence for the home",
+      "Local-first automation hub",
+      "Voice AI and Google Home controller",
+      "Aqara and Matter ecosystem hub"
+    ]
+  },
+  {
+    label: "Home context",
+    values: [
+      "One local timeline across device state, sensors, selected camera events, and memory",
+      "Insights, dashboards, and Flows",
+      "Daily summaries and Nest camera search with Premium Advanced",
+      "Device state and local automations"
+    ]
+  },
+  {
+    label: "Natural-language workflow",
+    values: [
+      "Built in: message, clarification, review, and approval",
+      "Flow and Advanced Flow cards; community AI apps available",
+      "Help me create with Premium Standard",
+      "Aqara Home automation UI; optional Aqara Agent through OpenClaw, not M3-local"
+    ]
+  },
+  {
+    label: "AI and data path",
+    values: [
+      "Core intelligence local; optional external models",
+      "Hub automation local; AI path depends on the installed app and provider",
+      "Gemini service; compatible Matter commands may execute locally",
+      "Local automations; cloud used for notifications and Agent paths"
+    ]
+  },
+  {
+    label: "Memory / storage",
+    values: [
+      "Planned 16GB LPDDR5X / 128GB eMMC base",
+      "4GB LPDDR4 / 8GB eMMC",
+      "Not published",
+      "RAM not published / 8GB eMMC"
+    ]
+  },
+  {
+    label: "Local AI compute",
+    values: [
+      "Up to 60 TOPS-class K3 target",
+      "No dedicated AI rating published",
+      "No local TOPS rating published",
+      "No dedicated AI rating published"
+    ]
+  },
+  {
+    label: "Device links",
+    values: [
+      "Home Assistant, planned native Zigbee and IR, sensors, and selected cameras",
+      "Zigbee, Z-Wave, Thread, Matter, BLE, 433MHz, and native IR",
+      "Google Home and Matter ecosystem; no Zigbee or IR listed",
+      "Aqara Zigbee, Thread and Matter, BLE, and native 360-degree IR"
+    ]
+  },
+  {
+    label: "Wired / expansion",
+    values: [
+      "Dual 2.5GbE, two M.2 slots, and planned IR extension",
+      "Optional Ethernet adapter; Bridge extends IR and wireless coverage",
+      "Wi-Fi; no storage expansion published",
+      "PoE Ethernet; no storage expansion published"
+    ]
+  },
+  {
+    label: "Core subscription",
+    values: [
+      "No required subscription planned",
+      "No subscription for the core hub; backup optional",
+      "Premium required for advanced briefing and automation creation",
+      "No subscription for core local automations"
+    ]
+  }
+];
+
+const comparisonSources = [
+  { label: "Homey Pro", href: "https://homey.app/en-gb/homey-pro/" },
+  { label: "Homey model comparison", href: "https://support.homey.app/hc/en-us/articles/360015447093-Homey-Pro-models-compared" },
+  { label: "Homey AI Hub app", href: "https://homey.app/en-us/app/com.michel.ai-hub/AI-Hub/" },
+  { label: "Google Home Speaker", href: "https://store.google.com/product/google_home_speaker?hl=en-US" },
+  { label: "Aqara Hub M3", href: "https://us.aqara.com/products/hub-m3" },
+  { label: "Aqara Agent skill", href: "https://forum.aqara.com/t/getting-started-with-aqara-agent-skills-on-openclaw/275584" },
+  { label: "SpacemiT K3", href: "https://www.spacemit.com/community/development-kit/k3-com260" }
+];
+
+const faqItems = [
+  {
+    question: "Is HarborNavi a camera recorder?",
+    answer:
+      "No. A camera is one possible source of context. HarborNavi also works with device state, sensors, permissions, local memory, and Home Assistant to explain what changed and coordinate what happens next."
+  },
+  {
+    question: "Does it replace Home Assistant?",
+    answer:
+      "No. Home Assistant remains the device and automation layer. HarborNavi adds local context and memory, asks clarifying questions, and turns plain language into coordinated workflows you control."
+  },
+  {
+    question: "When is the fingerprint used?",
+    answer:
+      "It is planned for high-trust setup changes such as adding a member, changing permissions, and pairing a Bluetooth or Zigbee device. Routine questions and ordinary automations do not require a fingerprint every time."
+  },
+  {
+    question: "How much storage is included?",
+    answer:
+      "The base design includes 128GB eMMC for the system, models, and core records. Two M.2 slots support optional SSD configurations when a household wants longer memory or media retention."
+  },
+  {
+    question: "Does it need cloud AI?",
+    answer:
+      "Core context, memory, policy, and device workflows are designed to run locally. External models are optional. When you choose one, HarborNavi applies the privacy filter first and sends requests only over outbound TLS."
+  },
+  {
+    question: "When will Kickstarter open?",
+    answer:
+      "Join the launch list and we will email you when the campaign is ready. There is nothing else to fill out on this page."
+  }
+];
+
+const structuredData = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "Product",
+  name: "HarborNavi",
+  category: "Local home intelligence",
+  slogan: "The spark that brings your home to life.",
+  description:
+    "HarborNavi brings device signals into one local memory, so your home can understand what changed, tell you what matters, and respond to what you say.",
+  url: "https://harbornavi.com/home-v4",
+  image: `https://harbornavi.com${heroImage}`,
+  brand: {
+    "@type": "Brand",
+    name: "HarborNavi"
+  }
+});
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="index,follow" />
+    <title>HarborNavi — The spark that brings your home to life.</title>
+    <meta
+      name="description"
+      content="HarborNavi brings device signals into one local memory, so your home can understand what changed, tell you what matters, and respond to what you say."
+    />
+    <link rel="canonical" href="https://harbornavi.com/home-v4" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta property="og:title" content="HarborNavi — The spark that brings your home to life." />
+    <meta property="og:description" content="Local intelligence that helps your home understand what changed and respond to what you say." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://harbornavi.com/home-v4" />
+    <meta property="og:image" content={`https://harbornavi.com${heroImage}`} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="HarborNavi — The spark that brings your home to life." />
+    <meta name="twitter:description" content="Local intelligence that helps your home understand what changed and respond to what you say." />
+    <meta name="twitter:image" content={`https://harbornavi.com${heroImage}`} />
+    <script is:inline type="application/ld+json" set:html={structuredData}></script>
+  </head>
+  <body class="home-v4-page" data-route="home-v4">
+    <header class="v4-header" aria-label="HarborNavi navigation">
+      <a class="v4-brand" href="/home-v4" aria-label="HarborNavi home">
+        <span class="v4-brand-mark" aria-hidden="true"><img src="/favicon.svg" alt="" width="24" height="24" /></span>
+        <span>HarborNavi</span>
+      </a>
+      <nav class="v4-nav" aria-label="Page sections">
+        <a href="#moments">Stories</a>
+        <a href="#agent">How it works</a>
+        <a href="#hardware">Hardware</a>
+        <a href="#compare">Compare</a>
+        <a href="#faq">FAQ</a>
+      </nav>
+      <a class="v4-header-cta" href="#early-access"><span>Join launch list</span></a>
+    </header>
+
+    <main>
+      <section class="v4-hero" aria-labelledby="v4-hero-title">
+        <img
+          class="v4-hero-image"
+          src={heroImage}
+          alt="A family member returning home at dusk as a dog runs to greet them, with HarborNavi visible in the room"
+          width="1536"
+          height="1024"
+          loading="eager"
+        />
+        <div class="v4-hero-inner">
+          <div class="v4-hero-copy">
+            <p class="v4-category">HarborNavi <span aria-hidden="true">&middot;</span> Local intelligence for your home.</p>
+            <h1 id="v4-hero-title">
+              <span>The spark that</span>
+              <span>brings your home to life.</span>
+            </h1>
+            <p class="v4-hero-lead">
+              Your devices already produce the signals. HarborNavi brings them into one local memory, so your home can understand what changed, tell you what matters, and respond to what you say. You stay in control.
+            </p>
+            <form class="v4-email-form" data-early-form data-form-location="hero">
+              <label class="v4-sr-only" for="v4-hero-email">Email address</label>
+              <input id="v4-hero-email" name="email" type="email" autocomplete="email" placeholder="Email for the Kickstarter launch" required />
+              <input class="v4-honeypot" name="company" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" />
+              <button type="submit">Join the Kickstarter list</button>
+            </form>
+            <p class="v4-form-error" data-form-error hidden>We could not save your email. Please try again.</p>
+            <p class="v4-hero-note">One email when the campaign is ready.</p>
+          </div>
+        </div>
+      </section>
+
+      <section id="moments" class="v4-story v4-story-moments" aria-labelledby="v4-moments-title">
+        <div class="v4-story-inner">
+          <div class="v4-story-copy">
+            <p class="v4-eyebrow">The home remembers</p>
+            <span class="v4-story-number">01</span>
+            <h2 id="v4-moments-title">Come home. Navi will catch you up.</h2>
+            <p>
+              Most home events do not need to interrupt your day. Navi keeps them in context, lets urgent conditions reach you, and gives you the short version when you are ready.
+            </p>
+            <div class="v4-homecoming-brief" aria-label="Example homecoming recap">
+              <div class="v4-brief-heading">
+                <span>While you were out</span>
+                <strong>Nothing needed you right away.</strong>
+              </div>
+              <ul>
+                <li><time>2:14 PM</time><span>Your package arrived.</span></li>
+                <li><time>4:32 PM</time><span>The dog took over the sofa again. One clip saved.</span></li>
+                <li><time>5:08 PM</time><span>The living-room window stayed open for 18 minutes.</span></li>
+              </ul>
+            </div>
+            <div class="v4-follow-up">
+              <span>Ask when you want more</span>
+              <p>"When was the window opened?"</p>
+            </div>
+          </div>
+          <figure class="v4-story-media v4-moment-media">
+            <img
+              src="/assets/home-v3-dog-focus-timeline.png"
+              alt="Home events and family moments converging into a concise local timeline through HarborNavi"
+              width="1536"
+              height="1024"
+              loading="lazy"
+            />
+            <figcaption>
+              {momentNotes.map(([title, body]) => (
+                <span><strong>{title}</strong>{body}</span>
+              ))}
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section id="workflow" class="v4-story v4-story-workflow" aria-labelledby="v4-workflow-title">
+        <div class="v4-story-inner">
+          <figure class="v4-story-media">
+            <img
+              src="/assets/home-v4-movie-night-workflow.png"
+              alt="A short message becoming coordinated lighting, television, and air-conditioning actions through HarborNavi"
+              width="1536"
+              height="1024"
+              loading="lazy"
+            />
+          </figure>
+          <div class="v4-story-copy">
+            <p class="v4-eyebrow">The home understands</p>
+            <span class="v4-story-number">02</span>
+            <h2 id="v4-workflow-title">"Movie night" should be enough.</h2>
+            <p>
+              Start with the result you want. Navi asks what it still needs to know, maps the right Home Assistant, Zigbee, and IR devices, and shows you the workflow before it runs.
+            </p>
+            <div class="v4-conversation" aria-label="Example movie night conversation">
+              <div class="v4-message v4-message-user"><span>You</span><p>Movie night.</p></div>
+              <div class="v4-message v4-message-agent"><span>HarborNavi</span><p>Living-room TV, lights at 20%, AC at 72&deg;F?</p></div>
+              <div class="v4-message v4-message-user"><span>You</span><p>Yes, and mute routine alerts for two hours.</p></div>
+              <div class="v4-rule-review"><strong>Ready to enable</strong><span>4 devices &middot; 1 temporary exception</span></div>
+            </div>
+          </div>
+        </div>
+      </section>
+
+      <section id="package-change" class="v4-story v4-story-package" aria-labelledby="v4-package-title">
+        <div class="v4-story-inner">
+          <div class="v4-story-copy">
+            <p class="v4-eyebrow">The home knows when not to wait</p>
+            <span class="v4-story-number">03</span>
+            <h2 id="v4-package-title">Someone takes the package. Navi responds now.</h2>
+            <p>
+              Navi connects the delivery, the person, and the package leaving. With a response you approved, it can use a supported speaker, siren, or doorbell, turn on the porch light, send you the key clip, and preserve the evidence. Any call for help waits for your confirmation.
+            </p>
+            <blockquote>
+              Package removed. Activating your supported response now. I sent you the key clip and saved the evidence.
+            </blockquote>
+          </div>
+          <figure class="v4-story-media">
+            <img
+              src="/assets/home-v4-package-response.png"
+              alt="HarborNavi responding as a person carries away a delivered package by activating a supported response and sending the owner the key clip"
+              width="1536"
+              height="1024"
+              loading="lazy"
+            />
+          </figure>
+        </div>
+      </section>
+
+      <section id="trust-boundary" class="v4-story v4-story-trust" aria-labelledby="v4-trust-story-title">
+        <div class="v4-story-inner">
+          <div class="v4-story-copy">
+            <p class="v4-eyebrow">The home knows where to stop</p>
+            <span class="v4-story-number">04</span>
+            <h2 id="v4-trust-story-title">Important changes wait for you.</h2>
+            <p>
+              A new member, a broader permission, or a newly paired device changes who can see and control the space. HarborNavi pauses those setup changes at the box for planned fingerprint confirmation. Everyday questions and routines stay easy.
+            </p>
+            <ul class="v4-trust-list">
+              <li>Add a family member</li>
+              <li>Change room or device permissions</li>
+              <li>Pair a Bluetooth or Zigbee device</li>
+            </ul>
+          </div>
+          <figure class="v4-story-media">
+            <img
+              src="/assets/home-v4-trust-boundary.png"
+              alt="A fingerprint confirmation on HarborNavi for adding a member, changing permissions, or pairing a device"
+              width="1536"
+              height="1024"
+              loading="lazy"
+            />
+          </figure>
+        </div>
+      </section>
+
+      <section id="agent" class="v4-section v4-agent" aria-labelledby="v4-agent-title">
+        <div class="v4-section-inner">
+          <div class="v4-heading centered">
+            <p class="v4-eyebrow">What makes it feel alive</p>
+            <h2 id="v4-agent-title">Everything already in your home, working as one.</h2>
+            <p>
+              Device state, sensor changes, selected camera events, family permissions, and local memory meet in HarborNavi. HarborNavi turns those separate signals into shared context it can remember, explain, and carry into the next action.
+            </p>
+          </div>
+          <div class="v4-agent-flow" aria-label="HarborNavi local intelligence flow">
+            {agentFlow.map(([title, body], index) => (
+              <article>
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <h3>{title}</h3>
+                <p>{body}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="connections" class="v4-section v4-connections" aria-labelledby="v4-connections-title">
+        <div class="v4-section-inner">
+          <div class="v4-heading v4-heading-split">
+            <div>
+              <p class="v4-eyebrow">Keep what already works</p>
+              <h2 id="v4-connections-title">It works with the space you already have.</h2>
+            </div>
+            <p>
+              HarborNavi brings supported local and Home Assistant paths into one shared context. A tested compatibility list will name each exact device and connection path before launch.
+            </p>
+          </div>
+          <div class="v4-connection-grid">
+            {connections.map((connection) => (
+              <article>
+                <span aria-hidden="true">{connection.marker}</span>
+                <h3>{connection.title}</h3>
+                <p>{connection.body}</p>
+              </article>
+            ))}
+          </div>
+
+          <div class="v4-interface-heading">
+            <p class="v4-eyebrow">Reach HarborNavi from</p>
+          </div>
+          <div class="v4-interface-grid">
+            {interfaces.map(([title, body], index) => (
+              <article>
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <h3>{title}</h3>
+                <p>{body}</p>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="hardware" class="v4-section v4-hardware" aria-labelledby="v4-hardware-title">
+        <div class="v4-section-inner">
+          <div class="v4-hardware-hero">
+            <div class="v4-hardware-copy">
+              <p class="v4-eyebrow">Why dedicated hardware</p>
+              <h2 id="v4-hardware-title">The local mind lives here for a reason.</h2>
+              <p>
+                It stays on, keeps household context close, and gives trusted changes a physical place to stop. Memory, device links, and policy remain in the space instead of another cloud session.
+              </p>
+            </div>
+            <figure>
+              <img
+                src="/assets/home-v4-private-space-agent-hero.png"
+                alt="A phone request flowing through HarborNavi to lights, television, climate control, and a Zigbee sensor"
+                width="1536"
+                height="1024"
+                loading="lazy"
+              />
+            </figure>
+          </div>
+
+          <div class="v4-hardware-values">
+            {hardwareValues.map(([title, body], index) => (
+              <article>
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <h3>{title}</h3>
+                <p>{body}</p>
+              </article>
+            ))}
+          </div>
+
+          <details class="v4-spec-details">
+            <summary>Planned launch hardware</summary>
+            <dl>
+              {launchSpecs.map(([term, description]) => (
+                <div><dt>{term}</dt><dd>{description}</dd></div>
+              ))}
+            </dl>
+          </details>
+
+          <div id="trust" class="v4-local-proof">
+            <div>
+              <p class="v4-eyebrow">Local first. Cloud by choice.</p>
+              <h2>Your space has a boundary.</h2>
+              <p>Core context, memory, permissions, and workflows are designed to run locally. External models remain optional.</p>
+            </div>
+            <article>
+              <span>Before outbound</span>
+              <h3>Reduce and redact the context</h3>
+              <p>HarborNavi applies the privacy filter locally before an optional external model receives a request.</p>
+            </article>
+            <article>
+              <span>Secrets at rest</span>
+              <h3>Protect the Cloud AI key</h3>
+              <p>The planned embedded secure element protects API keys at rest. Requests leave only through outbound TLS.</p>
+            </article>
+          </div>
+        </div>
+      </section>
+
+      <section id="compare" class="v4-section v4-compare" aria-labelledby="v4-compare-title">
+        <div class="v4-section-inner">
+          <div class="v4-heading v4-heading-split v4-compare-heading">
+            <div>
+              <p class="v4-eyebrow">Built for a different job</p>
+              <h2 id="v4-compare-title">What each box is built to do.</h2>
+            </div>
+            <p>
+              Some products connect devices. Others add a cloud assistant. HarborNavi is designed to keep the home's context, memory, and actions together locally.
+            </p>
+          </div>
+
+          <div class="v4-compare-wrap" role="region" aria-label="HarborNavi product comparison" tabindex="0">
+            <table>
+              <caption class="v4-sr-only">Comparison of planned HarborNavi hardware with Homey Pro, Google Home Speaker, and Aqara Hub M3</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Capability</th>
+                  {comparisonProducts.map((product) => (
+                    <th scope="col" class:list={{ featured: product.featured }}>
+                      <strong>{product.name}</strong>
+                      <span>{product.note}</span>
+                    </th>
+                  ))}
+                </tr>
+              </thead>
+              <tbody>
+                {comparisonRows.map((row) => (
+                  <tr>
+                    <th scope="row">{row.label}</th>
+                    {row.values.map((value, index) => (
+                      <td class:list={{ featured: comparisonProducts[index].featured }}>{value}</td>
+                    ))}
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+
+          <div class="v4-compare-notes">
+            <p>
+              Specifications checked July 2026. HarborNavi values describe planned Kickstarter hardware and remain subject to EVT validation.
+            </p>
+            <p>
+              Official sources:
+              {comparisonSources.map((source, index) => (
+                <>
+                  {index > 0 && <span aria-hidden="true"> &middot; </span>}
+                  <a href={source.href} target="_blank" rel="noreferrer">{source.label}</a>
+                </>
+              ))}
+            </p>
+          </div>
+        </div>
+      </section>
+
+      <section id="faq" class="v4-section v4-faq" aria-labelledby="v4-faq-title">
+        <div class="v4-section-inner v4-faq-layout">
+          <div class="v4-faq-intro">
+            <p class="v4-eyebrow">Questions before launch</p>
+            <h2 id="v4-faq-title">Before HarborNavi comes home.</h2>
+            <p>Final hardware and compatibility details will be published before the Kickstarter campaign opens.</p>
+          </div>
+          <div class="v4-faq-list">
+            {faqItems.map((item, index) => (
+              <details open={index === 0}>
+                <summary>{item.question}</summary>
+                <p>{item.answer}</p>
+              </details>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section id="early-access" class="v4-final" aria-labelledby="v4-final-title">
+        <div class="v4-final-inner">
+          <p class="v4-eyebrow">Kickstarter launch list</p>
+          <h2 id="v4-final-title">Be among the first to meet Navi.</h2>
+          <p>Join the list for the next hardware update and the Kickstarter campaign announcement.</p>
+          <form class="v4-email-form v4-email-form-final" data-early-form data-form-location="final">
+            <label class="v4-sr-only" for="v4-final-email">Email address</label>
+            <input id="v4-final-email" name="email" type="email" autocomplete="email" placeholder="Email for the Kickstarter launch" required />
+            <input class="v4-honeypot" name="company" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" />
+            <button type="submit">Join the Kickstarter list</button>
+          </form>
+          <p class="v4-form-error" data-form-error hidden>We could not save your email. Please try again.</p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="v4-footer">
+      <a class="v4-brand" href="/home-v4" aria-label="HarborNavi home">
+        <span class="v4-brand-mark" aria-hidden="true"><img src="/favicon.svg" alt="" width="24" height="24" /></span>
+        <span>HarborNavi</span>
+      </a>
+      <p>The spark that brings your home to life.</p>
+    </footer>
+
+    <div class="v4-success-modal" data-success-modal hidden role="dialog" aria-modal="true" aria-labelledby="v4-success-title">
+      <div class="v4-success-backdrop" data-modal-close></div>
+      <div class="v4-success-panel">
+        <button class="v4-modal-close" type="button" aria-label="Close thank you dialog" data-modal-close>&times;</button>
+        <p class="v4-eyebrow">Thank you</p>
+        <h2 id="v4-success-title">You are on the HarborNavi launch list.</h2>
+        <p>We will email you when the Kickstarter campaign is ready.</p>
+        <a class="v4-discord-link" href={discordUrl} target="_blank" rel="noreferrer" data-discord-link>Join the optional Discord discussion <span aria-hidden="true">&rarr;</span></a>
+      </div>
+    </div>
+
+    <script is:inline>
+      const route = document.body.dataset.route || "home-v4";
+      const utmKeys = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"];
+
+      function getSessionId() {
+        const key = "harbornavi_session_id";
+        let value = window.sessionStorage.getItem(key);
+        if (!value) {
+          value = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+          window.sessionStorage.setItem(key, value);
+        }
+        return value;
+      }
+
+      function getUtmPayload() {
+        const params = new URLSearchParams(window.location.search);
+        const current = {};
+        let hasCurrent = false;
+        utmKeys.forEach((key) => {
+          const value = params.get(key) || "";
+          current[key] = value;
+          hasCurrent = hasCurrent || Boolean(value);
+        });
+        if (hasCurrent) {
+          window.sessionStorage.setItem("harbornavi_utm", JSON.stringify(current));
+          return current;
+        }
+        try {
+          return JSON.parse(window.sessionStorage.getItem("harbornavi_utm") || "{}");
+        } catch {
+          return {};
+        }
+      }
+
+      function analyticsPayload(eventName, properties) {
+        const utm = getUtmPayload();
+        return {
+          event_name: eventName,
+          route,
+          path: window.location.pathname,
+          referrer: document.referrer,
+          form_location: properties?.form_location || "",
+          session_id: getSessionId(),
+          utm_source: utm.utm_source || "",
+          utm_medium: utm.utm_medium || "",
+          utm_campaign: utm.utm_campaign || "",
+          utm_content: utm.utm_content || "",
+          utm_term: utm.utm_term || "",
+          properties: properties || {}
+        };
+      }
+
+      window.harborTrack = function harborTrack(eventName, properties) {
+        window.harborEvents = window.harborEvents || [];
+        window.harborEvents.push({
+          eventName,
+          properties: properties || {},
+          timestamp: new Date().toISOString()
+        });
+
+        const body = JSON.stringify(analyticsPayload(eventName, properties || {}));
+        if (navigator.sendBeacon) {
+          const queued = navigator.sendBeacon("/api/events", new Blob([body], { type: "application/json" }));
+          if (queued) return;
+        }
+        fetch("/api/events", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body,
+          keepalive: true
+        }).catch(() => {});
+      };
+
+      const successModal = document.querySelector("[data-success-modal]");
+      let previousFocus = null;
+
+      function openSuccessModal() {
+        if (!successModal) return;
+        previousFocus = document.activeElement;
+        successModal.hidden = false;
+        document.body.classList.add("v4-modal-open");
+        successModal.querySelector("[data-modal-close]")?.focus();
+      }
+
+      function closeSuccessModal() {
+        if (!successModal) return;
+        successModal.hidden = true;
+        document.body.classList.remove("v4-modal-open");
+        previousFocus?.focus?.();
+      }
+
+      window.harborTrack("page_view", { route });
+
+      document.querySelectorAll("[data-early-form]").forEach((form) => {
+        const input = form.querySelector("input[type='email']");
+        const error = form.parentElement?.querySelector("[data-form-error]");
+        let started = false;
+
+        input?.addEventListener("focus", () => {
+          if (started) return;
+          started = true;
+          window.harborTrack("early_bird_start", {
+            route,
+            form_location: form.dataset.formLocation || "unknown"
+          });
+        });
+
+        form.addEventListener("submit", async (event) => {
+          event.preventDefault();
+          const data = new FormData(form);
+          const button = form.querySelector("button[type='submit']");
+          const utm = getUtmPayload();
+          const formLocation = form.dataset.formLocation || "unknown";
+
+          if (error) error.hidden = true;
+          window.harborTrack("early_bird_submit", {
+            route,
+            form_location: formLocation,
+            has_email: Boolean(data.get("email"))
+          });
+
+          button?.setAttribute("disabled", "disabled");
+          form.classList.add("submitting");
+
+          try {
+            const response = await fetch("/api/waitlist", {
+              method: "POST",
+              headers: { "content-type": "application/json" },
+              body: JSON.stringify({
+                email: data.get("email"),
+                company: data.get("company"),
+                route,
+                form_location: formLocation,
+                path: window.location.pathname,
+                referrer: document.referrer,
+                utm_source: utm.utm_source || "",
+                utm_medium: utm.utm_medium || "",
+                utm_campaign: utm.utm_campaign || "",
+                utm_content: utm.utm_content || "",
+                utm_term: utm.utm_term || ""
+              })
+            });
+
+            if (!response.ok) throw new Error("Waitlist request failed");
+
+            window.harborTrack("early_bird_saved", {
+              route,
+              form_location: formLocation
+            });
+            form.reset();
+            openSuccessModal();
+          } catch {
+            window.harborTrack("early_bird_error", {
+              route,
+              form_location: formLocation
+            });
+            if (error) error.hidden = false;
+          } finally {
+            button?.removeAttribute("disabled");
+            form.classList.remove("submitting");
+          }
+        });
+      });
+
+      document.querySelectorAll("[data-modal-close]").forEach((button) => {
+        button.addEventListener("click", closeSuccessModal);
+      });
+
+      document.querySelectorAll("[data-discord-link]").forEach((link) => {
+        link.addEventListener("click", () => {
+          window.harborTrack("discord_click", { route });
+        });
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape" && successModal && !successModal.hidden) {
+          closeSuccessModal();
+        }
+      });
+    </script>
+  </body>
+</html>

@@ -1,0 +1,234 @@
+---
+import CampaignAnalytics from "./CampaignAnalytics.astro";
+import { campaign } from "../data/campaign";
+import "../styles/fifteen-homes.css";
+
+const phaseCopy = {
+  before_prelaunch: "Applications and public links will appear here as each part of the project opens.",
+  prelaunch_live: "The Kickstarter pre-launch is open. Road-home screening continues, with live updates to follow.",
+  road_live: "The road field test is in progress. Follow the fixed live windows and daily recaps.",
+  replay: "The drive is complete. Watch the replays and follow the final report."
+}[campaign.phase];
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>{campaign.name} | HarborNavi</title>
+    <meta
+      name="description"
+      content="HarborNavi will visit 15 homes across America for a public, real-home field test from New Haven through Los Angeles to Silicon Valley."
+    />
+    <meta name="theme-color" content="#171427" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="canonical" href="https://harbornavi.com/15-homes" />
+  </head>
+  <body class="road-campaign" data-route="15-homes">
+    <header class="road-header">
+      <a class="road-brand" href="/home-v5" aria-label="HarborNavi home">
+        <span aria-hidden="true">HN</span>
+        HarborNavi
+      </a>
+      <nav aria-label="Campaign navigation">
+        <a href="#route">Route</a>
+        <a href="#host">Host a visit</a>
+        <a href="#watch">Watch</a>
+      </nav>
+      <a class="road-header-link" href="/home-v5">Product</a>
+    </header>
+
+    <main>
+      <section class="road-hero" aria-labelledby="road-title">
+        <div class="road-hero-copy">
+          <p class="road-kicker">A real-home field test · {campaign.roadEventDateLabel}</p>
+          <p class="road-journey">From Yale to Silicon Valley</p>
+          <h1 id="road-title"><span>15 Homes</span><span>Across America</span></h1>
+          <p class="road-hook">{campaign.hook}</p>
+          <p class="road-lead">
+            We are taking HarborNavi on the road and installing it with 15 selected households. Each stop starts
+            with a real question, a supported home setup, and an honest account of what worked, what did not, and
+            what changed next.
+          </p>
+          <div class="road-actions">
+            {campaign.roadHomesFormUrl ? (
+              <a
+                class="road-button road-button-primary"
+                href={campaign.roadHomesFormUrl}
+                target="_blank"
+                rel="noreferrer"
+                data-application-link
+                data-campaign-event="road_home_form_start"
+                data-link-kind="application"
+              >
+                Apply to host a visit
+              </a>
+            ) : (
+              <span class="road-button road-button-disabled" aria-disabled="true">Applications are not open yet</span>
+            )}
+            <a class="road-button road-button-quiet" href="/home-v5#join">Join the email list</a>
+          </div>
+          {!campaign.roadHomesFormUrl && (
+            <p class="road-availability">
+              {campaign.roadHomesFormUrlConfigured && !campaign.roadHomesPrivacyReady
+                ? "The application remains unavailable until the provider, retention window, deletion contact, and applicant rights are published."
+                : "The application link will appear here when screening opens. No form URL has been published yet."}
+            </p>
+          )}
+        </div>
+
+        <aside class="road-hero-board" aria-label="Campaign summary">
+          <p>Field notes / 2026</p>
+          <strong>15</strong>
+          <span>selected homes</span>
+          <dl>
+            <div><dt>Start</dt><dd>New Haven</dd></div>
+            <div><dt>Supply stop</dt><dd>Los Angeles</dd></div>
+            <div><dt>Finish</dt><dd>Silicon Valley</dd></div>
+            <div><dt>Report</dt><dd>{campaign.finalReportDateLabel}</dd></div>
+          </dl>
+        </aside>
+      </section>
+
+      <section class="road-route" id="route" aria-labelledby="route-title">
+        <div class="road-section-heading">
+          <p class="road-kicker">The route</p>
+          <h2 id="route-title">One cross-country story, built from individual homes.</h2>
+          <p>{phaseCopy}</p>
+        </div>
+        <ol class="route-line">
+          <li><span>01</span><strong>New Haven</strong><small>Opening stop</small></li>
+          <li><span>02</span><strong>Recruitment corridor</strong><small>Selected home visits</small></li>
+          <li><span>03</span><strong>Los Angeles</strong><small>Warehouse + field reset</small></li>
+          <li><span>04</span><strong>Palo Alto</strong><small>Bay Area closing stop</small></li>
+        </ol>
+        <div class="route-corridor" aria-label="Recruitment corridor">
+          {campaign.recruitmentCorridor.map((stop, index) => (
+            <span><b>{String(index + 1).padStart(2, "0")}</b>{stop}</span>
+          ))}
+        </div>
+        <p class="road-independence">
+          Yale and Stanford are geographic story markers connected to the founder's travel. This is an independent
+          HarborNavi project and is not sponsored, endorsed, or organized by either university.
+        </p>
+      </section>
+
+      <section class="road-purpose" aria-labelledby="purpose-title">
+        <div class="road-section-heading">
+          <p class="road-kicker">What each stop produces</p>
+          <h2 id="purpose-title">A household question, a real installation, and a seven-day follow-up.</h2>
+        </div>
+        <div class="road-card-grid">
+          <article><span>Before</span><h3>The question</h3><p>What does this household keep missing, checking, or piecing together across apps?</p></article>
+          <article><span>During</span><h3>The first useful read</h3><p>We connect supported sources, run the setup, and look for one concrete home event together.</p></article>
+          <article><span>After</span><h3>The honest follow-up</h3><p>Seven days later, the household tells us whether HarborNavi stayed useful and why.</p></article>
+        </div>
+      </section>
+
+      <section class="host-section" id="host" aria-labelledby="host-title">
+        <div class="host-copy">
+          <p class="road-kicker">Host one of the 15 visits · Screening {campaign.roadHomeScreeningDateLabel}</p>
+          <h2 id="host-title">We’re looking for real household questions and a mix of home setups.</h2>
+          <p>
+            We want a mix of ordinary and technical households: pet owners, package-heavy homes, privacy-conscious
+            families, Home Assistant users, and people managing several cameras or home systems.
+          </p>
+          <ul>
+            <li>You are 18 or older and authorized to invite us into the home.</li>
+            <li>Your location can fit the final route and you can allow roughly 3–4 hours for setup and conversation.</li>
+            <li>You can join a short seven-day follow-up after the visit.</li>
+            <li>You are open to discussing the experience; any filming or live appearance is confirmed separately.</li>
+          </ul>
+        </div>
+        <aside class="consent-card">
+          <p class="road-kicker">Application privacy</p>
+          <h3>Screening is not a release form.</h3>
+          <p>
+            Applying allows the application provider and HarborNavi to process your answers and contact you for
+            screening. Willingness to be recorded or appear live does not replace a final, visit-specific release.
+          </p>
+          <p>
+            Children are off camera by default. The application should not ask for raw home footage, camera
+            credentials, or a full street address.
+          </p>
+          {campaign.roadHomesFormUrl ? (
+            <a
+              class="road-button road-button-primary"
+              href={campaign.roadHomesFormUrl}
+              target="_blank"
+              rel="noreferrer"
+              data-application-link
+              data-campaign-event="road_home_form_start"
+              data-link-kind="application"
+            >Apply on the external form</a>
+          ) : (
+            <span class="road-button road-button-disabled" aria-disabled="true">Application link pending</span>
+          )}
+          <a class="privacy-link" href="/privacy">Read the campaign privacy direction</a>
+        </aside>
+      </section>
+
+      <section class="watch-section" id="watch" aria-labelledby="watch-title">
+        <div class="road-section-heading">
+          <p class="road-kicker">Watch the work</p>
+          <h2 id="watch-title">Four formal YouTube Lives, plus optional parked check-ins.</h2>
+          <p>
+            The four formal broadcasts cover the opening, a middle-America stop, Los Angeles, and the Bay Area finish.
+            Extra road check-ins happen only while parked; there is no driver-operated broadcast. Household footage
+            appears only with specific permission.
+          </p>
+        </div>
+        <div class="watch-grid">
+          <article>
+            <span>Live</span>
+            <h3>YouTube live windows</h3>
+            <p>Four scheduled broadcasts during {campaign.roadEventDateLabel}, with optional parked check-ins.</p>
+            {campaign.youtubeChannelUrl ? (
+              <a href={campaign.youtubeChannelUrl} target="_blank" rel="noreferrer" data-campaign-event="youtube_live_click" data-link-kind="youtube_live">Open the live channel →</a>
+            ) : (
+              <small>The live URL will appear here when the channel is configured.</small>
+            )}
+          </article>
+          <article>
+            <span>Replay</span>
+            <h3>Daily and trip replays</h3>
+            <p>Catch up without sharing more household detail than the host approved.</p>
+            {campaign.youtubePlaylistUrl ? (
+              <a href={campaign.youtubePlaylistUrl} target="_blank" rel="noreferrer" data-campaign-event="youtube_replay_click" data-link-kind="youtube_replay">Watch the replays →</a>
+            ) : (
+              <small>The replay URL will appear here after videos are published.</small>
+            )}
+          </article>
+          <article>
+            <span>Report</span>
+            <h3>What 15 American Homes Taught Us</h3>
+            <p>A public field report is planned for <time datetime={campaign.finalReportDate}>{campaign.finalReportDateLabel}</time>.</p>
+            <a href="/home-v5#join">Get the report update →</a>
+          </article>
+        </div>
+      </section>
+
+      <section class="kickstarter-strip" aria-labelledby="kickstarter-title">
+        <div>
+          <p class="road-kicker">Product pre-launch</p>
+          <h2 id="kickstarter-title">Follow HarborNavi before the road begins.</h2>
+          <p>The pre-launch milestone is <time datetime={campaign.kickstarterPrelaunchDate}>{campaign.kickstarterPrelaunchDateLabel}</time>, ahead of the planned Kickstarter launch on <time datetime={campaign.kickstarterLaunchDate}>{campaign.kickstarterLaunchDateLabel}</time>.</p>
+        </div>
+        {campaign.kickstarterPrelaunchUrl ? (
+          <a class="road-button road-button-light" href={campaign.kickstarterPrelaunchUrl} target="_blank" rel="noreferrer" data-campaign-event="kickstarter_prelaunch_click" data-link-kind="kickstarter">Open the Kickstarter pre-launch</a>
+        ) : (
+          <span class="road-button road-button-dark-disabled" aria-disabled="true">Pre-launch URL pending</span>
+        )}
+      </section>
+    </main>
+
+    <footer class="road-footer">
+      <strong>HarborNavi</strong>
+      <p>{campaign.name} · {campaign.routeLabel}</p>
+      <nav aria-label="Footer navigation"><a href="/home-v5">Product</a><a href="/privacy">Privacy</a></nav>
+    </footer>
+
+    <CampaignAnalytics route="15-homes" />
+  </body>
+</html>

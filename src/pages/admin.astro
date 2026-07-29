@@ -1,27 +1,5 @@
 ---
-import SiteHeader from "../components/SiteHeader.astro";
-import { landingAssets } from "../data/landingAssets";
-import "../styles/global.css";
-
-const githubAssetsUrl = "https://github.com/HarborNavi/harbornavi-site/tree/main/public/assets";
-const vercelDeploymentsUrl = "https://vercel.com/bebebeabeanbeans-projects/harbornavi-site";
-const assetSlots = [
-  {
-    label: "Home hero",
-    path: "public/assets/hero-home.png",
-    asset: landingAssets.homeHero
-  },
-  {
-    label: "Package hero",
-    path: "public/assets/hero-package.png",
-    asset: landingAssets.packageHero
-  },
-  {
-    label: "Pet hero",
-    path: "public/assets/hero-pets.png",
-    asset: landingAssets.petHero
-  }
-];
+import "../styles/admin.css";
 ---
 
 <!doctype html>
@@ -30,74 +8,903 @@ const assetSlots = [
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex,nofollow" />
-    <title>Landing Asset Updates | HarborNavi</title>
+    <title>Growth Admin | HarborNavi</title>
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
   </head>
-  <body data-route="admin">
-    <SiteHeader activeRoute="privacy" />
+  <body class="admin-page">
+    <header class="admin-header">
+      <a class="admin-brand" href="/home-v5">HarborNavi</a>
+      <nav aria-label="Admin links">
+        <a href="/home-v5">Home v5</a>
+        <a href="/15-homes">15 Homes</a>
+        <button type="button" data-logout hidden>Sign out</button>
+      </nav>
+    </header>
+
     <main>
-      <section class="admin-page section-shell" aria-labelledby="admin-title">
-        <div class="admin-head">
+      <section class="admin-shell admin-login" data-login-panel aria-labelledby="login-title">
+        <div>
+          <p class="admin-eyebrow">Private admin</p>
+          <h1 id="login-title">Growth cockpit</h1>
+          <p>Sign in with the admin password configured in Vercel.</p>
+        </div>
+        <form class="login-form" data-login-form>
+          <label>
+            Admin password
+            <input name="password" type="password" autocomplete="current-password" required />
+          </label>
+          <button type="submit">Sign in</button>
+          <p class="admin-message" data-login-message hidden></p>
+        </form>
+      </section>
+
+      <section class="admin-shell leads-panel" data-leads-panel aria-labelledby="admin-title" hidden>
+        <div class="leads-head">
           <div>
-            <p class="eyebrow">Asset workflow</p>
-            <h1 id="admin-title">Update landing images through GitHub.</h1>
+            <p class="admin-eyebrow">Early access</p>
+            <h1 id="admin-title">Growth cockpit</h1>
           </div>
-          <a class="secondary-link" href="/home">View site</a>
+          <div class="lead-actions">
+            <select data-range aria-label="Analytics range">
+              <option value="7">7 days</option>
+              <option value="30">30 days</option>
+              <option value="all">All time</option>
+            </select>
+            <button type="button" data-refresh-analytics>Refresh dashboard</button>
+            <button type="button" data-refresh>Refresh leads</button>
+            <button type="button" data-refresh-health>Check system</button>
+            <button type="button" data-export>Export CSV</button>
+          </div>
         </div>
 
-        <div class="admin-guide">
-          <article>
-            <p class="card-label">Current flow</p>
-            <h2>Replace the same files, keep the same names.</h2>
-            <p>
-              Upload the new images in GitHub under <code>public/assets</code>. Keep the filenames below unchanged so
-              the landing page updates without code edits.
-            </p>
-          </article>
-          <article>
-            <p class="card-label">Deploy</p>
-            <h2>Commit to main and Vercel will redeploy.</h2>
-            <p>
-              After GitHub receives the commit, Vercel rebuilds the static site. Use the deployment page to confirm the
-              latest production build.
-            </p>
-          </article>
+        <div class="admin-tabs" role="tablist" aria-label="Admin views">
+          <button type="button" class="active" data-tab-button="dashboard">Dashboard</button>
+          <button type="button" data-tab-button="leads">Leads</button>
+          <button type="button" data-tab-button="system">System</button>
         </div>
 
-        <div class="admin-actions">
-          <a class="primary-button" href={githubAssetsUrl}>Open GitHub assets</a>
-          <a class="secondary-link" href={vercelDeploymentsUrl}>View Vercel deployments</a>
-        </div>
+        <section class="tab-panel" data-tab-panel="dashboard">
+          <div class="metric-grid analytics-metrics" aria-label="Growth metrics">
+            <article>
+              <span>Page views</span>
+              <strong data-analytics-page-views>0</strong>
+            </article>
+            <article>
+              <span>Form starts</span>
+              <strong data-analytics-form-starts>0</strong>
+            </article>
+            <article>
+              <span>Form submits</span>
+              <strong data-analytics-form-submits>0</strong>
+            </article>
+            <article>
+              <span>Saved leads</span>
+              <strong data-analytics-saved-leads>0</strong>
+            </article>
+            <article>
+              <span>Conversion</span>
+              <strong data-analytics-conversion>0%</strong>
+            </article>
+            <article>
+              <span>Discord clicks</span>
+              <strong data-analytics-discord>0</strong>
+            </article>
+            <article>
+              <span>Compatibility profiles</span>
+              <strong data-analytics-compatibility>0</strong>
+            </article>
+            <article>
+              <span>Positive at $449</span>
+              <strong data-analytics-price-rate>0%</strong>
+            </article>
+            <article>
+              <span>Founder reservations</span>
+              <strong data-analytics-reservations>0</strong>
+            </article>
+          </div>
 
-        <div class="admin-assets" aria-label="Landing image files">
-          {assetSlots.map((slot) => (
-            <article class="admin-asset">
-              <div class="admin-preview">
-                <img
-                  src={slot.asset.url}
-                  alt={slot.asset.alt}
-                  width={slot.asset.width}
-                  height={slot.asset.height}
-                />
-              </div>
-              <div class="admin-asset-body">
-                <div>
-                  <p class="card-label">{slot.label}</p>
-                  <h2>{slot.path}</h2>
-                </div>
-                <p class="admin-asset-meta">Recommended format: 1600 x 900 PNG, JPG, or WebP.</p>
-                <p class="admin-asset-meta">
-                  Keep visual content calm, real-home oriented, and consistent with the HarborNavi page style.
-                </p>
+          <div class="dashboard-grid">
+            <article class="admin-panel">
+              <h2>Funnel by route and source</h2>
+              <div class="lead-table-wrap">
+                <table class="compact-table">
+                  <thead>
+                    <tr>
+                      <th>Route</th>
+                      <th>Source</th>
+                      <th>Campaign</th>
+                      <th>Form</th>
+                      <th>Views</th>
+                      <th>Starts</th>
+                      <th>Submits</th>
+                      <th>Saved</th>
+                      <th>Discord</th>
+                    </tr>
+                  </thead>
+                  <tbody data-funnel-body>
+                    <tr><td colspan="9">No analytics loaded yet.</td></tr>
+                  </tbody>
+                </table>
               </div>
             </article>
-          ))}
-        </div>
+            <article class="admin-panel">
+              <h2>Event mix</h2>
+              <div class="lead-table-wrap">
+                <table class="compact-table narrow">
+                  <thead>
+                    <tr>
+                      <th>Event</th>
+                      <th>Count</th>
+                    </tr>
+                  </thead>
+                  <tbody data-events-body>
+                    <tr><td colspan="2">No events loaded yet.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </article>
+            <article class="admin-panel">
+              <h2>Lead interests</h2>
+              <div class="lead-table-wrap">
+                <table class="compact-table narrow">
+                  <thead>
+                    <tr>
+                      <th>Interest</th>
+                      <th>Leads</th>
+                    </tr>
+                  </thead>
+                  <tbody data-interests-body>
+                    <tr><td colspan="2">No profiles loaded yet.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </article>
+            <article class="admin-panel">
+              <h2>Camera connection paths</h2>
+              <div class="lead-table-wrap">
+                <table class="compact-table narrow">
+                  <thead><tr><th>Connection</th><th>Leads</th></tr></thead>
+                  <tbody data-connections-body><tr><td colspan="2">No profiles loaded yet.</td></tr></tbody>
+                </table>
+              </div>
+            </article>
+            <article class="admin-panel">
+              <h2>Camera brands</h2>
+              <div class="lead-table-wrap">
+                <table class="compact-table narrow">
+                  <thead><tr><th>Brand</th><th>Leads</th></tr></thead>
+                  <tbody data-brands-body><tr><td colspan="2">No brands loaded yet.</td></tr></tbody>
+                </table>
+              </div>
+            </article>
+            <article class="admin-panel">
+              <h2>$449 price intent</h2>
+              <div class="lead-table-wrap">
+                <table class="compact-table narrow">
+                  <thead><tr><th>Intent</th><th>Leads</th></tr></thead>
+                  <tbody data-price-body><tr><td colspan="2">No price profiles loaded yet.</td></tr></tbody>
+                </table>
+              </div>
+            </article>
+            <article class="admin-panel">
+              <h2>Founder reservation status</h2>
+              <div class="lead-table-wrap">
+                <table class="compact-table narrow">
+                  <thead><tr><th>Status</th><th>Leads</th></tr></thead>
+                  <tbody data-reservations-body><tr><td colspan="2">No reservations loaded yet.</td></tr></tbody>
+                </table>
+              </div>
+            </article>
+          </div>
+          <p class="admin-message" data-analytics-message hidden></p>
+        </section>
+
+        <section class="tab-panel" data-tab-panel="leads" hidden>
+          <div class="lead-filters" aria-label="Lead filters">
+            <select data-filter-status aria-label="Filter by status">
+              <option value="">All statuses</option>
+              <option value="new">New</option>
+              <option value="qualified">Qualified</option>
+              <option value="contacted">Contacted</option>
+              <option value="not_fit">Not fit</option>
+            </select>
+            <select data-filter-interest aria-label="Filter by interest">
+              <option value="">All interests</option>
+            </select>
+            <select data-filter-brand aria-label="Filter by camera brand">
+              <option value="">All camera brands</option>
+            </select>
+            <select data-filter-connection aria-label="Filter by camera connection">
+              <option value="">All connection paths</option>
+            </select>
+            <select data-filter-price aria-label="Filter by price intent">
+              <option value="">All price intents</option>
+              <option value="definitely">Definitely</option>
+              <option value="probably">Probably</option>
+              <option value="not_sure">Not sure</option>
+              <option value="no">No</option>
+            </select>
+            <select data-filter-reservation aria-label="Filter by Founder reservation">
+              <option value="">All reservation states</option>
+              <option value="none">None</option>
+              <option value="checkout_started">Checkout started</option>
+              <option value="paid">Paid</option>
+              <option value="refund_pending">Refund pending</option>
+              <option value="refunded">Refunded</option>
+              <option value="expired">Expired</option>
+            </select>
+            <input data-filter-source type="search" placeholder="Filter source, campaign, or referrer" />
+          </div>
+
+          <div class="metric-grid" aria-label="Waitlist metrics">
+            <article>
+              <span>Total leads</span>
+              <strong data-total-leads>0</strong>
+            </article>
+            <article>
+              <span>New</span>
+              <strong data-new-leads>0</strong>
+            </article>
+            <article>
+              <span>Qualified</span>
+              <strong data-qualified-leads>0</strong>
+            </article>
+          </div>
+
+          <p class="admin-message" data-leads-message hidden></p>
+
+          <div class="lead-table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Email</th>
+                  <th>Route</th>
+                  <th>Source</th>
+                  <th>Submitted</th>
+                  <th>Interest</th>
+                  <th>Camera setup</th>
+                  <th>Price</th>
+                  <th>Founder</th>
+                  <th>Status</th>
+                  <th>Notes</th>
+                </tr>
+              </thead>
+              <tbody data-leads-body>
+                <tr>
+                  <td colspan="10">No leads loaded yet.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="tab-panel" data-tab-panel="system" hidden>
+          <div class="status-grid" aria-label="System status">
+            <article data-status-card="environment">
+              <span>Required env</span>
+              <strong data-status-label>Unknown</strong>
+              <small data-status-detail>Not checked yet.</small>
+            </article>
+            <article data-status-card="database">
+              <span>Database</span>
+              <strong data-status-label>Unknown</strong>
+              <small data-status-detail>Not checked yet.</small>
+            </article>
+            <article data-status-card="table">
+              <span>Waitlist table</span>
+              <strong data-status-label>Unknown</strong>
+              <small data-status-detail>Not checked yet.</small>
+            </article>
+            <article data-status-card="analytics">
+              <span>Analytics table</span>
+              <strong data-status-label>Unknown</strong>
+              <small data-status-detail>Not checked yet.</small>
+            </article>
+            <article data-status-card="reservations">
+              <span>Reservations table</span>
+              <strong data-status-label>Unknown</strong>
+              <small data-status-detail>Not checked yet.</small>
+            </article>
+            <article data-status-card="stripe">
+              <span>Stripe reservations</span>
+              <strong data-status-label>Unknown</strong>
+              <small data-status-detail>Not checked yet.</small>
+            </article>
+            <article data-status-card="notifications">
+              <span>Email notification</span>
+              <strong data-status-label>Unknown</strong>
+              <small data-status-detail>Not checked yet.</small>
+            </article>
+            <article data-status-card="contact-sync">
+              <span>Resend contact sync</span>
+              <strong data-status-label>Unknown</strong>
+              <small data-status-detail>Not checked yet.</small>
+            </article>
+          </div>
+        </section>
       </section>
     </main>
-    <footer class="site-footer">
-      <span>HarborNavi</span>
-      <a href="/home">Home</a>
-    </footer>
+
+    <template data-lead-row-template>
+      <tr>
+        <td>
+          <a data-email></a>
+          <small data-count></small>
+        </td>
+        <td>
+          <span data-route></span>
+          <small data-form-location></small>
+        </td>
+        <td>
+          <span data-source></span>
+          <small data-referrer></small>
+        </td>
+        <td data-created></td>
+        <td>
+          <span data-interest></span>
+          <small data-beta-intent></small>
+        </td>
+        <td>
+          <span data-camera-brands></span>
+          <small data-camera-connection></small>
+          <small data-camera-models></small>
+          <small data-camera-setup></small>
+        </td>
+        <td>
+          <span data-price-intent></span>
+          <small data-purchase-blocker></small>
+        </td>
+        <td>
+          <span data-reservation-status></span>
+          <small data-profile-status></small>
+        </td>
+        <td>
+          <select data-status>
+            <option value="new">New</option>
+            <option value="qualified">Qualified</option>
+            <option value="contacted">Contacted</option>
+            <option value="not_fit">Not fit</option>
+          </select>
+        </td>
+        <td>
+          <textarea data-notes rows="2" placeholder="Follow-up notes"></textarea>
+          <button type="button" data-save>Save</button>
+        </td>
+      </tr>
+    </template>
+
+    <script is:inline>
+      const tokenKey = "harbornavi_admin_token";
+      let leads = [];
+      let analytics = null;
+
+      const loginPanel = document.querySelector("[data-login-panel]");
+      const leadsPanel = document.querySelector("[data-leads-panel]");
+      const logoutButton = document.querySelector("[data-logout]");
+      const loginForm = document.querySelector("[data-login-form]");
+      const loginMessage = document.querySelector("[data-login-message]");
+      const leadsMessage = document.querySelector("[data-leads-message]");
+      const analyticsMessage = document.querySelector("[data-analytics-message]");
+      const leadsBody = document.querySelector("[data-leads-body]");
+      const rowTemplate = document.querySelector("[data-lead-row-template]");
+      const rangeSelect = document.querySelector("[data-range]");
+      const statusFilter = document.querySelector("[data-filter-status]");
+      const interestFilter = document.querySelector("[data-filter-interest]");
+      const brandFilter = document.querySelector("[data-filter-brand]");
+      const connectionFilter = document.querySelector("[data-filter-connection]");
+      const priceFilter = document.querySelector("[data-filter-price]");
+      const reservationFilter = document.querySelector("[data-filter-reservation]");
+      const sourceFilter = document.querySelector("[data-filter-source]");
+      const statusCards = {
+        environment: document.querySelector('[data-status-card="environment"]'),
+        database: document.querySelector('[data-status-card="database"]'),
+        table: document.querySelector('[data-status-card="table"]'),
+        analytics: document.querySelector('[data-status-card="analytics"]'),
+        reservations: document.querySelector('[data-status-card="reservations"]'),
+        stripe: document.querySelector('[data-status-card="stripe"]'),
+        notifications: document.querySelector('[data-status-card="notifications"]'),
+        contactSync: document.querySelector('[data-status-card="contact-sync"]')
+      };
+
+      function getToken() {
+        return window.sessionStorage.getItem(tokenKey);
+      }
+
+      function setToken(token) {
+        window.sessionStorage.setItem(tokenKey, token);
+      }
+
+      function clearToken() {
+        window.sessionStorage.removeItem(tokenKey);
+      }
+
+      function setMessage(element, message, tone = "info") {
+        if (!element) return;
+        element.textContent = message;
+        element.dataset.tone = tone;
+        element.hidden = !message;
+      }
+
+      function showLoggedIn(loggedIn) {
+        loginPanel.hidden = loggedIn;
+        leadsPanel.hidden = !loggedIn;
+        logoutButton.hidden = !loggedIn;
+      }
+
+      function activateTab(name) {
+        document.querySelectorAll("[data-tab-button]").forEach((button) => {
+          const active = button.dataset.tabButton === name;
+          button.classList.toggle("active", active);
+        });
+        document.querySelectorAll("[data-tab-panel]").forEach((panel) => {
+          panel.hidden = panel.dataset.tabPanel !== name;
+        });
+      }
+
+      function formatDate(value) {
+        if (!value) return "";
+        return new Intl.DateTimeFormat(undefined, {
+          month: "short",
+          day: "numeric",
+          hour: "2-digit",
+          minute: "2-digit"
+        }).format(new Date(value));
+      }
+
+      function leadSource(lead) {
+        return [lead.utm_source, lead.utm_medium, lead.utm_campaign].filter(Boolean).join(" / ") || "direct";
+      }
+
+      function missingNames(values) {
+        return Object.entries(values || {})
+          .filter(([, ready]) => !ready)
+          .map(([name]) => name)
+          .join(", ");
+      }
+
+      function setStatusCard(name, label, detail, tone = "neutral") {
+        const card = statusCards[name];
+        if (!card) return;
+        card.dataset.tone = tone;
+        card.querySelector("[data-status-label]").textContent = label;
+        card.querySelector("[data-status-detail]").textContent = detail;
+      }
+
+      function updateLeadMetrics() {
+        const filtered = filteredLeads();
+        document.querySelector("[data-total-leads]").textContent = String(filtered.length);
+        document.querySelector("[data-new-leads]").textContent = String(filtered.filter((lead) => lead.status === "new").length);
+        document.querySelector("[data-qualified-leads]").textContent = String(
+          filtered.filter((lead) => lead.status === "qualified").length
+        );
+      }
+
+      function syncInterestOptions() {
+        const current = interestFilter.value;
+        const interests = [...new Set(leads.map((lead) => lead.primary_interest).filter(Boolean))].sort();
+        interestFilter.innerHTML = '<option value="">All interests</option>';
+        interests.forEach((interest) => {
+          const option = document.createElement("option");
+          option.value = interest;
+          option.textContent = interest;
+          interestFilter.appendChild(option);
+        });
+        interestFilter.value = interests.includes(current) ? current : "";
+
+        const currentBrand = brandFilter.value;
+        const brands = [...new Set(leads.flatMap((lead) => lead.camera_brands || []))].sort();
+        brandFilter.innerHTML = '<option value="">All camera brands</option>';
+        brands.forEach((brand) => {
+          const option = document.createElement("option");
+          option.value = brand;
+          option.textContent = brand;
+          brandFilter.appendChild(option);
+        });
+        brandFilter.value = brands.includes(currentBrand) ? currentBrand : "";
+
+        const currentConnection = connectionFilter.value;
+        const connections = [...new Set(leads.map((lead) => lead.camera_connection).filter(Boolean))].sort();
+        connectionFilter.innerHTML = '<option value="">All connection paths</option>';
+        connections.forEach((connection) => {
+          const option = document.createElement("option");
+          option.value = connection;
+          option.textContent = connection;
+          connectionFilter.appendChild(option);
+        });
+        connectionFilter.value = connections.includes(currentConnection) ? currentConnection : "";
+      }
+
+      function filteredLeads() {
+        const status = statusFilter.value;
+        const interest = interestFilter.value;
+        const brand = brandFilter.value;
+        const connection = connectionFilter.value;
+        const price = priceFilter.value;
+        const reservation = reservationFilter.value;
+        const source = sourceFilter.value.trim().toLowerCase();
+        return leads.filter((lead) => {
+          if (status && lead.status !== status) return false;
+          if (interest && lead.primary_interest !== interest) return false;
+          if (brand && !(lead.camera_brands || []).includes(brand)) return false;
+          if (connection && lead.camera_connection !== connection) return false;
+          if (price && lead.price_intent !== price) return false;
+          if (reservation && (lead.founder_reservation_status || "none") !== reservation) return false;
+          if (source) {
+            const haystack = [
+              leadSource(lead),
+              lead.referrer || "",
+              lead.route || "",
+              lead.form_location || "",
+              lead.primary_interest || "",
+              (lead.camera_brands || []).join(" "),
+              lead.camera_models || "",
+              lead.camera_connection || "",
+              lead.price_intent || "",
+              lead.purchase_blocker || ""
+            ]
+              .join(" ")
+              .toLowerCase();
+            if (!haystack.includes(source)) return false;
+          }
+          return true;
+        });
+      }
+
+      function renderLeads() {
+        syncInterestOptions();
+        const visible = filteredLeads();
+        leadsBody.innerHTML = "";
+        if (!visible.length) {
+          leadsBody.innerHTML = '<tr><td colspan="10">No matching leads.</td></tr>';
+          updateLeadMetrics();
+          return;
+        }
+
+        visible.forEach((lead) => {
+          const row = rowTemplate.content.firstElementChild.cloneNode(true);
+          const email = row.querySelector("[data-email]");
+          email.textContent = lead.email;
+          email.href = `mailto:${lead.email}`;
+          row.querySelector("[data-count]").textContent = `${lead.submission_count || 1} submission(s)`;
+          row.querySelector("[data-route]").textContent = lead.route || "";
+          row.querySelector("[data-form-location]").textContent = lead.form_location || "";
+          row.querySelector("[data-source]").textContent = leadSource(lead);
+          row.querySelector("[data-referrer]").textContent = lead.referrer || "";
+          row.querySelector("[data-created]").textContent = formatDate(lead.created_at);
+          row.querySelector("[data-interest]").textContent = lead.primary_interest || "";
+          row.querySelector("[data-beta-intent]").textContent = lead.beta_intent || "";
+          row.querySelector("[data-camera-brands]").textContent = (lead.camera_brands || []).join(", ");
+          row.querySelector("[data-camera-connection]").textContent = lead.camera_connection || "";
+          row.querySelector("[data-camera-models]").textContent = lead.camera_models || "";
+          row.querySelector("[data-camera-setup]").textContent = lead.camera_setup || "";
+          row.querySelector("[data-price-intent]").textContent = lead.price_intent || "";
+          row.querySelector("[data-purchase-blocker]").textContent = lead.purchase_blocker || "";
+          row.querySelector("[data-reservation-status]").textContent = lead.founder_reservation_status || "none";
+          row.querySelector("[data-profile-status]").textContent = lead.profile_completed_at ? "Profile saved" : "";
+          row.querySelector("[data-status]").value = lead.status || "new";
+          row.querySelector("[data-notes]").value = lead.notes || "";
+          row.querySelector("[data-save]").addEventListener("click", () => saveLead(row, lead));
+          leadsBody.appendChild(row);
+        });
+
+        updateLeadMetrics();
+      }
+
+      function renderRows(tbody, rows, columns, emptyMessage) {
+        tbody.innerHTML = "";
+        if (!rows.length) {
+          const row = document.createElement("tr");
+          const cell = document.createElement("td");
+          cell.colSpan = columns.length;
+          cell.textContent = emptyMessage;
+          row.appendChild(cell);
+          tbody.appendChild(row);
+          return;
+        }
+        rows.forEach((item) => {
+          const row = document.createElement("tr");
+          columns.forEach((column) => {
+            const cell = document.createElement("td");
+            cell.textContent = String(item[column] ?? "");
+            row.appendChild(cell);
+          });
+          tbody.appendChild(row);
+        });
+      }
+
+      function renderAnalytics() {
+        const summary = analytics?.summary || {};
+        document.querySelector("[data-analytics-page-views]").textContent = String(summary.page_views || 0);
+        document.querySelector("[data-analytics-form-starts]").textContent = String(summary.form_starts || 0);
+        document.querySelector("[data-analytics-form-submits]").textContent = String(summary.form_submits || 0);
+        document.querySelector("[data-analytics-saved-leads]").textContent = String(summary.saved_leads || 0);
+        document.querySelector("[data-analytics-conversion]").textContent = `${summary.conversion_rate || 0}%`;
+        document.querySelector("[data-analytics-discord]").textContent = String(summary.discord_clicks || 0);
+        document.querySelector("[data-analytics-compatibility]").textContent = String(summary.compatibility_completes || 0);
+        document.querySelector("[data-analytics-price-rate]").textContent = `${summary.positive_price_rate || 0}%`;
+        document.querySelector("[data-analytics-reservations]").textContent = String(summary.founder_reservations || 0);
+        renderRows(
+          document.querySelector("[data-funnel-body]"),
+          analytics?.funnel || [],
+          ["route", "source", "campaign", "form_location", "page_views", "form_starts", "form_submits", "saved_leads", "discord_clicks"],
+          "No funnel data yet."
+        );
+        renderRows(
+          document.querySelector("[data-events-body]"),
+          analytics?.events || [],
+          ["event_name", "count"],
+          "No event data yet."
+        );
+        renderRows(
+          document.querySelector("[data-interests-body]"),
+          analytics?.lead_interests || [],
+          ["primary_interest", "count"],
+          "No lead profile data yet."
+        );
+        renderRows(
+          document.querySelector("[data-connections-body]"),
+          analytics?.camera_connections || [],
+          ["camera_connection", "count"],
+          "No connection data yet."
+        );
+        renderRows(
+          document.querySelector("[data-brands-body]"),
+          analytics?.camera_brands || [],
+          ["camera_brand", "count"],
+          "No camera brands yet."
+        );
+        renderRows(
+          document.querySelector("[data-price-body]"),
+          analytics?.price_intents || [],
+          ["price_intent", "count"],
+          "No price profiles yet."
+        );
+        renderRows(
+          document.querySelector("[data-reservations-body]"),
+          analytics?.reservation_statuses || [],
+          ["reservation_status", "count"],
+          "No Founder reservations yet."
+        );
+      }
+
+      async function apiFetch(path, options = {}) {
+        const response = await fetch(path, {
+          ...options,
+          headers: {
+            "content-type": "application/json",
+            authorization: `Bearer ${getToken()}`,
+            ...(options.headers || {})
+          }
+        });
+        if (response.status === 401) {
+          clearToken();
+          showLoggedIn(false);
+          throw new Error("Please sign in again.");
+        }
+        const body = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          throw new Error(body.error || "Request failed");
+        }
+        return body;
+      }
+
+      async function loadAnalytics() {
+        setMessage(analyticsMessage, "Loading dashboard...");
+        try {
+          const body = await apiFetch(`/api/admin/analytics?range=${rangeSelect.value}`);
+          analytics = body.analytics;
+          renderAnalytics();
+          setMessage(analyticsMessage, "");
+        } catch (error) {
+          setMessage(analyticsMessage, error.message, "error");
+        }
+      }
+
+      async function loadLeads() {
+        setMessage(leadsMessage, "Loading leads...");
+        try {
+          const body = await apiFetch("/api/admin/leads");
+          leads = body.leads || [];
+          renderLeads();
+          setMessage(leadsMessage, "");
+        } catch (error) {
+          setMessage(leadsMessage, error.message, "error");
+        }
+      }
+
+      async function loadAdminHealth() {
+        Object.keys(statusCards).forEach((name) => setStatusCard(name, "Checking", "", "neutral"));
+        try {
+          const body = await apiFetch("/api/admin/health");
+          const missingRequired = missingNames(body.environment);
+          setStatusCard(
+            "environment",
+            missingRequired ? "Missing" : "Ready",
+            missingRequired || "All required variables are present.",
+            missingRequired ? "error" : "success"
+          );
+
+          const database = body.database || {};
+          setStatusCard(
+            "database",
+            database.connected ? "Connected" : "Not ready",
+            database.error || "Connection check passed.",
+            database.connected ? "success" : "error"
+          );
+          setStatusCard(
+            "table",
+            database.table_ready ? "Ready" : "Missing",
+            database.table_ready ? `${database.lead_count ?? 0} saved lead(s).` : "Run db/waitlist.sql in Neon.",
+            database.table_ready ? "success" : "error"
+          );
+          setStatusCard(
+            "analytics",
+            database.analytics_table_ready ? "Ready" : "Missing",
+            database.analytics_table_ready ? "analytics_events is available." : "Run db/analytics.sql in Neon.",
+            database.analytics_table_ready ? "success" : "error"
+          );
+
+          setStatusCard(
+            "reservations",
+            database.reservations_table_ready ? "Ready" : "Missing",
+            database.reservations_table_ready
+              ? `${database.reservation_count ?? 0} Founder reservation(s).`
+              : "Run db/growth-v4.sql in Neon.",
+            database.reservations_table_ready ? "success" : "error"
+          );
+
+          const missingStripe = missingNames(body.reservations?.variables);
+          setStatusCard(
+            "stripe",
+            body.reservations?.enabled ? "Enabled" : "Closed",
+            missingStripe || `Automatic refunds start ${body.reservations?.refund_at || "after a launch date is set"}.`,
+            body.reservations?.enabled ? "success" : "neutral"
+          );
+
+          const missingNotification = missingNames(body.notifications?.variables);
+          setStatusCard(
+            "notifications",
+            body.notifications?.configured ? "Enabled" : "Skipped",
+            missingNotification || "Resend notification variables are present.",
+            body.notifications?.configured ? "success" : "neutral"
+          );
+
+          const missingContactSync = missingNames(body.contact_sync?.variables);
+          setStatusCard(
+            "contactSync",
+            body.contact_sync?.configured ? "Enabled" : "Skipped",
+            missingContactSync || "Kickstarter and Road topic IDs are configured.",
+            body.contact_sync?.configured ? "success" : "neutral"
+          );
+        } catch (error) {
+          Object.keys(statusCards).forEach((name) => setStatusCard(name, "Error", error.message, "error"));
+        }
+      }
+
+      async function saveLead(row, lead) {
+        const button = row.querySelector("[data-save]");
+        button.disabled = true;
+        try {
+          const body = await apiFetch("/api/admin/update-lead", {
+            method: "POST",
+            body: JSON.stringify({
+              id: lead.id,
+              status: row.querySelector("[data-status]").value,
+              notes: row.querySelector("[data-notes]").value
+            })
+          });
+          Object.assign(lead, body.lead);
+          setMessage(leadsMessage, `Saved ${lead.email}.`, "success");
+          renderLeads();
+        } catch (error) {
+          setMessage(leadsMessage, error.message, "error");
+        } finally {
+          button.disabled = false;
+        }
+      }
+
+      function exportCsv() {
+        const headers = [
+          "email",
+          "route",
+          "form_location",
+          "source",
+          "primary_interest",
+          "camera_setup",
+          "camera_brands",
+          "camera_models",
+          "camera_connection",
+          "beta_intent",
+          "price_intent",
+          "purchase_blocker",
+          "founder_reservation_status",
+          "status",
+          "submission_count",
+          "created_at",
+          "profile_completed_at",
+          "notes"
+        ];
+        const rows = filteredLeads().map((lead) => [
+          lead.email,
+          lead.route || "",
+          lead.form_location || "",
+          leadSource(lead),
+          lead.primary_interest || "",
+          lead.camera_setup || "",
+          (lead.camera_brands || []).join(" | "),
+          lead.camera_models || "",
+          lead.camera_connection || "",
+          lead.beta_intent || "",
+          lead.price_intent || "",
+          lead.purchase_blocker || "",
+          lead.founder_reservation_status || "none",
+          lead.status || "",
+          lead.submission_count || 1,
+          lead.created_at || "",
+          lead.profile_completed_at || "",
+          lead.notes || ""
+        ]);
+        const csv = [headers, ...rows]
+          .map((row) => row.map((value) => `"${String(value).replaceAll('"', '""')}"`).join(","))
+          .join("\n");
+        const url = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
+        const link = Object.assign(document.createElement("a"), {
+          href: url,
+          download: `harbornavi-waitlist-${new Date().toISOString().slice(0, 10)}.csv`
+        });
+        link.click();
+        URL.revokeObjectURL(url);
+      }
+
+      loginForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        setMessage(loginMessage, "Signing in...");
+        const data = new FormData(loginForm);
+        try {
+          const response = await fetch("/api/admin/login", {
+            method: "POST",
+            headers: {
+              "content-type": "application/json"
+            },
+            body: JSON.stringify({ password: data.get("password") })
+          });
+          const body = await response.json().catch(() => ({}));
+          if (!response.ok) {
+            throw new Error(body.error || "Sign in failed");
+          }
+          setToken(body.token);
+          loginForm.reset();
+          setMessage(loginMessage, "");
+          showLoggedIn(true);
+          await Promise.all([loadAnalytics(), loadAdminHealth(), loadLeads()]);
+        } catch (error) {
+          setMessage(loginMessage, error.message, "error");
+        }
+      });
+
+      document.querySelectorAll("[data-tab-button]").forEach((button) => {
+        button.addEventListener("click", () => activateTab(button.dataset.tabButton));
+      });
+      rangeSelect.addEventListener("change", loadAnalytics);
+      document.querySelector("[data-refresh-analytics]").addEventListener("click", loadAnalytics);
+      document.querySelector("[data-refresh-health]").addEventListener("click", loadAdminHealth);
+      document.querySelector("[data-refresh]").addEventListener("click", loadLeads);
+      document.querySelector("[data-export]").addEventListener("click", exportCsv);
+      [statusFilter, interestFilter, brandFilter, connectionFilter, priceFilter, reservationFilter].forEach((filter) =>
+        filter.addEventListener("change", renderLeads)
+      );
+      sourceFilter.addEventListener("input", renderLeads);
+      logoutButton.addEventListener("click", () => {
+        clearToken();
+        leads = [];
+        analytics = null;
+        showLoggedIn(false);
+      });
+
+      if (getToken()) {
+        showLoggedIn(true);
+        Promise.all([loadAnalytics(), loadAdminHealth(), loadLeads()]);
+      }
+    </script>
   </body>
 </html>

@@ -1,0 +1,753 @@
+---
+import "../styles/home-v3.css";
+
+const discordUrl = "https://discord.gg/tC2bktRWWj";
+const heroImage = "/assets/home-v2-ai-box.png";
+
+const productHotspots = [
+  {
+    title: "Local AI compute",
+    body: "Runs selected household understanding and workflow logic close to the room.",
+    x: 28,
+    y: 30
+  },
+  {
+    title: "Private storage",
+    body: "Keeps useful clips, summaries, and context under local ownership first.",
+    x: 68,
+    y: 26
+  },
+  {
+    title: "Camera + sensor timeline",
+    body: "Turns cameras, sensors, and smart-home states into one reviewable local view.",
+    x: 22,
+    y: 67
+  },
+  {
+    title: "Home automation bridge",
+    body: "Lets plain-language intent become reviewable actions across household devices.",
+    x: 78,
+    y: 63
+  },
+  {
+    title: "Quiet thermal path",
+    body: "Designed for desks, shelves, and living spaces instead of a server closet.",
+    x: 51,
+    y: 78
+  }
+];
+
+const demoCases = [
+  {
+    title: "What changed while I was away?",
+    body: "Door events, package movement, pet activity, lights, and sensors become one short local timeline instead of a pile of clips.",
+    chips: ["Away summary", "Local timeline", "Evidence clips"],
+    image: "/assets/home-v3-dog-focus-timeline.png",
+    imageAlt: "Five lightweight home moments converging into HarborNavi with an abstract local timeline below the device"
+  },
+  {
+    title: "What did my pet do today?",
+    body: "Funny jumps, sofa takeovers, and short pet highlights are saved with context instead of buried inside routine footage.",
+    chips: ["Pet highlight", "Context kept", "Share later"],
+    image: "/assets/hero-pets.png",
+    imageAlt: "A pet highlight timeline showing a short moment saved with context"
+  },
+  {
+    title: "Which family moment should we keep?",
+    body: "A child's small milestone, a shared laugh, or an everyday family moment can be lifted out before it disappears into hours of footage.",
+    chips: ["Family highlight", "Kid moment", "Saved locally"],
+    image: "/assets/home-v3-family-moment.png",
+    imageAlt: "A warm family moment with a child playing blocks highlighted as a moment worth keeping"
+  },
+  {
+    title: "Which alert actually mattered?",
+    body: "Repeated motion alerts can fade into the background while the package event, door change, or real exception gets pulled forward.",
+    chips: ["Noise filtered", "Package moved", "Review first"],
+    image: "/assets/home-v3-alert-that-mattered.png",
+    imageAlt: "A package event highlighted from a set of muted motion alerts on a front porch"
+  },
+  {
+    title: "Can this become a safe automation?",
+    body: "HarborNavi can draft a readable Home Assistant rule, then wait for approval before anything sensitive runs.",
+    chips: ["Rule draft", "HA bridge", "Approval step"],
+    image: "/assets/home-v3-safe-automation.png",
+    imageAlt: "A safe home automation approval flow before actions run"
+  }
+];
+
+const privacySteps = [
+  {
+    title: "Confirm the entry",
+    body:
+      "Before a camera, sensor, device, or external service can use household context, HarborNavi should make the entry point explicit and reviewable.",
+    hint: "Body and pose data stay local by default.",
+    chips: ["Local approval", "Device source", "Review first"],
+    image: "/assets/home-v2-privacy-entry.png"
+  },
+  {
+    title: "Manage family permissions",
+    body:
+      "Family members, visitors, care routines, and home helpers should not all see or control the same things. Permissions need to match the relationship.",
+    hint: "Private conversations do not become ad signals.",
+    chips: ["Room scope", "Role-based access", "Shared control"],
+    image: "/assets/home-v2-privacy-permissions.png"
+  },
+  {
+    title: "Redact before cloud",
+    body:
+      "When remote support, sharing, or cloud AI is useful, the local privacy gate should remove sensitive faces, voices, body outlines, room layout, and valuables first.",
+    hint: "Room layout and valuables do not become cloud inventory.",
+    chips: ["Local redaction", "Cloud packet", "Audit trail"],
+    image: "/assets/home-v2-privacy-redaction.png"
+  }
+];
+
+const specCallouts = [
+  { key: "soc", label: "SoC", value: "RISC-V target platform with high-performance compute and AI cores" },
+  { key: "ai", label: "AI acceleration", value: "Planning target for up to 60 TOPS-class local AI acceleration" },
+  { key: "compute", label: "General compute", value: "130 KDMIPS-class target for orchestration and device workflows" },
+  { key: "storage", label: "Storage", value: "Local storage-first architecture with product SKUs to be confirmed" },
+  { key: "interfaces", label: "Interfaces", value: "Planned support for LAN devices, cameras, sensors, and smart-home bridges" },
+  { key: "model", label: "Model workflow", value: "Designed to evaluate 30B-class local model workflows as SKUs mature" }
+];
+
+const comparisonRows = [
+  [
+    "Data direction",
+    "Highlights and household context stay local first, with sharing added only when you approve it.",
+    "Often routes personal context through third-party cloud services before you know what was captured."
+  ],
+  [
+    "Network dependency",
+    "Designed to keep everyday pet, child, and device moments useful even when the internet is not the center of the workflow.",
+    "Often depends on public internet, account sessions, and remote service queues."
+  ],
+  [
+    "Setup burden",
+    "Plain-language setup for scenes like pet highlights, family moments, device coordination, and reviewable actions.",
+    "Often requires API keys, dashboards, manual rules, and network workarounds."
+  ]
+];
+
+const structuredData = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "WebPage",
+  name: "Ask your home what happened.",
+  description:
+    "HarborNavi turns cameras, sensors, and smart-home events into a private home timeline.",
+  url: "https://harbornavi.com/home-v3"
+});
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>Ask your home what happened. | HarborNavi</title>
+    <meta
+      name="description"
+      content="HarborNavi helps families ask what happened at home, keep meaningful moments, and turn home events into reviewable actions."
+    />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta property="og:title" content="Ask your home what happened. | HarborNavi" />
+    <meta
+      property="og:description"
+      content="A local-first AI home device for pet highlights, family moments, private timelines, and reviewable Home Assistant workflows."
+    />
+    <meta property="og:type" content="website" />
+    <meta property="og:image" content={heroImage} />
+    <script is:inline type="application/ld+json" set:html={structuredData}></script>
+  </head>
+  <body class="home-v3-page" data-route="home-v3">
+    <header class="v2-header" aria-label="HarborNavi navigation">
+      <a class="v2-brand" href="/home" aria-label="HarborNavi home">
+        <span class="v2-brand-mark" aria-hidden="true">
+          <svg viewBox="0 0 64 34" focusable="false">
+            <defs>
+              <linearGradient id="home-v3-mark" x1="0" y1="34" x2="64" y2="0" gradientUnits="userSpaceOnUse">
+                <stop offset="0" stop-color="#6d28d9" />
+                <stop offset="0.58" stop-color="#8b5cf6" />
+                <stop offset="1" stop-color="#ddd6fe" />
+              </linearGradient>
+            </defs>
+            <path d="M0 34C18.8 34 31.1 21.6 31.1 2.7V0H20.8v2.3C20.8 15.8 12.8 23.5 0 23.5V34Z" fill="url(#home-v3-mark)" />
+            <path d="M35.7 34C40.8 20.3 50.5 11.1 64 7.8V0C45.1 2.4 31.2 14.5 25.3 34H35.7Z" fill="url(#home-v3-mark)" opacity="0.88" />
+          </svg>
+        </span>
+        <span>HarborNavi</span>
+      </a>
+      <a class="v2-header-link" href="#early-access" data-track="early_bird_start">Join waitlist <span aria-hidden="true">→</span></a>
+    </header>
+
+    <main>
+      <section class="v2-hero" aria-labelledby="v2-hero-title">
+        <div class="v2-hero-content">
+          <div class="v2-hero-copy-block">
+            <p class="v2-kicker">Private home memory, not another camera app</p>
+            <h1 id="v2-hero-title">
+              <span>Ask your home</span>
+              <span>what happened.</span>
+            </h1>
+            <p class="v2-hero-copy">
+              HarborNavi turns cameras, sensors, and Home Assistant events into a private timeline you can actually use.
+              Your cat's funny jump, your child's important little moment, and the clips worth keeping should not vanish inside 24 hours of dull monitoring footage.
+            </p>
+            <form class="v2-email-form hero" data-early-form data-form-location="hero">
+              <label class="v2-sr-only" for="hero-email">Email</label>
+              <input id="hero-email" name="email" type="email" autocomplete="email" placeholder="Enter your email for Early Bird access" required />
+              <input class="v2-honeypot" name="company" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" />
+              <button type="submit">Get Early Bird Access</button>
+            </form>
+            <div class="v2-form-success" data-form-success hidden role="dialog" aria-modal="true" aria-labelledby="hero-thank-title">
+              <div class="v2-thank-panel">
+                <button class="v2-modal-close" type="button" aria-label="Close thank you dialog" data-modal-close>×</button>
+                <p class="v2-card-label">Thank you</p>
+                <h2 id="hero-thank-title">You're on the Early Bird list.</h2>
+                <p>
+                  Want to join deeper hardware discussions? Answer three quick questions, then join our Discord community.
+                </p>
+                <form class="v2-profile-form" data-profile-form data-form-location="hero_profile">
+                  <select name="primary_interest" aria-label="Primary interest">
+                    <option value="">What should HarborNavi help with first?</option>
+                    <option value="family_memory">Family memory</option>
+                    <option value="package_alerts">Package alerts</option>
+                    <option value="pet_highlights">Pet highlights</option>
+                    <option value="device_workflows">Device workflows</option>
+                    <option value="other">Something else</option>
+                  </select>
+                  <input name="camera_setup" type="text" placeholder="Camera setup, if any" />
+                  <select name="beta_intent" aria-label="Beta intent">
+                    <option value="">Beta intent</option>
+                    <option value="own_setup">I can test with my own setup</option>
+                    <option value="updates_only">Updates only</option>
+                    <option value="curious">Just curious</option>
+                  </select>
+                  <button type="submit">Save preferences</button>
+                  <small data-profile-message hidden></small>
+                </form>
+                <a class="v2-discord-secondary" href={discordUrl} data-discord-link>Join our Discord community →</a>
+              </div>
+            </div>
+            <p class="v2-form-error" data-form-error hidden>Something went wrong. Please try again in a moment.</p>
+            <p class="v2-concept-note">Built for homes that want useful AI without turning private space into cloud data.</p>
+          </div>
+
+          <div class="v2-hero-product-card">
+            <img src={heroImage} alt="HarborNavi AI box on a home desk" width="1536" height="1024" loading="eager" />
+          </div>
+        </div>
+      </section>
+
+      <section class="v2-section v2-product-focus" aria-labelledby="focus-title">
+        <div class="v2-section-inner v2-focus-grid">
+          <div class="v2-section-heading">
+            <p class="v2-eyebrow">Local AI box</p>
+            <h2 id="focus-title">A box for asking the home, not just recording it.</h2>
+            <p>
+              HarborNavi sits close to the cameras, sensors, and smart-home systems that already understand pieces of your home,
+              then turns selected events into a local, reviewable answer.
+            </p>
+          </div>
+          <div class="v2-hotspot-stage">
+            <img src="/assets/home-v2-ai-box.png" alt="HarborNavi AI box" width="1536" height="1024" loading="lazy" />
+            {productHotspots.map((hotspot, index) => (
+              <button
+                class="v2-hotspot"
+                type="button"
+                style={`--x:${hotspot.x}%; --y:${hotspot.y}%`}
+                aria-label={`${hotspot.title}: ${hotspot.body}`}
+              >
+                <span class="v2-hotspot-dot" aria-hidden="true">{index + 1}</span>
+                <span class="v2-hotspot-card">
+                  <strong>{hotspot.title}</strong>
+                  <small>{hotspot.body}</small>
+                </span>
+              </button>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section class="v2-section v3-demo-cases" aria-labelledby="demo-title">
+        <div class="v2-section-inner">
+          <div class="v2-section-heading centered">
+            <p class="v2-eyebrow">Everyday home questions</p>
+            <h2 id="demo-title">Ask for the moments that actually matter.</h2>
+            <p>
+              HarborNavi is built around the things families already wonder about: packages, pets, kids,
+              visitors, repeated alerts, and safe automations that should be reviewed before they run.
+            </p>
+          </div>
+          <div class="v3-demo-grid">
+            {demoCases.map((demo) => (
+              <article class="v3-demo-card">
+                <figure>
+                  <img src={demo.image} alt={demo.imageAlt} width="1536" height="1024" loading="lazy" />
+                </figure>
+                <div class="v3-demo-copy">
+                  <h3>{demo.title}</h3>
+                  <p>{demo.body}</p>
+                  <div class="v2-chip-row" aria-label={`${demo.title} signals`}>
+                    {demo.chips.map((chip) => <span>{chip}</span>)}
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section class="v2-section v2-architecture" aria-labelledby="architecture-title">
+        <div class="v2-section-inner">
+          <div class="v2-product-head">
+            <div>
+              <p class="v2-eyebrow">Industrial design and architecture</p>
+              <h2 id="architecture-title">A product shell for local compute, not another cloud account.</h2>
+            </div>
+            <p>
+              HarborNavi brings local compute, private storage, and home automation context into one device designed for the rooms where life happens.
+            </p>
+          </div>
+          <figure class="v2-exploded">
+            <div class="v2-exploded-visual" aria-hidden="true">
+              <span class="v2-exploded-shell">Top shell</span>
+              <span class="v2-exploded-board">RISC-V compute board</span>
+              <span class="v2-exploded-thermal">Quiet thermal path</span>
+              <span class="v2-exploded-storage">Local storage bay</span>
+              <span class="v2-exploded-base">Base enclosure</span>
+            </div>
+            <figcaption>
+              <strong>Inside the local AI box.</strong>
+              Compute, storage, connectivity, and quiet cooling work together so useful home context can stay close to home.
+            </figcaption>
+          </figure>
+        </div>
+      </section>
+
+      <section class="v2-section v2-privacy" aria-labelledby="privacy-title">
+        <div class="v2-section-inner">
+          <div class="v2-section-heading centered">
+            <p class="v2-eyebrow">Privacy as a product path</p>
+            <h2 id="privacy-title">Know who can enter, who can see, and what may leave home.</h2>
+            <p>
+              Privacy is not one scary scenario. It is a chain of decisions from entry confirmation to family permissions
+              to local redaction before anything touches the cloud.
+            </p>
+          </div>
+          <div class="v2-privacy-grid">
+            {privacySteps.map((step, index) => (
+              <article class="v2-privacy-card">
+                <img src={step.image} alt="" width="1536" height="1024" loading="lazy" />
+                <div>
+                  <p class="v2-card-label">Step {index + 1}</p>
+                  <h3>{step.title}</h3>
+                  <p>{step.body}</p>
+                  <small>{step.hint}</small>
+                  <div class="v2-chip-row" aria-label={`${step.title} examples`}>
+                    {step.chips.map((chip) => <span>{chip}</span>)}
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section class="v2-section v2-specs" aria-labelledby="specs-title">
+        <div class="v2-section-inner">
+          <div class="v2-section-heading centered">
+            <p class="v2-eyebrow">Target hardware configuration</p>
+            <h2 id="specs-title">Local compute, diagrammed for real spaces.</h2>
+            <p>
+              HarborNavi is designed for local AI workloads, home-device coordination, and private storage-first workflows.
+              Exact hardware configurations will be shared closer to availability.
+            </p>
+          </div>
+
+          <div class="v2-spec-board" aria-label="HarborNavi planning hardware diagram">
+            <div class="v2-board-visual" aria-hidden="true">
+              <span class="chip soc">SoC</span>
+              <span class="chip ai">AI</span>
+              <span class="chip memory">MEM</span>
+              <span class="chip storage">SSD</span>
+              <span class="trace t1"></span>
+              <span class="trace t2"></span>
+              <span class="trace t3"></span>
+              <span class="port p1"></span>
+              <span class="port p2"></span>
+              <span class="port p3"></span>
+            </div>
+            <div class="v2-spec-callouts">
+              {specCallouts.map((spec) => (
+                <article data-spec={spec.key}>
+                  <p>{spec.label}</p>
+                  <strong>{spec.value}</strong>
+                </article>
+              ))}
+            </div>
+          </div>
+
+          <div class="v2-table-wrap" aria-label="HarborNavi comparison with traditional AI and network storage devices">
+            <table>
+              <thead>
+                <tr>
+                  <th>Parameter</th>
+                  <th>HarborNavi</th>
+                  <th>Traditional AI / network storage devices</th>
+                </tr>
+              </thead>
+              <tbody>
+                {comparisonRows.map(([parameter, harborNavi, traditional]) => (
+                  <tr>
+                    <th scope="row">{parameter}</th>
+                    <td><span class="v2-compare-cell positive"><span aria-hidden="true">✅</span>{harborNavi}</span></td>
+                    <td><span class="v2-compare-cell negative"><span aria-hidden="true">❌</span>{traditional}</span></td>
+                  </tr>
+                ))}
+              </tbody>
+            </table>
+          </div>
+        </div>
+      </section>
+
+      <section id="early-access" class="v2-section v2-final-cta" aria-labelledby="final-title">
+        <div class="v2-section-inner">
+          <div class="v2-final-copy">
+            <p class="v2-eyebrow">Early access</p>
+            <h2 id="final-title">Help shape the first HarborNavi homes.</h2>
+            <p>
+              Join the Early Bird list first. After that, you can choose whether to answer a few hardware questions and join the deeper Discord discussion.
+            </p>
+          </div>
+          <form class="v2-email-form final" data-early-form data-form-location="final">
+            <label class="v2-sr-only" for="final-email">Email</label>
+            <input id="final-email" name="email" type="email" autocomplete="email" placeholder="Enter your email for Early Bird access" required />
+            <input class="v2-honeypot" name="company" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" />
+            <button type="submit">Get Early Bird Access</button>
+          </form>
+          <div class="v2-form-success final" data-form-success hidden role="dialog" aria-modal="true" aria-labelledby="final-thank-title">
+            <div class="v2-thank-panel">
+              <button class="v2-modal-close" type="button" aria-label="Close thank you dialog" data-modal-close>×</button>
+              <p class="v2-card-label">Thank you</p>
+              <h2 id="final-thank-title">You're on the Early Bird list.</h2>
+              <p>
+                Want to join deeper hardware discussions? Answer three quick questions, then join our Discord community.
+              </p>
+              <form class="v2-profile-form" data-profile-form data-form-location="final_profile">
+                <select name="primary_interest" aria-label="Primary interest">
+                  <option value="">What should HarborNavi help with first?</option>
+                  <option value="family_memory">Family memory</option>
+                  <option value="package_alerts">Package alerts</option>
+                  <option value="pet_highlights">Pet highlights</option>
+                  <option value="device_workflows">Device workflows</option>
+                  <option value="other">Something else</option>
+                </select>
+                <input name="camera_setup" type="text" placeholder="Camera setup, if any" />
+                <select name="beta_intent" aria-label="Beta intent">
+                  <option value="">Beta intent</option>
+                  <option value="own_setup">I can test with my own setup</option>
+                  <option value="updates_only">Updates only</option>
+                  <option value="curious">Just curious</option>
+                </select>
+                <button type="submit">Save preferences</button>
+                <small data-profile-message hidden></small>
+              </form>
+              <a class="v2-discord-secondary" href={discordUrl} data-discord-link>Join our Discord community →</a>
+            </div>
+          </div>
+          <p class="v2-form-error final" data-form-error hidden>Something went wrong. Please try again in a moment.</p>
+        </div>
+      </section>
+    </main>
+
+    <footer class="v2-footer">
+      <span>HarborNavi</span>
+      <span>Ask your home what happened</span>
+      <a href="/privacy">Privacy</a>
+    </footer>
+
+    <script is:inline>
+      const route = "home-v3";
+      const utmKeys = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"];
+      let lastSubmittedEmail = "";
+
+      function getSessionId() {
+        const key = "harbornavi_session_id";
+        let value = window.sessionStorage.getItem(key);
+        if (!value) {
+          value = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+          window.sessionStorage.setItem(key, value);
+        }
+        return value;
+      }
+
+      function getUtmPayload() {
+        const params = new URLSearchParams(window.location.search);
+        const current = {};
+        let hasCurrent = false;
+        utmKeys.forEach((key) => {
+          const value = params.get(key) || "";
+          current[key] = value;
+          hasCurrent = hasCurrent || Boolean(value);
+        });
+        if (hasCurrent) {
+          window.sessionStorage.setItem("harbornavi_utm", JSON.stringify(current));
+          return current;
+        }
+        try {
+          return JSON.parse(window.sessionStorage.getItem("harbornavi_utm") || "{}");
+        } catch {
+          return {};
+        }
+      }
+
+      function analyticsPayload(eventName, properties) {
+        const utm = getUtmPayload();
+        return {
+          event_name: eventName,
+          route,
+          path: window.location.pathname,
+          referrer: document.referrer,
+          form_location: properties?.form_location || "",
+          session_id: getSessionId(),
+          utm_source: utm.utm_source || "",
+          utm_medium: utm.utm_medium || "",
+          utm_campaign: utm.utm_campaign || "",
+          utm_content: utm.utm_content || "",
+          utm_term: utm.utm_term || "",
+          properties: properties || {}
+        };
+      }
+
+      window.harborTrack = function harborTrack(eventName, properties) {
+        window.harborEvents = window.harborEvents || [];
+        window.harborEvents.push({
+          eventName,
+          properties: properties || {},
+          timestamp: new Date().toISOString()
+        });
+
+        const payload = analyticsPayload(eventName, properties || {});
+        const body = JSON.stringify(payload);
+        if (navigator.sendBeacon) {
+          const queued = navigator.sendBeacon("/api/events", new Blob([body], { type: "application/json" }));
+          if (queued) return;
+        }
+        fetch("/api/events", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body,
+          keepalive: true
+        }).catch(() => {});
+      };
+
+      window.harborTrack("page_view", { route });
+
+      document.querySelectorAll("[data-track]").forEach((element) => {
+        element.addEventListener("click", () => {
+          window.harborTrack(element.getAttribute("data-track"), { route });
+        });
+      });
+
+      document.querySelectorAll("[data-early-form]").forEach((form) => {
+        const input = form.querySelector("input[type='email']");
+        let started = false;
+        input?.addEventListener("focus", () => {
+          if (!started) {
+            started = true;
+            window.harborTrack("early_bird_start", {
+              route,
+              form_location: form.dataset.formLocation || "unknown"
+            });
+          }
+        });
+
+        form.addEventListener("submit", async (event) => {
+          event.preventDefault();
+          const data = new FormData(form);
+          const button = form.querySelector("button[type='submit']");
+          const success = form.nextElementSibling;
+          const error = success?.nextElementSibling;
+          const utm = getUtmPayload();
+
+          if (success?.matches("[data-form-success]")) {
+            success.hidden = true;
+          }
+          if (error?.matches("[data-form-error]")) {
+            error.hidden = true;
+          }
+
+          window.harborTrack("early_bird_submit", {
+            route,
+            form_location: form.dataset.formLocation || "unknown",
+            has_email: Boolean(data.get("email"))
+          });
+
+          button?.setAttribute("disabled", "disabled");
+          form.classList.add("submitting");
+
+          try {
+            const response = await fetch("/api/waitlist", {
+              method: "POST",
+              headers: {
+                "content-type": "application/json"
+              },
+              body: JSON.stringify({
+                email: data.get("email"),
+                company: data.get("company"),
+                route,
+                form_location: form.dataset.formLocation || "unknown",
+                path: window.location.pathname,
+                referrer: document.referrer,
+                utm_source: utm.utm_source || "",
+                utm_medium: utm.utm_medium || "",
+                utm_campaign: utm.utm_campaign || "",
+                utm_content: utm.utm_content || "",
+                utm_term: utm.utm_term || ""
+              })
+            });
+
+            if (!response.ok) {
+              throw new Error("Waitlist request failed");
+            }
+
+            lastSubmittedEmail = String(data.get("email") || "");
+            window.harborTrack("early_bird_saved", {
+              route,
+              form_location: form.dataset.formLocation || "unknown"
+            });
+            form.classList.add("submitted");
+            form.reset();
+            if (success?.matches("[data-form-success]")) {
+              success.hidden = false;
+              success.querySelector("[data-modal-close]")?.focus();
+            }
+          } catch {
+            window.harborTrack("early_bird_error", {
+              route,
+              form_location: form.dataset.formLocation || "unknown"
+            });
+            if (error?.matches("[data-form-error]")) {
+              error.hidden = false;
+            }
+          } finally {
+            button?.removeAttribute("disabled");
+            form.classList.remove("submitting");
+          }
+        });
+      });
+
+      document.querySelectorAll("[data-profile-form]").forEach((form) => {
+        form.addEventListener("submit", async (event) => {
+          event.preventDefault();
+          const data = new FormData(form);
+          const button = form.querySelector("button[type='submit']");
+          const message = form.querySelector("[data-profile-message]");
+          const utm = getUtmPayload();
+
+          if (message) {
+            message.hidden = true;
+            message.textContent = "";
+            message.dataset.tone = "";
+          }
+
+          window.harborTrack("profile_submit", {
+            route,
+            form_location: form.dataset.formLocation || "profile",
+            has_primary_interest: Boolean(data.get("primary_interest")),
+            has_camera_setup: Boolean(data.get("camera_setup")),
+            has_beta_intent: Boolean(data.get("beta_intent"))
+          });
+
+          if (!lastSubmittedEmail) {
+            if (message) {
+              message.textContent = "Submit your email first.";
+              message.dataset.tone = "error";
+              message.hidden = false;
+            }
+            return;
+          }
+
+          button?.setAttribute("disabled", "disabled");
+          try {
+            const response = await fetch("/api/waitlist/profile", {
+              method: "POST",
+              headers: { "content-type": "application/json" },
+              body: JSON.stringify({
+                email: lastSubmittedEmail,
+                route,
+                form_location: form.dataset.formLocation || "profile",
+                path: window.location.pathname,
+                referrer: document.referrer,
+                utm_source: utm.utm_source || "",
+                utm_medium: utm.utm_medium || "",
+                utm_campaign: utm.utm_campaign || "",
+                utm_content: utm.utm_content || "",
+                utm_term: utm.utm_term || "",
+                primary_interest: data.get("primary_interest"),
+                camera_setup: data.get("camera_setup"),
+                beta_intent: data.get("beta_intent")
+              })
+            });
+            if (!response.ok) {
+              throw new Error("Profile request failed");
+            }
+            window.harborTrack("profile_saved", {
+              route,
+              form_location: form.dataset.formLocation || "profile"
+            });
+            if (message) {
+              message.textContent = "Preferences saved.";
+              message.dataset.tone = "success";
+              message.hidden = false;
+            }
+          } catch {
+            window.harborTrack("profile_error", {
+              route,
+              form_location: form.dataset.formLocation || "profile"
+            });
+            if (message) {
+              message.textContent = "Could not save preferences.";
+              message.dataset.tone = "error";
+              message.hidden = false;
+            }
+          } finally {
+            button?.removeAttribute("disabled");
+          }
+        });
+      });
+
+      document.querySelectorAll("[data-modal-close]").forEach((button) => {
+        button.addEventListener("click", () => {
+          const modal = button.closest("[data-form-success]");
+          if (modal) {
+            modal.hidden = true;
+          }
+        });
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (event.key === "Escape") {
+          document.querySelectorAll("[data-form-success]:not([hidden])").forEach((modal) => {
+            modal.hidden = true;
+          });
+        }
+      });
+
+      document.querySelectorAll("[data-discord-link]").forEach((link) => {
+        link.addEventListener("click", () => {
+          window.harborTrack("discord_click", { route });
+        });
+      });
+
+      document.querySelectorAll("[data-scenario-event]").forEach((link) => {
+        link.addEventListener("click", () => {
+          window.harborTrack(link.getAttribute("data-scenario-event"), { route });
+        });
+      });
+
+    </script>
+  </body>
+</html>

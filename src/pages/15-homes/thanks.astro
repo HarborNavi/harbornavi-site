@@ -1,0 +1,75 @@
+---
+import CampaignAnalytics from "../../components/CampaignAnalytics.astro";
+import { campaign } from "../../data/campaign";
+import "../../styles/fifteen-homes.css";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>Application received | {campaign.name}</title>
+    <meta name="description" content="HarborNavi has received your 15 Homes Across America host application." />
+    <meta name="robots" content="noindex,follow" />
+    <meta name="theme-color" content="#171427" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <link rel="canonical" href="https://harbornavi.com/15-homes/thanks" />
+  </head>
+  <body class="road-campaign road-thanks" data-route="15-homes-thanks">
+    <header class="road-header">
+      <a class="road-brand" href="/home-v5" aria-label="HarborNavi home"><span aria-hidden="true">HN</span>HarborNavi</a>
+      <a class="road-header-link" href={campaign.roadHomesPath}>15 Homes</a>
+    </header>
+
+    <main class="thanks-main">
+      <section class="thanks-card" aria-labelledby="thanks-title">
+        <p class="road-kicker">Application received</p>
+        <h1 id="thanks-title">Thank you for opening your home to the idea.</h1>
+        <p class="thanks-lead">
+          Your form was submitted to the application provider. This confirms receipt, not selection. HarborNavi will
+          review route fit, timing, supported setup, and the mix of household stories before contacting shortlisted hosts.
+        </p>
+        <div class="thanks-next">
+          <article><span>01</span><h2>Watch your inbox</h2><p>We will contact shortlisted hosts using the details provided in the application.</p></article>
+          <article><span>02</span><h2>No visit yet</h2><p>Travel, filming, access, and final consent are confirmed separately before any home visit.</p></article>
+          <article><span>03</span><h2>Keep following</h2><p>The field test runs {campaign.roadEventDateLabel}; the public report is planned for {campaign.finalReportDateLabel}.</p></article>
+        </div>
+        <div class="road-actions thanks-actions">
+          <a class="road-button road-button-primary" href={campaign.roadHomesPath}>Back to 15 Homes</a>
+          <a class="road-button road-button-quiet" href="/home-v5#join">Join product updates</a>
+        </div>
+      </section>
+
+      <section class="thanks-links" aria-label="Campaign links">
+        <article>
+          <h2>Kickstarter pre-launch</h2>
+          {campaign.kickstarterPrelaunchUrl ? (
+            <a href={campaign.kickstarterPrelaunchUrl} target="_blank" rel="noreferrer" data-campaign-event="kickstarter_prelaunch_click" data-link-kind="kickstarter">Follow HarborNavi on Kickstarter →</a>
+          ) : (
+            <p>The public pre-launch URL has not been configured yet.</p>
+          )}
+        </article>
+        <article>
+          <h2>YouTube live</h2>
+          {campaign.youtubeChannelUrl ? (
+            <a href={campaign.youtubeChannelUrl} target="_blank" rel="noreferrer" data-campaign-event="youtube_live_click" data-link-kind="youtube_live">Open the live channel →</a>
+          ) : (
+            <p>The live channel link will appear when it is ready.</p>
+          )}
+        </article>
+        <article>
+          <h2>Trip replays</h2>
+          {campaign.youtubePlaylistUrl ? (
+            <a href={campaign.youtubePlaylistUrl} target="_blank" rel="noreferrer" data-campaign-event="youtube_replay_click" data-link-kind="youtube_replay">Watch published replays →</a>
+          ) : (
+            <p>Replay links will appear after videos are published.</p>
+          )}
+        </article>
+      </section>
+    </main>
+
+    <footer class="road-footer"><strong>HarborNavi</strong><p>{campaign.hook}</p><a href="/privacy">Privacy</a></footer>
+    <CampaignAnalytics route="15-homes-thanks" completeOnLoad={true} />
+  </body>
+</html>
