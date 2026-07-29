@@ -1,12 +1,22 @@
 import { jsonResponse } from "../src/server/config.js";
-import { sendLeadNotification } from "../src/server/notify.js";
-import { syncWaitlistContact } from "../src/server/resend-contacts.js";
 import {
+  deliverOperatorNotification,
+  deliverWaitlistConfirmation
+} from "../src/server/waitlist-integrations.js";
+import {
+  activeWaitlistConsentVersion,
   contactConsentScopeForRoute,
   normalizeWaitlistRoute,
   serverConsentMetadata
 } from "../src/server/waitlist-consent.js";
-import { normalizeEmail, upsertWaitlistLead } from "../src/server/waitlist.js";
+import {
+  normalizeEmail,
+  prepareOperatorNotification,
+  prepareWaitlistConsent,
+  upsertWaitlistLead,
+  waitlistIntegrationState
+} from "../src/server/waitlist.js";
+import { waitlistConfirmationBaseUrl } from "../src/server/waitlist-email.js";
 
 export function OPTIONS() {
   return jsonResponse({ ok: true });
@@ -32,10 +42,10 @@ export async function POST(request: Request) {
 
   const route = normalizeWaitlistRoute(payload.route);
   const consentScope = contactConsentScopeForRoute(route);
+  const consentMetadata = serverConsentMetadata(route);
   const metadata: Record<string, string> = {
     user_agent: request.headers.get("user-agent") || "",
-    accept_language: request.headers.get("accept-language") || "",
-    ...serverConsentMetadata(route)
+    accept_language: request.headers.get("accept-language") || ""
   };
 
   try {
@@ -56,28 +66,67 @@ export async function POST(request: Request) {
       metadata
     });
 
-    const [contactSyncResult, notificationResult] = await Promise.allSettled([
-      syncWaitlistContact(email, consentScope),
-      sendLeadNotification({
-        email,
-        route,
-        form_location: payload.form_location as string | undefined,
-        path: payload.path as string | undefined,
-        referrer: payload.referrer as string | undefined,
-        utm_source: payload.utm_source as string | undefined,
-        utm_campaign: payload.utm_campaign as string | undefined
-      })
-    ]);
+    if (consentScope !== "none") {
+      const prepared = await prepareWaitlistConsent(
+        lead.id,
+        consentScope,
+        consentMetadata.consent_version || activeWaitlistConsentVersion,
+        consentMetadata.consent_requested_at || new Date().toISOString()
+      );
+      if (!prepared) throw new Error("Unable to prepare waitlist confirmation");
 
-    if (contactSyncResult.status === "rejected") {
-      console.error("Waitlist lead saved, but Resend contact sync failed", contactSyncResult.reason);
-    }
-    if (notificationResult.status === "rejected") {
-      console.error("Waitlist lead saved, but operator notification failed", notificationResult.reason);
+      let confirmationResult;
+      try {
+        confirmationResult = await deliverWaitlistConfirmation(
+          prepared.id,
+          waitlistConfirmationBaseUrl(request.url)
+        );
+      } catch (error) {
+        console.error("Waitlist lead saved, but subscriber confirmation failed", error);
+        return jsonResponse({
+          error: "Your email was saved, but we could not send the confirmation email. Please try again.",
+          code: "confirmation_delivery_failed",
+          lead_saved: true,
+          retryable: true
+        }, { status: 503 });
+      }
+
+      const state = waitlistIntegrationState(prepared);
+      if (
+        confirmationResult.skipped &&
+        !state.consent_confirmed_at &&
+        !["sent", "sending"].includes(state.confirmation_email_status)
+      ) {
+        return jsonResponse({
+          error: "Your email was saved, but we could not send the confirmation email. Please try again later.",
+          code: "confirmation_delivery_unavailable",
+          lead_saved: true,
+          retryable: true
+        }, { status: 503 });
+      }
+
+      return jsonResponse({
+        ok: true,
+        lead: {
+          id: lead.id,
+          email: lead.email,
+          submission_count: lead.submission_count
+        },
+        subscription_status: state.consent_confirmed_at ? "confirmed" : "pending_confirmation",
+        confirmation_email_sent: !confirmationResult.skipped,
+        contact_sync_status: state.consent_confirmed_at ? state.contact_sync_status : "awaiting_confirmation"
+      });
     }
 
-    const contactSyncSkipped = contactSyncResult.status !== "fulfilled" || contactSyncResult.value.skipped;
-    const notificationSkipped = notificationResult.status !== "fulfilled" || notificationResult.value.skipped;
+    await prepareOperatorNotification(lead.id);
+    let operatorNotificationStatus = "sent";
+    try {
+      const result = await deliverOperatorNotification(lead.id);
+      if (result.skipped) operatorNotificationStatus = "already_processed";
+    } catch (error) {
+      operatorNotificationStatus = "failed";
+      console.error("Waitlist lead saved, but operator notification failed", error);
+    }
 
     return jsonResponse({
       ok: true,
@@ -86,8 +135,8 @@ export async function POST(request: Request) {
         email: lead.email,
         submission_count: lead.submission_count
       },
-      contact_sync_skipped: contactSyncSkipped,
-      notification_skipped: notificationSkipped
+      subscription_status: "not_requested",
+      operator_notification_status: operatorNotificationStatus
     });
   } catch (error) {
     console.error(error);

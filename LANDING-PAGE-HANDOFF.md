@@ -21,6 +21,7 @@ Fiona 可以直接 push 到 `main`。她的 `main` push 会通过 GitHub Actions
 | Vercel 本地链接项目 | `harbornavi-site` |
 | 正式站点 | `https://harbornavi.com` |
 | V6 路由 | `https://harbornavi.com/home-v6` |
+| 正式入口 | `/` 和 `/home` 永久重定向到 `/home-v6` |
 
 仓库已经存在，不要再创建同名或重复仓库。Fiona 具有 GitHub `Write` 权限；按本次交接要求，`main` 保持可直接 push。大范围改动、API、数据库、支付和隐私修改仍建议通过 PR Preview 验证后再合并。
 
@@ -43,7 +44,7 @@ npm ci
 npm run dev
 ```
 
-页面地址：`http://127.0.0.1:4321/home-v6`
+页面地址：`http://127.0.0.1:4321/home-v6`。生产环境的 `/` 和 `/home` 由 `vercel.json` 永久重定向到 V6；本地 Astro dev 仍可直接打开各路由源文件。
 
 `npm run dev` 可以验证页面和浏览器端交互，但 Astro dev server 本身不等于完整 Vercel 环境。`/api/waitlist` 和 `/api/events` 的端到端验证应在配置好 Preview 环境变量和 Preview 数据库的 Vercel deployment 上进行，或由有权限的维护者使用 Vercel 本地开发流程验证。
 
@@ -57,6 +58,7 @@ npm run dev
 | `src/components/HomeV6Landing.astro` | 页面内容、SEO、JSON-LD、表单、弹窗和前端 analytics |
 | `src/styles/home-v6.css` | V6 独立样式与响应式断点 |
 | `public/assets/` | 页面使用的图像素材 |
+| `vercel.json` | 根路径重定向和每小时 waitlist retry cron |
 
 页面自上而下为：
 
@@ -118,31 +120,28 @@ V6 有 Hero 和页尾两个 email 表单。它们共享同一套浏览器逻辑�
 - POST `/api/waitlist`：提交 email、`route=home-v6`、表单位置、path、referrer 和 UTM。
 - POST `/api/events`：记录 page view、表单开始/提交/成功/失败、场景曝光、survey 和 Discord 点击。
 - UTM 保存在 `sessionStorage`；analytics session id 也只在浏览器 session 内使用。
-- 成功后清空表单并打开感谢弹窗；弹窗链接到 SurveyMonkey 和 Discord。
+- API 保存成功并发出确认邮件后，页面提示用户检查邮箱；只有点击有效确认链接后才完成营销订阅。
 
-服务端边界：
+服务端的双重确认链路：
 
-- `/api/waitlist` 校验 email、忽略 honeypot、按 email upsert 到 Neon，并增加 `submission_count`。
-- 数据库保存成功后，Resend 联系人同步和运营通知以 best-effort 方式运行，失败不回滚 lead。
-- `/api/events` 只接受 allowlist 事件，并清理 analytics properties 中的 PII-like key；email 不应进入 analytics 表。
-- V6 当前不调用 `/api/waitlist/profile`、reservation、Stripe 或 admin API。不要为了改 Landing Page 表现而修改这些接口。
+1. `/api/waitlist` 校验 email、忽略 honeypot、按 email upsert 到 Neon，并增加 `submission_count`。
+2. 只有标准化后的 `route=home-v6` 获得 `kickstarter_updates` scope。服务端写入 `home_v6_2026_07`、请求时间和 `pending_confirmation`；这些值不信任客户端输入。
+3. Resend Email API 发送带 HMAC 签名的确认链接。链接七天后失效；未点击前不会创建营销 Topic 订阅。
+4. `/api/waitlist/confirm` 验签、检查有效期和 consent version，确认后才将联系人明确设为单一 Kickstarter Topic 的 `opt_in`，随后发送运营提醒。
+5. 确认邮件、Contact sync 和运营提醒的 status、attempt count、时间、provider/topic id 和错误记录在 `waitlist_leads.metadata`。
+6. `/api/cron/retry-waitlist` 每小时重试符合条件的失败任务。没有配置 Topic ID 时，它会查找或创建 `default_subscription=opt_out` 的 Kickstarter Topic；未确认 V6 lead 超过 30 天会从 Neon 清理。
 
-### 当前发布阻断：V6 营销同意范围不一致
+Resend Topic 的 `opt_out` 是 Topic 的默认策略；确认后的单个联系人仍由代码明确写成 `opt_in`。V6 不依赖 Road Topic，也不会在初次 POST 后直接把邮箱加入营销名单。Kickstarter 营销邮件必须用 Resend Broadcast 和 Topic 退订能力发送，不能用事务性 Email API 绕过退订。
 
-`src/server/waitlist-consent.ts` 当前只为 `home-v5` 和 `home-v4` 返回 Resend consent scope；`home-v6` 返回 `none`。因此 V6 email 可以保存进数据库，但不会同步到 Resend Topic。页面却写着 Kickstarter pre-launch updates。
+`/api/events` 只接受 allowlist 事件，并清理 analytics properties 中的 PII-like key；email 不进入 analytics 表。V6 不调用 `/api/waitlist/profile`、reservation、Stripe 或 admin API。不要为了改 Landing Page 表现而修改这些接口。
 
-在正式收集 V6 email 前，产品/隐私负责人必须选择并批准以下一种做法：
-
-1. 明确将 `home-v6` 加入正确的 Topic 和 consent version，并补充自动测试；或
-2. 修改页面文案，使其准确反映只保存 waitlist lead、不订阅营销 Topic 的事实。
-
-在这个决策完成前，不要把 V6 表单称为已完成的营销订阅流程。
+V4 和 V5 仅作历史视觉对照，已标记 `noindex`，表单不再提交 email，只引导访问 V6。后续不能从这两个 route 恢复营销收集，除非重新完成产品、隐私、测试和发布审批。
 
 ## 7. 环境变量与密钥原则
 
 变量名以 `.env.example` 为唯一可提交模板。`.env.example` 只能放空值或明显占位符，绝不放真实凭据。
 
-V6 waitlist/analytics 的最低服务端依赖：
+V6 数据保存的最低服务端依赖：
 
 ```text
 DATABASE_URL
@@ -155,17 +154,32 @@ ADMIN_PASSWORD
 ADMIN_SESSION_SECRET
 ```
 
-可选的运营通知和 Resend Contact 同步：
+完整的 V6 确认、Topic 同步和 cron 链路需要：
 
 ```text
 RESEND_API_KEY
-NOTIFY_TO_EMAIL
-NOTIFY_FROM_EMAIL
-RESEND_KICKSTARTER_TOPIC_ID
-RESEND_ROAD_TOPIC_ID
+WAITLIST_CONFIRMATION_SECRET
+CRON_SECRET
 ```
 
-其他 campaign、Stripe、cron 变量与 V6 Landing Page 修改不是同一发布范围。不要因为它们存在于 `.env.example` 就给 Landing Page 维护者开放生产密钥。
+`WAITLIST_CONFIRMATION_SECRET` 至少 32 个字符。生产环境还必须提供一个 Resend 接受的 sender：优先使用 `WAITLIST_CONFIRMATION_FROM_EMAIL`，未配置时回退到 `NOTIFY_FROM_EMAIL`。运营提醒还需要：
+
+```text
+NOTIFY_TO_EMAIL
+NOTIFY_FROM_EMAIL
+```
+
+`NOTIFY_TO_EMAIL` 也作为确认邮件的 reply-to，便于接收删除请求。以下是可选 override，不是首次部署的阻断项：
+
+```text
+WAITLIST_PUBLIC_ORIGIN
+RESEND_KICKSTARTER_TOPIC_ID
+RESEND_KICKSTARTER_TOPIC_NAME
+```
+
+`WAITLIST_PUBLIC_ORIGIN` 默认 `https://harbornavi.com`。`RESEND_KICKSTARTER_TOPIC_ID` 未配置时，cron 会按环境查找或创建 Topic；Preview 默认使用独立名称，避免混入生产受众。V6 没有 `RESEND_ROAD_TOPIC_ID` 依赖。
+
+其他 campaign 和 Stripe 变量与 V6 Landing Page 修改不是同一发布范围。`CRON_SECRET` 同时保护 waitlist retry 和现有的 reservation refund cron。不要因为变量存在于 `.env.example` 就给 Landing Page 维护者开放生产密钥。
 
 执行原则：
 
@@ -234,19 +248,21 @@ npm test
 Preview API 验收：
 
 - `/api/events` 的 `page_view` 和表单事件写入 Preview analytics 表。
-- 有效 email 保存成功；无效 email 返回 400；honeypot 不写入 lead。
-- 成功、失败、重复提交、网络断开和慢请求状态都可理解。
+- 有效 email 保存为 `pending_confirmation` 并收到确认邮件；无效 email 返回 400；honeypot 不写入 lead。
+- 有效链接确认后只进入一个 Kickstarter Topic，联系人为显式 `opt_in`，运营提醒只在确认后发送。
+- 无效/过期链接、成功、发送失败、重复提交、网络断开和慢请求状态都可理解。
+- 人为制造一次 provider 失败后，验证每小时 cron 能恢复任务；验证 30 天未确认清理逻辑。
 - email 不进入 analytics 表。
 - 只用测试邮箱和 Preview 数据库，测试完成后清理数据。
-- 根据已批准的 V6 consent 决策验证 Resend Topic 行为。
+- 退订使用 Broadcast 的 Topic unsubscribe；不要用事务性 Email API 做营销 smoke test。
 
 发布流程：
 
 1. 确认 GitHub-Vercel 集成为 PR 生成 Preview；本地 `.vercel/project.json` 不能替代远端检查。
 2. 在 Preview 完成视觉、功能、SEO、隐私和产品承诺审批。
 3. Fiona 合并或 push 到 `main` 后，确认 GitHub Actions `Deploy production` 成功。
-4. 等待 Vercel 构建完成，在正式域名检查 canonical、OG 图、robots、API、表单和 analytics。
-5. `/home-v6` 变成根路径 `/` 或替换当前首页是独立产品/SEO决策，未经批准不要修改 `src/pages/index.astro`。
+4. 等待 Vercel 构建完成，在正式域名检查 `/` 和 `/home` 重定向、canonical、OG 图、robots、API、表单和 analytics。
+5. `/home-v6` 已是正式入口；V4/V5 只保留历史对照。不要重新启用旧页表单或把旧页设为可索引入口。
 
 ## 11. 需要产品负责人审批的内容
 
@@ -259,18 +275,22 @@ Preview API 验收：
 - HarborNavi 可以自动执行的动作、需要确认的敏感动作和安全边界。
 - 对竞品能力、订阅、安装和数据路径的比较；来源链接和比较日期必须可核验。
 - Kickstarter、SurveyMonkey、Discord、YouTube、15 Homes 等外部链接和收集目的。
-- waitlist 的营销同意、Topic、unsubscribe 文案、privacy policy 和数据保留规则。
+- waitlist 的营销同意、Topic、unsubscribe 文案、privacy policy 和数据保留规则发生变化时，必须重新审批。
 
 ## 12. 当前待办
 
-- [ ] 明确并实现 `home-v6` 的 consent scope/version，或改正表单文案。
+- [x] 将 `/home-v6` 设为唯一当前 Landing Page，并让 `/`、`/home` 永久重定向到 V6。
+- [x] 将 V4/V5 标记为 `noindex` 历史页并停用旧表单。
+- [x] 实现 V6 Neon pending lead、七天签名确认、单一 Kickstarter Topic 显式 opt-in 和确认后运营提醒。
+- [x] 实现 waitlist metadata 状态、每小时失败重试、Topic 自动初始化和 30 天未确认清理。
+- [x] 更新 V6 表单状态、隐私说明、环境变量模板和后端操作文档。
 - [x] 将 `.tmp/` 和 `.neon` 规则纳入远端 `.gitignore`。
 - [x] 将当前线上前后端代码整理成可复现的 GitHub `main` 基线。
 - [x] Fiona 获得 GitHub `Write` 权限，可以直接 push `main`。
 - [x] 建立 Fiona `main` push 到 Vercel Production 的 GitHub Actions 自动发布。
+- [ ] 在生产环境完成真实受控邮箱的端到端验证：提交、确认、Topic opt-in、运营提醒、cron 恢复和正式域名 smoke test。
 - [ ] 为 Preview 配置独立数据库，并执行 `db/waitlist.sql`、`db/analytics.sql`。
 - [ ] 优化大体积 PNG，并重新检查首屏 LCP 与移动流量。
 - [ ] 验证 SurveyMonkey、Discord 和 comparison source 链接。
-- [ ] 更新 sitemap/正式入口策略；决定 `/home-v6` 是否只做候选页或替换 `/`。
 - [ ] 完成 1440/1280/390/360 截图和表单/API smoke test。
 - [ ] 由产品负责人签字确认硬件、兼容性、隐私、订阅和众筹表述。

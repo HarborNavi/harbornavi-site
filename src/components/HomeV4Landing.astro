@@ -226,7 +226,7 @@ const structuredData = JSON.stringify({
   <head>
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="robots" content="index,follow" />
+    <meta name="robots" content="noindex,follow" />
     <title>HarborNavi — The spark that brings your home to life.</title>
     <meta
       name="description"
@@ -281,14 +281,14 @@ const structuredData = JSON.stringify({
             <p class="v4-hero-lead">
               Your devices already produce the signals. HarborNavi brings them into one local memory, so your home can understand what changed, tell you what matters, and respond to what you say. You stay in control.
             </p>
-            <form class="v4-email-form" data-early-form data-form-location="hero">
+            <form class="v4-email-form" action="/home-v6#join" method="get">
               <label class="v4-sr-only" for="v4-hero-email">Email address</label>
-              <input id="v4-hero-email" name="email" type="email" autocomplete="email" placeholder="Email for the Kickstarter launch" required />
-              <input class="v4-honeypot" name="company" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" />
-              <button type="submit">Join the Kickstarter list</button>
+              <input id="v4-hero-email" name="email" type="email" autocomplete="email" placeholder="This is an archived page" disabled />
+              <input class="v4-honeypot" name="company" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" disabled />
+              <button type="submit">View current launch page</button>
             </form>
             <p class="v4-form-error" data-form-error hidden>We could not save your email. Please try again.</p>
-            <p class="v4-hero-note">One email when the campaign is ready.</p>
+            <p class="v4-hero-note">This archived concept page no longer accepts signups.</p>
           </div>
         </div>
       </section>
@@ -610,12 +610,12 @@ const structuredData = JSON.stringify({
         <div class="v4-final-inner">
           <p class="v4-eyebrow">Kickstarter launch list</p>
           <h2 id="v4-final-title">Be among the first to meet Navi.</h2>
-          <p>Join the list for the next hardware update and the Kickstarter campaign announcement.</p>
-          <form class="v4-email-form v4-email-form-final" data-early-form data-form-location="final">
+          <p>This archived concept page no longer accepts signups. Continue to the current launch page.</p>
+          <form class="v4-email-form v4-email-form-final" action="/home-v6#join" method="get">
             <label class="v4-sr-only" for="v4-final-email">Email address</label>
-            <input id="v4-final-email" name="email" type="email" autocomplete="email" placeholder="Email for the Kickstarter launch" required />
-            <input class="v4-honeypot" name="company" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" />
-            <button type="submit">Join the Kickstarter list</button>
+            <input id="v4-final-email" name="email" type="email" autocomplete="email" placeholder="This is an archived page" disabled />
+            <input class="v4-honeypot" name="company" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" disabled />
+            <button type="submit">View current launch page</button>
           </form>
           <p class="v4-form-error" data-form-error hidden>We could not save your email. Please try again.</p>
         </div>

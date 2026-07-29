@@ -25,13 +25,14 @@ test("campaign pages declare their canonical URLs", async () => {
   assert.match(thanksPage, /rel="canonical" href="https:\/\/harbornavi\.com\/15-homes\/thanks"/);
 });
 
-test("campaign email links target the existing home-v5 join anchor", async () => {
+test("campaign email links target the current home-v6 join anchor", async () => {
   const campaignPage = await source("src/components/FifteenHomesLanding.astro");
   const thanksPage = await source("src/pages/15-homes/thanks.astro");
-  const homeV5 = await source("src/components/HomeV5Landing.astro");
-  assert.match(homeV5, /id="join"/);
-  assert.doesNotMatch(`${campaignPage}\n${thanksPage}`, /\/home-v5#waitlist/);
-  assert.equal((`${campaignPage}\n${thanksPage}`.match(/\/home-v5#join/g) || []).length, 3);
+  const homeV6 = await source("src/components/HomeV6Landing.astro");
+  const combined = `${campaignPage}\n${thanksPage}`;
+  assert.match(homeV6, /id="join"/);
+  assert.doesNotMatch(combined, /\/home-v[45]#(?:join|waitlist)/);
+  assert.equal((combined.match(/\/home-v6#join/g) || []).length, 3);
 });
 
 test("application availability distinguishes missing URL from pending privacy review", async () => {
@@ -45,9 +46,9 @@ test("application availability distinguishes missing URL from pending privacy re
   assert.match(campaignPage, /No form URL has been published yet/);
 });
 
-test("home-v5 keeps exactly two email-only waitlist forms with honeypots", async () => {
-  const homeV5 = await source("src/components/HomeV5Landing.astro");
-  const forms = [...homeV5.matchAll(/<form\b[^>]*data-early-form[\s\S]*?<\/form>/g)].map((match) => match[0]);
+test("home-v6 keeps exactly two email-only waitlist forms with honeypots", async () => {
+  const homeV6 = await source("src/components/HomeV6Landing.astro");
+  const forms = [...homeV6.matchAll(/<form\b[^>]*data-early-form[\s\S]*?<\/form>/g)].map((match) => match[0]);
 
   assert.equal(forms.length, 2);
   for (const form of forms) {
@@ -55,8 +56,53 @@ test("home-v5 keeps exactly two email-only waitlist forms with honeypots", async
     assert.match(form, /name="company" type="text"/);
     assert.doesNotMatch(form, /name="(?:application|profile|primary_interest|camera|beta|price|purchase)[^"]*"/i);
   }
-  assert.match(homeV5, /document\.querySelectorAll\("\[data-early-form\]"\)/);
-  assert.match(homeV5, /fetch\("\/api\/waitlist"/);
+  assert.match(homeV6, /document\.querySelectorAll\("\[data-early-form\]"\)/);
+  assert.match(homeV6, /fetch\("\/api\/waitlist"/);
+  assert.match(homeV6, /subscription_status === "confirmed"/);
+  assert.match(homeV6, /email_confirmation_complete/);
+});
+
+test("home-v4 and home-v5 remain no-index historical comparisons", async () => {
+  for (const version of ["4", "5"]) {
+    const archived = await source(`src/components/HomeV${version}Landing.astro`);
+    const forms = [...archived.matchAll(/<form\b[\s\S]*?<\/form>/g)].map((match) => match[0]);
+
+    assert.match(archived, /<meta name="robots" content="noindex,follow" \/>/);
+    assert.equal(forms.length, 2);
+    for (const form of forms) {
+      assert.match(form, /action="\/home-v6#join"/);
+      assert.match(form, /method="get"/);
+      assert.match(form, /type="email"[^>]*disabled/);
+      assert.doesNotMatch(form, /data-early-form/);
+    }
+  }
+});
+
+test("public roots redirect to home-v6 and archived pages stay out of the sitemap", async () => {
+  const vercel = JSON.parse(await source("vercel.json"));
+  const sitemap = await source("public/sitemap.xml");
+  const redirects = new Map(vercel.redirects.map((redirect) => [redirect.source, redirect]));
+
+  for (const route of ["/", "/home"]) {
+    assert.deepEqual(redirects.get(route), {
+      source: route,
+      destination: "/home-v6",
+      permanent: true
+    });
+  }
+  assert.match(sitemap, /<loc>https:\/\/harbornavi\.com\/home-v6<\/loc>/);
+  assert.doesNotMatch(sitemap, /<loc>https:\/\/harbornavi\.com\/home-v[45]<\/loc>/);
+});
+
+test("privacy copy documents the V6 double-opt-in and historical-page boundary", async () => {
+  const privacy = await source("src/pages/privacy.astro");
+
+  assert.match(privacy, /<code>\/home-v6<\/code> is the current launch page/);
+  assert.match(privacy, /<code>\/home-v4<\/code> and <code>\/home-v5<\/code> are no-index historical comparisons/);
+  assert.match(privacy, /starts as pending and is not added\s+to a marketing audience at submission time/);
+  assert.match(privacy, /signed confirmation link\s+expires after seven days/);
+  assert.match(privacy, /one Resend Topic for\s+HarborNavi Kickstarter pre-launch updates/);
+  assert.match(privacy, /An unconfirmed V6 lead is deleted from Neon after 30 days/);
 });
 
 test("campaign analytics events are allowlisted and unknown events stay ignored", () => {
@@ -67,7 +113,8 @@ test("campaign analytics events are allowlisted and unknown events stay ignored"
     "road_home_form_complete",
     "kickstarter_prelaunch_click",
     "youtube_live_click",
-    "youtube_replay_click"
+    "youtube_replay_click",
+    "email_confirmation_complete"
   ];
   campaignEvents.forEach((eventName) => assert.equal(isAllowedAnalyticsEventName(eventName), true));
   assert.equal(isAllowedAnalyticsEventName("road_home_application_payload"), false);

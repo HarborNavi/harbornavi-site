@@ -1,6 +1,9 @@
+import { createHash } from "node:crypto";
+
 import { getOptionalEnv } from "./config.js";
 
 interface NotifyLead {
+  id?: string;
   email: string;
   route?: string;
   form_location?: string;
@@ -34,14 +37,16 @@ export async function sendLeadNotification(lead: NotifyLead) {
     method: "POST",
     headers: {
       authorization: `Bearer ${apiKey}`,
-      "content-type": "application/json"
+      "content-type": "application/json",
+      "idempotency-key": `operator-lead/${lead.id || createHash("sha256").update(lead.email).digest("hex").slice(0, 32)}`
     },
     body: JSON.stringify({
       from,
       to,
       subject: `New HarborNavi lead: ${lead.email}`,
       text
-    })
+    }),
+    signal: AbortSignal.timeout(8000)
   });
 
   if (!response.ok) {

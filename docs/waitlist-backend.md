@@ -1,0 +1,282 @@
+# HarborNavi Waitlist Backend
+
+Status: current V6 product pre-launch and 15 Homes campaign cockpit
+
+## Shape
+
+- Public pages: `/home-v6`, `/15-homes`, `/15-homes/thanks`, `/privacy`, plus retained comparison routes
+- Entry redirects: `/` and `/home` permanently redirect to `/home-v6`
+- Archived pages: `/home-v4` and `/home-v5` are `noindex` references with inactive forms
+- Submit API: `/api/waitlist`
+- Confirmation API: `/api/waitlist/confirm`
+- Optional profile API: `/api/waitlist/profile`
+- Event API: `/api/events`
+- Admin page: `/admin`
+- Admin APIs: `/api/admin/login`, `/api/admin/health`, `/api/admin/leads`, `/api/admin/update-lead`, `/api/admin/analytics`
+- Reservation APIs: `/api/reservations/status`, `/api/reservations/checkout`, `/api/reservations/session`
+- Stripe webhook and refund worker: `/api/stripe/webhook`, `/api/cron/refund-reservations`
+- Waitlist retry worker: `/api/cron/retry-waitlist`, scheduled hourly by `vercel.json`
+- Database: Neon Postgres tables `waitlist_leads`, `analytics_events`, and `founder_reservations`
+- Subscriber confirmation and operator notification: Resend Email API
+- Confirmed marketing-contact sync: Resend Contacts with one Kickstarter Topic
+
+The public site remains static. Vercel serves API functions from the same project, so no extra backend server is required.
+
+## Environment Variables
+
+Required for waitlist persistence:
+
+```text
+DATABASE_URL
+```
+
+Required only for the admin dashboard:
+
+```text
+ADMIN_PASSWORD
+ADMIN_SESSION_SECRET
+```
+
+Required for the complete V6 confirmation and retry path:
+
+```text
+RESEND_API_KEY
+WAITLIST_CONFIRMATION_SECRET
+CRON_SECRET
+```
+
+`WAITLIST_CONFIRMATION_SECRET` must contain at least 32 characters. A sender is also required:
+`WAITLIST_CONFIRMATION_FROM_EMAIL` is preferred and falls back to `NOTIFY_FROM_EMAIL`. The sender must be accepted by
+the configured Resend account.
+
+The post-confirmation operator alert also needs both values below. `NOTIFY_TO_EMAIL` is also used as the confirmation
+message reply-to address for deletion requests when configured.
+
+```text
+NOTIFY_TO_EMAIL
+NOTIFY_FROM_EMAIL
+```
+
+Optional overrides:
+
+```text
+WAITLIST_PUBLIC_ORIGIN
+RESEND_KICKSTARTER_TOPIC_ID
+RESEND_KICKSTARTER_TOPIC_NAME
+```
+
+`WAITLIST_PUBLIC_ORIGIN` defaults to `https://harbornavi.com` for the retry worker. If
+`RESEND_KICKSTARTER_TOPIC_ID` is empty, the hourly worker finds or creates a Topic named
+`HarborNavi Kickstarter Updates` in Production and `HarborNavi Preview Kickstarter Updates` outside Production.
+The Topic must use `default_subscription=opt_out`; confirmed contacts are explicitly synced as `opt_in`. The optional
+name override is useful for isolated test resources. There is no V6 Road Topic dependency.
+
+Public, build-time campaign configuration:
+
+```text
+PUBLIC_ROAD_HOMES_FORM_URL
+PUBLIC_ROAD_HOMES_PRIVACY_READY
+PUBLIC_KICKSTARTER_PRELAUNCH_URL
+PUBLIC_YOUTUBE_CHANNEL_URL
+PUBLIC_YOUTUBE_PLAYLIST_URL
+PUBLIC_CAMPAIGN_PHASE
+```
+
+Leave public URLs empty until the official destination exists. The pages render an unavailable state rather than a
+placeholder link. A valid application URL remains disabled unless `PUBLIC_ROAD_HOMES_PRIVACY_READY=true`. Set that flag
+only after the application provider name, retention window, deletion-request contact, and applicant rights are published
+on the privacy surface and reviewed for launch. Supported phases are `before_prelaunch`, `prelaunch_live`, `road_live`,
+and `replay`.
+
+Optional and configuration-gated for Founder priority reservations:
+
+```text
+FOUNDER_RESERVATION_ENABLED
+STRIPE_SECRET_KEY
+STRIPE_WEBHOOK_SECRET
+FOUNDER_RESERVATION_REFUND_AT
+```
+
+Keep `FOUNDER_RESERVATION_ENABLED=false` until checkout, signed webhook delivery, the Neon reservation table, and the automatic refund worker have all passed Stripe test mode. `FOUNDER_RESERVATION_REFUND_AT` must be set to the actual Kickstarter launch time; the daily Vercel cron starts refunds at or after that timestamp.
+
+No additional analytics account or environment variable is required. The admin password is sent only to `/api/admin/login` over HTTPS; the browser receives an 8-hour signed token stored in `sessionStorage`.
+
+## Database Setup
+
+Run the base SQL files in Neon:
+
+```sql
+-- db/waitlist.sql
+-- db/analytics.sql
+```
+
+For an existing database, also run the idempotent migration:
+
+```sql
+-- db/growth-v4.sql
+```
+
+`db/waitlist.sql` is idempotent and also adds the v1 profile columns:
+
+- `primary_interest`
+- `camera_setup`
+- `beta_intent`
+- `profile_completed_at`
+
+The v4 migration adds:
+
+- `camera_brands text[]`, `camera_models`, and `camera_connection`
+- `price_intent` and `purchase_blocker`
+- `founder_reservation_status`
+- `founder_reservations`, which holds Stripe object IDs and refund lifecycle timestamps separately from public lead data
+
+`db/analytics.sql` creates first-party event storage with route, path, referrer, form location, session id, UTM fields, JSON properties, and timestamp indexes.
+
+## Waitlist Flow
+
+`/api/waitlist` validates email, ignores honeypot submissions, upserts the lead by email, and increments
+`submission_count`. Only normalized `route=home-v6` starts marketing consent. V4, V5, and unknown routes have scope
+`none` and cannot enter the marketing Topic.
+
+For V6, the server writes its own pending consent metadata after the primary save; it never accepts these values from
+the browser:
+
+- `consent_scope=kickstarter_updates`
+- `consent_version=home_v6_2026_07`
+- `consent_requested_at=<server ISO timestamp>`
+- `consent_status=pending_confirmation`
+
+The API then claims and sends a transactional Resend confirmation message. The signed HMAC token contains the
+normalized email, consent version, request time, and a seven-day expiry. It does not contain a provider credential.
+A delivery failure leaves the Neon lead saved, records a failed status, and returns a retryable 503 response with
+`lead_saved=true`; it does not subscribe the address.
+
+`GET /api/waitlist/confirm` verifies the signature, expiry, normalized email, and current consent version. A valid click
+sets `consent_status=confirmed`, records `consent_confirmed_at`, and independently starts Resend Contact sync and the
+operator alert. The Contact adapter resolves one Kickstarter Topic, creates or updates the contact, and explicitly sets
+the Topic subscription to `opt_in`. A contact-sync failure redirects back with a recoverable status and remains eligible
+for the hourly retry job.
+
+Operational state lives in `waitlist_leads.metadata`, including:
+
+- `confirmation_email_status`, attempt count, timestamps, provider ID, and last error
+- `contact_sync_status`, attempt count, timestamps, Topic ID, and last error
+- `operator_notification_status`, attempt count, timestamps, and last error
+
+The hourly authenticated `/api/cron/retry-waitlist` worker resolves or creates the Kickstarter Topic, processes eligible
+confirmation/contact/operator failures in bounded batches, and purges unconfirmed V6 leads older than 30 days. A
+confirmed lead remains in Neon until a deletion request is handled. Reply-to can be routed to `NOTIFY_TO_EMAIL` so a
+recipient can request deletion by replying to the confirmation message.
+
+### Resend Broadcast operating rule
+
+The site synchronizes consent and topic membership; it deliberately does not auto-send marketing mail. Campaign sends
+remain a reviewed operator action in Resend Broadcasts:
+
+1. Use the single V6 Kickstarter Topic resolved by the application. Its optional ID override is
+   `RESEND_KICKSTARTER_TOPIC_ID`; do not attach the V6 audience to a Road Topic.
+2. Draft every Kickstarter marketing send as a Broadcast and associate it with that Topic.
+3. Include Resend's unsubscribe footer or `{{{RESEND_UNSUBSCRIBE_URL}}}`. Never send campaign marketing through the
+   transactional Email API to bypass a global or Topic-level unsubscribe.
+4. Send a test to the internal review list, then verify sender domain, reply-to, subject, mobile layout, every link,
+   UTM values, Topic, Segment, and suppression behavior. A named operator gives the final send/schedule approval.
+5. After sending, record Broadcast ID, Topic, Segment, audience count, delivered, clicks, unsubscribes and the linked
+   campaign milestone. Open rate is contextual only and does not replace attributable follower or application metrics.
+
+Resend's current Topic model applies preferences to Broadcasts and exposes Topic-level or global unsubscribe choices;
+its Broadcast editor/API handles reviewed drafts, tests and sends. See
+<https://resend.com/docs/dashboard/topics/introduction> and
+<https://resend.com/docs/dashboard/broadcasts/introduction>.
+
+`/api/waitlist/profile` is a retained legacy endpoint for optional lightweight profile fields. It is not called by V6,
+does not send Resend email, and does not increment `submission_count`.
+
+The current `/home-v6` forms collect email only. A successful submission tells the visitor to check email; confirmation
+is complete only after the signed link is opened. V6 does not call the profile, price, or reservation APIs. V4 and V5
+are archived, no-index pages with inactive forms that direct visitors to V6.
+
+The `/15-homes` application opens on the configured external provider. Its answers are not written to
+`waitlist_leads` or `analytics_events`. The provider should redirect successful submissions to `/15-homes/thanks` and
+map the URL parameters `utm_*`, `source_route`, sanitized `referrer`, and `site_session_id` to hidden attribution fields.
+The thanks page confirms receipt, not selection.
+
+Camera model text and email remain in `waitlist_leads`; neither is copied into analytics. Only `definitely` and `probably` price-intent profiles can start a Founder checkout.
+
+## Founder Reservation Flow
+
+The Founder reservation is a $10 Stripe Checkout payment for priority access to the limited $419 Kickstarter Secret Reward. It is not a Kickstarter pledge, does not reduce the pledge price, and does not guarantee a unit.
+
+`/api/reservations/checkout` resumes an existing open Checkout Session instead of creating repeated sessions. Signed Stripe webhooks update `checkout_started`, `paid`, `expired`, `refund_pending`, and `refunded` states. If a second payment intent reaches an already-paid reservation, the webhook refunds that duplicate payment.
+
+`vercel.json` runs the refund worker daily. After `FOUNDER_RESERVATION_REFUND_AT`, it claims paid reservations idempotently, calls Stripe Refunds, and updates the lead only with the reservation status. Raw card data never reaches HarborNavi.
+
+## Analytics Flow
+
+`window.harborTrack` posts to `/api/events` with `navigator.sendBeacon`, falling back to `fetch` with `keepalive`. The event API stores only non-PII analytics data. Email addresses are not sent to `analytics_events`, and the server strips PII-like keys from the `properties` object.
+
+Tracked events include:
+
+- `page_view`
+- `early_bird_start`, `early_bird_submit`, `early_bird_saved`, `early_bird_error`
+- `profile_submit`, `profile_saved`, `profile_error`
+- `compatibility_check_start`, `compatibility_check_complete`
+- `price_view`, `price_intent_submit`
+- `reservation_start`, `reservation_complete`, `reservation_error`
+- `waitlist_start`, `waitlist_submit`, `waitlist_saved`, `waitlist_error`
+- `discord_click`
+- `road_home_apply_click`, `road_home_form_start`, `road_home_form_complete`
+- `kickstarter_prelaunch_click`, `youtube_live_click`, `youtube_replay_click`
+- `scenario_*`
+- `product_carousel_next`
+- `demo_option_package`, `demo_option_pet`, `demo_option_unusual`
+
+## Admin Dashboard
+
+`/admin` has three tabs:
+
+- Dashboard: 7-day, 30-day, or all-time funnel metrics.
+- Leads: lead table with status/source/interest/camera/connection/price/reservation filters, notes, status updates, and expanded CSV export.
+- System: environment, database, waitlist, analytics, reservation table, Stripe gate, subscriber confirmation,
+  Resend Contact sync, operator notification, Topic, and retry-state health.
+
+Dashboard metric definitions:
+
+- Page views: `page_view` and legacy `page_view_home_v2`.
+- Form starts: `early_bird_start` and `waitlist_start`.
+- Form submits: `early_bird_submit` and `waitlist_submit`.
+- Saved leads: `early_bird_saved` and `waitlist_saved`.
+- Conversion rate: saved leads divided by page views.
+- Discord clicks: `discord_click`.
+- Compatibility profiles: completed post-submit compatibility forms.
+- Positive price rate: `definitely` plus `probably`, divided by completed price profiles.
+- Founder reservations: leads in paid, refund-pending, or refunded reservation states.
+
+The funnel table groups events by `route`, `utm_source`, `utm_campaign`, and `form_location`.
+
+## Smoke Test
+
+After Vercel env vars and both database tables are ready, use a controlled Preview environment and an inbox that the
+tester owns. Do not use a third party's address:
+
+```sh
+export SITE_ORIGIN='https://replace-with-preview-host.vercel.app'
+export SMOKE_EMAIL='replace-with-an-inbox-you-control'
+
+curl -X POST "$SITE_ORIGIN/api/events" \
+  -H "content-type: application/json" \
+  -d '{"event_name":"page_view","route":"home-v6","utm_source":"smoke","utm_campaign":"analytics_smoke","properties":{"smoke":true}}'
+
+curl -X POST "$SITE_ORIGIN/api/waitlist" \
+  -H "content-type: application/json" \
+  -d "{\"email\":\"$SMOKE_EMAIL\",\"route\":\"home-v6\",\"form_location\":\"smoke\",\"utm_source\":\"smoke\",\"utm_campaign\":\"analytics_smoke\"}"
+```
+
+Confirm that the POST returns `pending_confirmation`, the message arrives, the seven-day link redirects to V6 with a
+confirmed status, the Resend contact is `opt_in` for exactly one Kickstarter Topic, and the operator alert is sent only
+after confirmation. Also test invalid and expired tokens, duplicate submissions, an induced provider failure followed
+by cron recovery, and deletion of an unconfirmed record older than 30 days. Remove all Preview smoke data afterward.
+
+Before enabling real reservations, repeat checkout, cancel, duplicate-click, webhook retry, and refund tests with Stripe test-mode keys and Stripe CLI forwarding to `/api/stripe/webhook`.
+
+Then open the Preview deployment's `/admin`, sign in, confirm the Dashboard and Leads tabs show the test data, and
+delete the smoke records from the Preview Neon database.

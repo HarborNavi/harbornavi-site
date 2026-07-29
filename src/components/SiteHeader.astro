@@ -6,11 +6,11 @@ interface Props {
 }
 
 const { activeRoute } = Astro.props;
-const ctaHref = activeRoute === "privacy" ? "/home#waitlist" : "#waitlist";
+const ctaHref = activeRoute === "privacy" ? "/home-v6#join" : "#waitlist";
 ---
 
 <header class="site-header">
-  <a class="brand" href="/home" aria-label="HarborNavi home">
+  <a class="brand" href="/home-v6" aria-label="HarborNavi home">
     <span class="brand-mark" aria-hidden="true">
       <svg viewBox="0 0 64 34" focusable="false">
         <defs>

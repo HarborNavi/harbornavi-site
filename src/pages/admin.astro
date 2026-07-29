@@ -261,6 +261,7 @@ import "../styles/admin.css";
                   <th>Route</th>
                   <th>Source</th>
                   <th>Submitted</th>
+                  <th>Email service</th>
                   <th>Interest</th>
                   <th>Camera setup</th>
                   <th>Price</th>
@@ -271,7 +272,7 @@ import "../styles/admin.css";
               </thead>
               <tbody data-leads-body>
                 <tr>
-                  <td colspan="10">No leads loaded yet.</td>
+                  <td colspan="11">No leads loaded yet.</td>
                 </tr>
               </tbody>
             </table>
@@ -310,13 +311,23 @@ import "../styles/admin.css";
               <strong data-status-label>Unknown</strong>
               <small data-status-detail>Not checked yet.</small>
             </article>
-            <article data-status-card="notifications">
-              <span>Email notification</span>
+            <article data-status-card="operator-notifications">
+              <span>Operator lead alerts</span>
+              <strong data-status-label>Unknown</strong>
+              <small data-status-detail>Not checked yet.</small>
+            </article>
+            <article data-status-card="subscriber-confirmation">
+              <span>Subscriber confirmation</span>
               <strong data-status-label>Unknown</strong>
               <small data-status-detail>Not checked yet.</small>
             </article>
             <article data-status-card="contact-sync">
-              <span>Resend contact sync</span>
+              <span>Kickstarter topic sync</span>
+              <strong data-status-label>Unknown</strong>
+              <small data-status-detail>Not checked yet.</small>
+            </article>
+            <article data-status-card="waitlist-retry">
+              <span>Waitlist retry job</span>
               <strong data-status-label>Unknown</strong>
               <small data-status-detail>Not checked yet.</small>
             </article>
@@ -340,6 +351,10 @@ import "../styles/admin.css";
           <small data-referrer></small>
         </td>
         <td data-created></td>
+        <td>
+          <span data-consent-status></span>
+          <small data-email-service-status></small>
+        </td>
         <td>
           <span data-interest></span>
           <small data-beta-intent></small>
@@ -402,8 +417,10 @@ import "../styles/admin.css";
         analytics: document.querySelector('[data-status-card="analytics"]'),
         reservations: document.querySelector('[data-status-card="reservations"]'),
         stripe: document.querySelector('[data-status-card="stripe"]'),
-        notifications: document.querySelector('[data-status-card="notifications"]'),
-        contactSync: document.querySelector('[data-status-card="contact-sync"]')
+        operatorNotifications: document.querySelector('[data-status-card="operator-notifications"]'),
+        subscriberConfirmation: document.querySelector('[data-status-card="subscriber-confirmation"]'),
+        contactSync: document.querySelector('[data-status-card="contact-sync"]'),
+        waitlistRetry: document.querySelector('[data-status-card="waitlist-retry"]')
       };
 
       function getToken() {
@@ -571,6 +588,13 @@ import "../styles/admin.css";
           row.querySelector("[data-source]").textContent = leadSource(lead);
           row.querySelector("[data-referrer]").textContent = lead.referrer || "";
           row.querySelector("[data-created]").textContent = formatDate(lead.created_at);
+          const service = lead.metadata || {};
+          row.querySelector("[data-consent-status]").textContent = service.consent_status || "not requested";
+          row.querySelector("[data-email-service-status]").textContent = [
+            service.confirmation_email_status ? `confirmation: ${service.confirmation_email_status}` : "",
+            service.contact_sync_status ? `topic: ${service.contact_sync_status}` : "",
+            service.operator_notification_status ? `alert: ${service.operator_notification_status}` : ""
+          ].filter(Boolean).join(" · ");
           row.querySelector("[data-interest]").textContent = lead.primary_interest || "";
           row.querySelector("[data-beta-intent]").textContent = lead.beta_intent || "";
           row.querySelector("[data-camera-brands]").textContent = (lead.camera_brands || []).join(", ");
@@ -761,20 +785,36 @@ import "../styles/admin.css";
             body.reservations?.enabled ? "success" : "neutral"
           );
 
-          const missingNotification = missingNames(body.notifications?.variables);
+          const emailServices = database.email_services || {};
+          const missingNotification = missingNames(body.operator_notifications?.variables);
           setStatusCard(
-            "notifications",
-            body.notifications?.configured ? "Enabled" : "Skipped",
-            missingNotification || "Resend notification variables are present.",
-            body.notifications?.configured ? "success" : "neutral"
+            "operatorNotifications",
+            body.operator_notifications?.configured ? "Configured" : "Missing",
+            missingNotification || `${emailServices.failed_operator_notifications || 0} failed alert(s).`,
+            body.operator_notifications?.configured ? "success" : "error"
           );
 
-          const missingContactSync = missingNames(body.contact_sync?.variables);
+          const missingConfirmation = missingNames(body.subscriber_confirmation?.variables);
+          setStatusCard(
+            "subscriberConfirmation",
+            body.subscriber_confirmation?.configured ? "Configured" : "Missing",
+            missingConfirmation || `${emailServices.pending_confirmations || 0} pending, ${emailServices.failed_confirmations || 0} failed.`,
+            body.subscriber_confirmation?.configured ? "success" : "error"
+          );
+
+          const contactProvider = body.contact_sync?.provider || {};
           setStatusCard(
             "contactSync",
-            body.contact_sync?.configured ? "Enabled" : "Skipped",
-            missingContactSync || "Kickstarter and Road topic IDs are configured.",
-            body.contact_sync?.configured ? "success" : "neutral"
+            body.contact_sync?.ready ? "Ready" : "Not ready",
+            contactProvider.error || `${contactProvider.topic?.name || "Kickstarter topic"}; ${emailServices.pending_contact_syncs || 0} pending, ${emailServices.failed_contact_syncs || 0} failed.`,
+            body.contact_sync?.ready ? "success" : "error"
+          );
+
+          setStatusCard(
+            "waitlistRetry",
+            body.waitlist_retry?.configured ? "Configured" : "Missing",
+            body.waitlist_retry?.configured ? "Runs hourly in Production." : "CRON_SECRET is missing.",
+            body.waitlist_retry?.configured ? "success" : "error"
           );
         } catch (error) {
           Object.keys(statusCards).forEach((name) => setStatusCard(name, "Error", error.message, "error"));

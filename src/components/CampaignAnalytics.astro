@@ -15,7 +15,7 @@ const { route, completeOnLoad = false } = Astro.props;
       const params = new URLSearchParams(window.location.search);
       const stored = {};
       try {
-        const previous = JSON.parse(window.sessionStorage.getItem("harbor_utm") || "{}");
+        const previous = JSON.parse(window.sessionStorage.getItem("harbornavi_utm") || "{}");
         if (previous && typeof previous === "object") Object.assign(stored, previous);
       } catch {}
 
@@ -24,17 +24,17 @@ const { route, completeOnLoad = false } = Astro.props;
         if (value) stored[key] = value.slice(0, 160);
       });
       try {
-        window.sessionStorage.setItem("harbor_utm", JSON.stringify(stored));
+        window.sessionStorage.setItem("harbornavi_utm", JSON.stringify(stored));
       } catch {}
       return stored;
     }
 
     function sessionId() {
       try {
-        const existing = window.sessionStorage.getItem("harbor_session_id");
+        const existing = window.sessionStorage.getItem("harbornavi_session_id");
         if (existing) return existing;
         const created = window.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(16).slice(2)}`;
-        window.sessionStorage.setItem("harbor_session_id", created);
+        window.sessionStorage.setItem("harbornavi_session_id", created);
         return created;
       } catch {
         return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
@@ -101,7 +101,7 @@ const { route, completeOnLoad = false } = Astro.props;
     window.harborTrack("page_view", { route });
 
     if (completeOnLoad) {
-      const completionKey = `harbor_complete_${route}`;
+      const completionKey = `harbornavi_complete_${route}`;
       let alreadyTracked = false;
       try {
         alreadyTracked = window.sessionStorage.getItem(completionKey) === "1";

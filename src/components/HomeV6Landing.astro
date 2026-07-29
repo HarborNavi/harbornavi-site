@@ -154,7 +154,7 @@ const structuredData = JSON.stringify({
               <button type="submit">Join the launch list</button>
             </form>
             <p id="v6-hero-error" class="form-error" data-form-error aria-live="polite" hidden>We could not save your email. Please try again.</p>
-            <p id="v6-hero-note" class="form-note">Get HarborNavi Kickstarter pre-launch updates. Unsubscribe anytime. <a href="/privacy">Privacy</a></p>
+            <p id="v6-hero-note" class="form-note">Confirm by email to receive HarborNavi Kickstarter pre-launch updates. Unsubscribe anytime. <a href="/privacy">Privacy</a></p>
           </div>
           <figure class="hero-visual">
             <img src={heroImage} alt="A child sharing a drawing with family as a pet runs beside HarborNavi and selected home memories gather locally" width="1536" height="1024" loading="eager" />
@@ -332,7 +332,7 @@ const structuredData = JSON.stringify({
             <button type="submit">Join the launch list</button>
           </form>
           <p id="v6-final-error" class="form-error" data-form-error aria-live="polite" hidden>We could not save your email. Please try again.</p>
-          <p id="v6-final-note" class="form-note">One email when the campaign is ready. Unsubscribe anytime. <a href="/privacy">Privacy</a></p>
+          <p id="v6-final-note" class="form-note">Confirm by email to receive HarborNavi Kickstarter pre-launch updates. Unsubscribe anytime. <a href="/privacy">Privacy</a></p>
         </section>
       </main>
 
@@ -345,15 +345,15 @@ const structuredData = JSON.stringify({
         <button class="modal-backdrop" type="button" tabindex="-1" aria-label="Close thank you dialog" data-modal-close></button>
         <div class="modal-panel">
           <button class="modal-close" type="button" aria-label="Close thank you dialog" data-modal-close>&times;</button>
-          <p class="eyebrow">Thank you</p>
-          <h2 id="v6-success-title">You are on the HarborNavi launch list.</h2>
-          <p id="v6-success-description">Your email is saved for HarborNavi Kickstarter pre-launch updates.</p>
-          <div class="survey-invite">
+          <p class="eyebrow" data-success-eyebrow>Check your inbox</p>
+          <h2 id="v6-success-title" data-success-title>Confirm your email to join the launch list.</h2>
+          <p id="v6-success-description" data-success-description>We sent a confirmation link. Your address will not receive Kickstarter updates until you confirm it.</p>
+          <div class="survey-invite" data-confirmation-extras>
             <p class="survey-label">Optional &middot; About 3&ndash;5 minutes</p>
             <h3>Help us build HarborNavi around real homes.</h3>
             <p>Tell us which devices you already use and what you would most want HarborNavi to help with. Your answers will guide compatibility testing and product priorities.</p>
           </div>
-          <div class="modal-actions">
+          <div class="modal-actions" data-confirmation-extras>
             <a class="modal-primary-link" href={surveyUrl} target="_blank" rel="noreferrer" data-survey-link>Take the short survey <span aria-hidden="true">&rarr;</span></a>
             <a href={discordUrl} target="_blank" rel="noreferrer" data-discord-link>Join the optional Discord discussion <span aria-hidden="true">&rarr;</span></a>
           </div>
@@ -457,7 +457,64 @@ const structuredData = JSON.stringify({
         previousFocus?.focus?.();
       }
 
+      function setSuccessModalState(state) {
+        if (!successModal) return;
+        const eyebrow = successModal.querySelector("[data-success-eyebrow]");
+        const title = successModal.querySelector("[data-success-title]");
+        const description = successModal.querySelector("[data-success-description]");
+        const extras = successModal.querySelectorAll("[data-confirmation-extras]");
+        const content = {
+          pending: {
+            eyebrow: "Check your inbox",
+            title: "Confirm your email to join the launch list.",
+            description: "We sent a confirmation link. Your address will not receive Kickstarter updates until you confirm it.",
+            extras: true
+          },
+          confirmed: {
+            eyebrow: "Confirmed",
+            title: "You are on the HarborNavi launch list.",
+            description: "Your email is confirmed for HarborNavi Kickstarter pre-launch updates.",
+            extras: true
+          },
+          "sync-failed": {
+            eyebrow: "Email confirmed",
+            title: "Your confirmation is saved.",
+            description: "We are finishing the connection to the launch list automatically. You do not need to submit again.",
+            extras: true
+          },
+          invalid: {
+            eyebrow: "Link unavailable",
+            title: "This confirmation link is invalid or expired.",
+            description: "Submit your email again to receive a new confirmation link.",
+            extras: false
+          },
+          "service-error": {
+            eyebrow: "Temporary issue",
+            title: "We could not finish your confirmation.",
+            description: "Please open the confirmation link again in a few minutes.",
+            extras: false
+          }
+        }[state] || null;
+        if (!content) return;
+        if (eyebrow) eyebrow.textContent = content.eyebrow;
+        if (title) title.textContent = content.title;
+        if (description) description.textContent = content.description;
+        extras.forEach((element) => { element.hidden = !content.extras; });
+      }
+
       window.harborTrack("page_view", { route });
+
+      const confirmationUrl = new URL(window.location.href);
+      const confirmationStatus = confirmationUrl.searchParams.get("confirmation");
+      if (confirmationStatus) {
+        setSuccessModalState(confirmationStatus);
+        openSuccessModal();
+        if (confirmationStatus === "confirmed" || confirmationStatus === "sync-failed") {
+          window.harborTrack("email_confirmation_complete", { route });
+        }
+        confirmationUrl.searchParams.delete("confirmation");
+        window.history.replaceState({}, "", `${confirmationUrl.pathname}${confirmationUrl.search}${confirmationUrl.hash}`);
+      }
 
       document.querySelectorAll("[data-early-form]").forEach((form) => {
         const input = form.querySelector("input[type='email']");
@@ -510,20 +567,27 @@ const structuredData = JSON.stringify({
               })
             });
 
-            if (!response.ok) throw new Error("Waitlist request failed");
+            const responseBody = await response.json().catch(() => ({}));
+            if (!response.ok) throw new Error(responseBody.error || "Waitlist request failed");
 
             window.harborTrack("early_bird_saved", {
               route,
               form_location: formLocation
             });
             form.reset();
+            setSuccessModalState(responseBody.subscription_status === "confirmed" ? "confirmed" : "pending");
             openSuccessModal();
-          } catch {
+          } catch (requestError) {
             window.harborTrack("early_bird_error", {
               route,
               form_location: formLocation
             });
-            if (error) error.hidden = false;
+            if (error) {
+              error.textContent = requestError instanceof Error
+                ? requestError.message
+                : "We could not save your email. Please try again.";
+              error.hidden = false;
+            }
             input?.setAttribute("aria-invalid", "true");
           } finally {
             button?.removeAttribute("disabled");

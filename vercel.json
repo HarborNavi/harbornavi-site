@@ -1,4 +1,16 @@
 {
+  "redirects": [
+    {
+      "source": "/",
+      "destination": "/home-v6",
+      "permanent": true
+    },
+    {
+      "source": "/home",
+      "destination": "/home-v6",
+      "permanent": true
+    }
+  ],
   "rewrites": [
     {
       "source": "/api/reservations/status",
@@ -14,6 +26,10 @@
     }
   ],
   "crons": [
+    {
+      "path": "/api/cron/retry-waitlist",
+      "schedule": "0 * * * *"
+    },
     {
       "path": "/api/cron/refund-reservations",
       "schedule": "0 3 * * *"

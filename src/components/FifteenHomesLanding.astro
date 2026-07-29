@@ -27,7 +27,7 @@ const phaseCopy = {
   </head>
   <body class="road-campaign" data-route="15-homes">
     <header class="road-header">
-      <a class="road-brand" href="/home-v5" aria-label="HarborNavi home">
+      <a class="road-brand" href="/home-v6" aria-label="HarborNavi home">
         <span aria-hidden="true">HN</span>
         HarborNavi
       </a>
@@ -36,7 +36,7 @@ const phaseCopy = {
         <a href="#host">Host a visit</a>
         <a href="#watch">Watch</a>
       </nav>
-      <a class="road-header-link" href="/home-v5">Product</a>
+      <a class="road-header-link" href="/home-v6">Product</a>
     </header>
 
     <main>
@@ -67,7 +67,7 @@ const phaseCopy = {
             ) : (
               <span class="road-button road-button-disabled" aria-disabled="true">Applications are not open yet</span>
             )}
-            <a class="road-button road-button-quiet" href="/home-v5#join">Join the email list</a>
+            <a class="road-button road-button-quiet" href="/home-v6#join">Join the email list</a>
           </div>
           {!campaign.roadHomesFormUrl && (
             <p class="road-availability">
@@ -204,7 +204,7 @@ const phaseCopy = {
             <span>Report</span>
             <h3>What 15 American Homes Taught Us</h3>
             <p>A public field report is planned for <time datetime={campaign.finalReportDate}>{campaign.finalReportDateLabel}</time>.</p>
-            <a href="/home-v5#join">Get the report update →</a>
+            <a href="/home-v6#join">Get the report update →</a>
           </article>
         </div>
       </section>
@@ -226,7 +226,7 @@ const phaseCopy = {
     <footer class="road-footer">
       <strong>HarborNavi</strong>
       <p>{campaign.name} · {campaign.routeLabel}</p>
-      <nav aria-label="Footer navigation"><a href="/home-v5">Product</a><a href="/privacy">Privacy</a></nav>
+      <nav aria-label="Footer navigation"><a href="/home-v6">Product</a><a href="/privacy">Privacy</a></nav>
     </footer>
 
     <CampaignAnalytics route="15-homes" />
