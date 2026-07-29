@@ -14,6 +14,9 @@ export async function GET(request: Request) {
   }
 
   const config = getFounderReservationConfig();
+  if (!config.enabled_flag) {
+    return jsonResponse({ ok: true, skipped: true, reason: "Founder reservations are disabled" });
+  }
   if (!config.secret_key_ready) {
     return jsonResponse({ error: "Stripe is not configured" }, { status: 503 });
   }

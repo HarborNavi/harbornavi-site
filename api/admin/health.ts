@@ -1,8 +1,9 @@
 import { getBearerToken, verifyAdminToken } from "../../src/server/auth.js";
 import { getOptionalEnv, jsonResponse } from "../../src/server/config.js";
-import { getResendContactSyncConfig } from "../../src/server/resend-contacts.js";
+import { getResendContactSyncConfig, probeResendContactSync } from "../../src/server/resend-contacts.js";
 import { getFounderReservationConfig } from "../../src/server/stripe.js";
 import { getWaitlistHealth } from "../../src/server/waitlist.js";
+import { getWaitlistConfirmationConfig } from "../../src/server/waitlist-email.js";
 
 function configured(name: string) {
   return Boolean(getOptionalEnv(name));
@@ -34,6 +35,13 @@ export async function GET(request: Request) {
         reservations_table_ready: false;
         lead_count: null;
         reservation_count: null;
+        email_services: {
+          pending_confirmations: number;
+          failed_confirmations: number;
+          pending_contact_syncs: number;
+          failed_contact_syncs: number;
+          failed_operator_notifications: number;
+        };
         error: string;
       };
 
@@ -45,6 +53,13 @@ export async function GET(request: Request) {
       reservations_table_ready: false,
       lead_count: null,
       reservation_count: null,
+      email_services: {
+        pending_confirmations: 0,
+        failed_confirmations: 0,
+        pending_contact_syncs: 0,
+        failed_contact_syncs: 0,
+        failed_operator_notifications: 0
+      },
       error: "DATABASE_URL is missing"
     };
   } else {
@@ -58,6 +73,13 @@ export async function GET(request: Request) {
         reservations_table_ready: false,
         lead_count: null,
         reservation_count: null,
+        email_services: {
+          pending_confirmations: 0,
+          failed_confirmations: 0,
+          pending_contact_syncs: 0,
+          failed_contact_syncs: 0,
+          failed_operator_notifications: 0
+        },
         error: error instanceof Error ? error.message : "Database check failed"
       };
     }
@@ -65,18 +87,31 @@ export async function GET(request: Request) {
 
   const reservations = getFounderReservationConfig();
   const contactSync = getResendContactSyncConfig();
+  const subscriberConfirmation = getWaitlistConfirmationConfig();
+  const resendProvider = await probeResendContactSync();
 
   return jsonResponse({
     ok: true,
     environment: requiredEnv,
     database,
-    notifications: {
+    operator_notifications: {
       configured: Object.values(notificationEnv).every(Boolean),
       variables: notificationEnv
     },
+    subscriber_confirmation: {
+      configured: subscriberConfirmation.configured,
+      variables: subscriberConfirmation.variables
+    },
     contact_sync: {
       configured: contactSync.configured,
-      variables: contactSync.variables
+      ready: resendProvider.provider_ready && resendProvider.topic_ready,
+      variables: contactSync.variables,
+      provider: resendProvider
+    },
+    waitlist_retry: {
+      configured: configured("CRON_SECRET"),
+      schedule: "hourly_github_actions",
+      fallback_schedule: "daily_vercel"
     },
     reservations: {
       enabled: reservations.enabled,

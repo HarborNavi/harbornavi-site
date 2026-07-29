@@ -1,7 +1,10 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
   <url>
-    <loc>https://harbornavi.com/home</loc>
+    <loc>https://harbornavi.com/home-v6</loc>
+  </url>
+  <url>
+    <loc>https://harbornavi.com/15-homes</loc>
   </url>
   <url>
     <loc>https://harbornavi.com/package</loc>
