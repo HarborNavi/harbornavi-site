@@ -1,5 +1,5 @@
 ---
-import "../styles/home-v2.css";
+import "../styles/home-v3.css";
 
 const discordUrl = "https://discord.gg/tC2bktRWWj";
 const heroImage = "/assets/home-v2-ai-box.png";
@@ -37,48 +37,41 @@ const productHotspots = [
   }
 ];
 
-const useCaseSections = [
+const demoCases = [
   {
-    index: "01",
-    eyebrow: "Space",
-    title: "Know your space.",
-    headline: "The home already knows a lot. The signals live in separate places.",
-    body: [
-      "A front door camera sees a delivery. A sensor knows the door opened. Home Assistant knows the porch light state. Today those facts usually stay in separate apps.",
-      "HarborNavi brings selected camera events, sensor changes, and device state into one local timeline, so the space becomes easier to understand."
-    ],
-    chips: ["Camera event", "Door sensor", "HA state", "Zigbee", "IR device", "Local timeline"],
-    image: "/assets/hero-home.png",
-    imageAlt: "Local home timeline concept showing selected camera and device events together",
-    caption: ""
+    title: "What changed while I was away?",
+    body: "Door events, package movement, pet activity, lights, and sensors become one short local timeline instead of a pile of clips.",
+    chips: ["Away summary", "Local timeline", "Evidence clips"],
+    image: "/assets/home-v3-dog-focus-timeline.png",
+    imageAlt: "Five lightweight home moments converging into HarborNavi with an abstract local timeline below the device"
   },
   {
-    index: "02",
-    eyebrow: "Moments",
-    title: "Keep your moments.",
-    headline: "The clips worth keeping usually disappear into routine footage.",
-    body: [
-      "A cat's ridiculous jump, a dog stealing the sofa, a child's small milestone, a visitor, or a package leaving the frame: each moment is short. The camera records it, then it gets buried.",
-      "HarborNavi automatically extracts the highlight with the context around it, so the parts worth remembering are not drowned in 24 hours of dull monitoring footage."
-    ],
-    chips: ["Pet highlight", "Visitor moment", "Package change", "Short clip", "Context kept"],
+    title: "What did my pet do today?",
+    body: "Funny jumps, sofa takeovers, and short pet highlights are saved with context instead of buried inside routine footage.",
+    chips: ["Pet highlight", "Context kept", "Share later"],
     image: "/assets/hero-pets.png",
-    imageAlt: "Pet highlight timeline concept showing a short moment saved with surrounding context",
-    caption: ""
+    imageAlt: "A pet highlight timeline showing a short moment saved with context"
   },
   {
-    index: "03",
-    eyebrow: "Devices",
-    title: "Connect your devices.",
-    headline: "Smart-home rules are still too manual.",
-    body: [
-      "People think in scenes: if the package is gone, remind me; when the pet is on the sofa for a while, keep a clip; movie mode should lower lights and quiet noisy alerts.",
-      "HarborNavi turns plain language into readable conditions, actions, exceptions, and approval steps before anything sensitive runs."
-    ],
-    chips: ["Plain language", "Conditions", "Actions", "Exceptions", "Approval step"],
-    image: "/assets/hero-package.png",
-    imageAlt: "Plain-language home automation storyboard concept",
-    caption: "Storyboard preview. Product experience may change."
+    title: "Which family moment should we keep?",
+    body: "A child's small milestone, a shared laugh, or an everyday family moment can be lifted out before it disappears into hours of footage.",
+    chips: ["Family highlight", "Kid moment", "Saved locally"],
+    image: "/assets/home-v3-family-moment.png",
+    imageAlt: "A warm family moment with a child playing blocks highlighted as a moment worth keeping"
+  },
+  {
+    title: "Which alert actually mattered?",
+    body: "Repeated motion alerts can fade into the background while the package event, door change, or real exception gets pulled forward.",
+    chips: ["Noise filtered", "Package moved", "Review first"],
+    image: "/assets/home-v3-alert-that-mattered.png",
+    imageAlt: "A package event highlighted from a set of muted motion alerts on a front porch"
+  },
+  {
+    title: "Can this become a safe automation?",
+    body: "HarborNavi can draft a readable Home Assistant rule, then wait for approval before anything sensitive runs.",
+    chips: ["Rule draft", "HA bridge", "Approval step"],
+    image: "/assets/home-v3-safe-automation.png",
+    imageAlt: "A safe home automation approval flow before actions run"
   }
 ];
 
@@ -139,10 +132,10 @@ const comparisonRows = [
 const structuredData = JSON.stringify({
   "@context": "https://schema.org",
   "@type": "WebPage",
-  name: "Know your space. Keep your moments. Connect your devices.",
+  name: "Ask your home what happened.",
   description:
-    "A preview landing page for HarborNavi, a local-first AI hardware concept for private household highlights, family moments, and device workflows.",
-  url: "https://harbornavi.com/home-v2"
+    "HarborNavi turns cameras, sensors, and smart-home events into a private home timeline.",
+  url: "https://harbornavi.com/home-v3"
 });
 ---
 
@@ -152,35 +145,35 @@ const structuredData = JSON.stringify({
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex,nofollow" />
-    <title>Know your space. Keep your moments. Connect your devices. | HarborNavi</title>
+    <title>Ask your home what happened. | HarborNavi</title>
     <meta
       name="description"
-      content="Preview HarborNavi, a local-first AI hardware concept that keeps pet highlights, family moments, and household context useful without turning private space into cloud data."
+      content="HarborNavi helps families ask what happened at home, keep meaningful moments, and turn home events into reviewable actions."
     />
     <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <meta property="og:title" content="Know your space. Keep your moments. Connect your devices. | HarborNavi" />
+    <meta property="og:title" content="Ask your home what happened. | HarborNavi" />
     <meta
       property="og:description"
-      content="A local-first AI hardware concept for pet highlights, family moments, private space, and natural device workflows."
+      content="A local-first AI home device for pet highlights, family moments, private timelines, and reviewable Home Assistant workflows."
     />
     <meta property="og:type" content="website" />
     <meta property="og:image" content={heroImage} />
     <script is:inline type="application/ld+json" set:html={structuredData}></script>
   </head>
-  <body class="home-v2-page" data-route="home-v2">
-    <header class="v2-header" aria-label="HarborNavi preview navigation">
+  <body class="home-v3-page" data-route="home-v3">
+    <header class="v2-header" aria-label="HarborNavi navigation">
       <a class="v2-brand" href="/home" aria-label="HarborNavi home">
         <span class="v2-brand-mark" aria-hidden="true">
           <svg viewBox="0 0 64 34" focusable="false">
             <defs>
-              <linearGradient id="home-v2-mark" x1="0" y1="34" x2="64" y2="0" gradientUnits="userSpaceOnUse">
+              <linearGradient id="home-v3-mark" x1="0" y1="34" x2="64" y2="0" gradientUnits="userSpaceOnUse">
                 <stop offset="0" stop-color="#6d28d9" />
                 <stop offset="0.58" stop-color="#8b5cf6" />
                 <stop offset="1" stop-color="#ddd6fe" />
               </linearGradient>
             </defs>
-            <path d="M0 34C18.8 34 31.1 21.6 31.1 2.7V0H20.8v2.3C20.8 15.8 12.8 23.5 0 23.5V34Z" fill="url(#home-v2-mark)" />
-            <path d="M35.7 34C40.8 20.3 50.5 11.1 64 7.8V0C45.1 2.4 31.2 14.5 25.3 34H35.7Z" fill="url(#home-v2-mark)" opacity="0.88" />
+            <path d="M0 34C18.8 34 31.1 21.6 31.1 2.7V0H20.8v2.3C20.8 15.8 12.8 23.5 0 23.5V34Z" fill="url(#home-v3-mark)" />
+            <path d="M35.7 34C40.8 20.3 50.5 11.1 64 7.8V0C45.1 2.4 31.2 14.5 25.3 34H35.7Z" fill="url(#home-v3-mark)" opacity="0.88" />
           </svg>
         </span>
         <span>HarborNavi</span>
@@ -192,15 +185,14 @@ const structuredData = JSON.stringify({
       <section class="v2-hero" aria-labelledby="v2-hero-title">
         <div class="v2-hero-content">
           <div class="v2-hero-copy-block">
-            <p class="v2-kicker">Local AI hardware for private spaces</p>
+            <p class="v2-kicker">Private home memory, not another camera app</p>
             <h1 id="v2-hero-title">
-              <span>Know your space.</span>
-              <span>Keep your moments.</span>
-              <span>Connect your devices.</span>
+              <span>Ask your home</span>
+              <span>what happened.</span>
             </h1>
             <p class="v2-hero-copy">
-              Your cat's funny jump, your child's important little moment, and the clips worth keeping should not vanish
-              inside 24 hours of dull monitoring footage. HarborNavi turns everyday home context into highlights you can actually find.
+              HarborNavi turns cameras, sensors, and Home Assistant events into a private timeline you can actually use.
+              Your cat's funny jump, your child's important little moment, and the clips worth keeping should not vanish inside 24 hours of dull monitoring footage.
             </p>
             <form class="v2-email-form hero" data-early-form data-form-location="hero">
               <label class="v2-sr-only" for="hero-email">Email</label>
@@ -239,11 +231,11 @@ const structuredData = JSON.stringify({
               </div>
             </div>
             <p class="v2-form-error" data-form-error hidden>Something went wrong. Please try again in a moment.</p>
-            <p class="v2-concept-note">Concept visualization. Final hardware, specs, and availability may change.</p>
+            <p class="v2-concept-note">Built for homes that want useful AI without turning private space into cloud data.</p>
           </div>
 
           <div class="v2-hero-product-card">
-            <img src={heroImage} alt="Concept placeholder of the HarborNavi AI box on a home desk" width="1536" height="1024" loading="eager" />
+            <img src={heroImage} alt="HarborNavi AI box on a home desk" width="1536" height="1024" loading="eager" />
           </div>
         </div>
       </section>
@@ -251,15 +243,15 @@ const structuredData = JSON.stringify({
       <section class="v2-section v2-product-focus" aria-labelledby="focus-title">
         <div class="v2-section-inner v2-focus-grid">
           <div class="v2-section-heading">
-            <p class="v2-eyebrow">AI box concept placeholder</p>
-            <h2 id="focus-title">Local intelligence should have a place in the room.</h2>
+            <p class="v2-eyebrow">Local AI box</p>
+            <h2 id="focus-title">A box for asking the home, not just recording it.</h2>
             <p>
-              The final industrial design will replace this placeholder. The landing page now reserves space for a real product
-              moment instead of explaining everything through text.
+              HarborNavi sits close to the cameras, sensors, and smart-home systems that already understand pieces of your home,
+              then turns selected events into a local, reviewable answer.
             </p>
           </div>
           <div class="v2-hotspot-stage">
-            <img src="/assets/home-v2-ai-box.png" alt="HarborNavi AI box concept placeholder" width="1536" height="1024" loading="lazy" />
+            <img src="/assets/home-v2-ai-box.png" alt="HarborNavi AI box" width="1536" height="1024" loading="lazy" />
             {productHotspots.map((hotspot, index) => (
               <button
                 class="v2-hotspot"
@@ -278,31 +270,28 @@ const structuredData = JSON.stringify({
         </div>
       </section>
 
-      <section class="v2-usecases" aria-labelledby="usecases-title">
+      <section class="v2-section v3-demo-cases" aria-labelledby="demo-title">
         <div class="v2-section-inner">
           <div class="v2-section-heading centered">
-            <p class="v2-eyebrow">Three jobs in the home</p>
-            <h2 id="usecases-title">The same idea, shown as full household scenes.</h2>
+            <p class="v2-eyebrow">Everyday home questions</p>
+            <h2 id="demo-title">Ask for the moments that actually matter.</h2>
+            <p>
+              HarborNavi is built around the things families already wonder about: packages, pets, kids,
+              visitors, repeated alerts, and safe automations that should be reviewed before they run.
+            </p>
           </div>
-          <div class="v2-usecase-stack">
-            {useCaseSections.map((scene) => (
-              <article class="v2-usecase-panel">
-                <div class="v2-usecase-label">
-                  <p>{scene.index} / {scene.eyebrow}</p>
-                  <h3>{scene.title}</h3>
-                </div>
-                <div class="v2-usecase-story">
-                  <div class="v2-usecase-copy">
-                    <h4>{scene.headline}</h4>
-                    {scene.body.map((paragraph) => <p>{paragraph}</p>)}
-                    <div class="v2-chip-row" aria-label={`${scene.title} examples`}>
-                      {scene.chips.map((chip) => <span>{chip}</span>)}
-                    </div>
+          <div class="v3-demo-grid">
+            {demoCases.map((demo) => (
+              <article class="v3-demo-card">
+                <figure>
+                  <img src={demo.image} alt={demo.imageAlt} width="1536" height="1024" loading="lazy" />
+                </figure>
+                <div class="v3-demo-copy">
+                  <h3>{demo.title}</h3>
+                  <p>{demo.body}</p>
+                  <div class="v2-chip-row" aria-label={`${demo.title} signals`}>
+                    {demo.chips.map((chip) => <span>{chip}</span>)}
                   </div>
-                  <figure>
-                    <img src={scene.image} alt={scene.imageAlt} width="1536" height="1024" loading="lazy" />
-                    {scene.caption && <figcaption>{scene.caption}</figcaption>}
-                  </figure>
                 </div>
               </article>
             ))}
@@ -318,7 +307,7 @@ const structuredData = JSON.stringify({
               <h2 id="architecture-title">A product shell for local compute, not another cloud account.</h2>
             </div>
             <p>
-              Official product renders and internal structure visuals will replace these concept slots when ready.
+              HarborNavi brings local compute, private storage, and home automation context into one device designed for the rooms where life happens.
             </p>
           </div>
           <figure class="v2-exploded">
@@ -330,8 +319,8 @@ const structuredData = JSON.stringify({
               <span class="v2-exploded-base">Base enclosure</span>
             </div>
             <figcaption>
-              <strong>Exploded-view placeholder.</strong>
-              Modular craft, local AI compute, storage, and quiet cooling should be visible here once the official internal structure is available.
+              <strong>Inside the local AI box.</strong>
+              Compute, storage, connectivity, and quiet cooling work together so useful home context can stay close to home.
             </figcaption>
           </figure>
         </div>
@@ -372,7 +361,8 @@ const structuredData = JSON.stringify({
             <p class="v2-eyebrow">Target hardware configuration</p>
             <h2 id="specs-title">Local compute, diagrammed for real spaces.</h2>
             <p>
-              These are planning specs for the landing preview. Final SoC, memory, storage, and IO SKUs should be confirmed from the official hardware specification.
+              HarborNavi is designed for local AI workloads, home-device coordination, and private storage-first workflows.
+              Exact hardware configurations will be shared closer to availability.
             </p>
           </div>
 
@@ -425,8 +415,8 @@ const structuredData = JSON.stringify({
       <section id="early-access" class="v2-section v2-final-cta" aria-labelledby="final-title">
         <div class="v2-section-inner">
           <div class="v2-final-copy">
-            <p class="v2-eyebrow">Build the future of data sovereignty with us</p>
-            <h2 id="final-title">Make the moments worth keeping easier to find.</h2>
+            <p class="v2-eyebrow">Early access</p>
+            <h2 id="final-title">Help shape the first HarborNavi homes.</h2>
             <p>
               Join the Early Bird list first. After that, you can choose whether to answer a few hardware questions and join the deeper Discord discussion.
             </p>
@@ -474,12 +464,12 @@ const structuredData = JSON.stringify({
 
     <footer class="v2-footer">
       <span>HarborNavi</span>
-      <span>Local-first AI hardware preview</span>
+      <span>Ask your home what happened</span>
       <a href="/privacy">Privacy</a>
     </footer>
 
     <script is:inline>
-      const route = "home-v2";
+      const route = "home-v3";
       const utmKeys = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"];
       let lastSubmittedEmail = "";
 

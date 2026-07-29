@@ -4,9 +4,9 @@
 
 ## 1. 交接目标与责任边界
 
-本交接以 `/home-v6` 为当前 Landing Page 工作版本。同事负责页面设计、前端实现、响应式适配、素材更新、SEO 元信息、Preview 验证和 Vercel 发布；产品负责人负责最终文案、产品承诺、价格、发布日期、众筹口径、硬件规格、兼容性范围和隐私/营销同意口径的审批。
+本交接以 `/home-v6` 为当前 Landing Page 工作版本。Fiona (`fiona-xstation`) 负责页面设计、前端实现、响应式适配、素材更新、SEO 元信息、Preview 验证和生产发布；产品负责人只负责需要业务判断的文案、产品承诺、价格、日期、众筹、硬件规格、兼容性和隐私口径。
 
-不要把当前整个工作区直接提交。它同时包含 V2-V6 页面、后台、数据库、活动页、支付和本地浏览器临时数据等多批尚未归档的工作，必须按下面的 staging 清单拆分。
+Fiona 可以直接 push 到 `main`。她的 `main` push 会通过 GitHub Actions 调用项目专属 Vercel Deploy Hook，自动发布到 `harbornavi.com`，不需要原维护者操作 Vercel。
 
 ## 2. 仓库与当前状态
 
@@ -15,20 +15,21 @@
 | GitHub | `https://github.com/HarborNavi/harbornavi-site` |
 | 可见性 | Public |
 | 默认分支 | `main` |
-| 当前基线 | `db36818` (`Add HarborNavi home v2 landing page`) |
-| 本地分支 | `main`，与 `origin/main` 同步 |
+| 生产分支 | `main` |
+| 生产发布 workflow | `.github/workflows/deploy-production.yml` |
+| GitHub 生产密钥 | `VERCEL_DEPLOY_HOOK_URL` (Actions Secret) |
 | Vercel 本地链接项目 | `harbornavi-site` |
 | 正式站点 | `https://harbornavi.com` |
 | V6 路由 | `https://harbornavi.com/home-v6` |
 
-仓库已经存在，不要再创建同名或重复仓库。当前 `main` 没有启用 GitHub branch protection；在同事开始独立负责前，应开启“必须通过 Pull Request 合并”，并禁止直接 push 到 `main`。
+仓库已经存在，不要再创建同名或重复仓库。Fiona 具有 GitHub `Write` 权限；按本次交接要求，`main` 保持可直接 push。大范围改动、API、数据库、支付和隐私修改仍建议通过 PR Preview 验证后再合并。
 
-当前工作树是混合状态。尤其注意：
+任何本地工作树都应遵守：
 
 - `.env.local` 已被忽略，任何时候都不要提交、粘贴或截图其中的值。
 - `.vercel/` 是本地项目链接信息，已被忽略，不提交。
-- `.tmp/` 可能包含浏览器 profile、缓存、Cookie/登录数据等本地状态。当前本地 `.gitignore` 已新增 `.tmp/`，但这项保护尚未进入远端基线；不要 stage 目录内容。
-- `.neon` 可能包含本地 Neon 链接状态。当前本地 `.gitignore` 已新增 `.neon`，但这项保护尚未进入远端基线；不要读取或提交该文件。
+- `.tmp/` 可能包含浏览器 profile、缓存、Cookie/登录数据等本地状态，已被 `.gitignore` 忽略。
+- `.neon` 可能包含本地 Neon 链接状态，已被 `.gitignore` 忽略。
 - 不要使用 `git add -A`、`git add .` 或 Git 客户端的“Stage All”。只按明确文件路径 stage。
 
 ## 3. 本地运行
@@ -176,66 +177,22 @@ RESEND_ROAD_TOPIC_ID
 
 ## 8. Git 分支与 PR 流程
 
-1. 从最新 `origin/main` 创建独立分支，例如 `landing/v6-hero-copy` 或 `landing/v6-responsive`。
-2. 一次 PR 只负责一个清楚的范围；不要把后台、支付、旧版页面和 V6 视觉修改混在一起。
-3. 用明确路径 `git add <file...>`，然后再次运行 `git diff --cached --stat` 和 `git diff --cached`。
-4. 推送分支并创建 Draft PR；PR 中附 Vercel Preview URL、桌面/手机截图和验证结果。
-5. 产品负责人先审产品承诺与文案，再审视觉；至少一名工程维护者审 API、隐私和部署变更。
-6. 检查通过后再将 Draft 转为 Ready，并 squash/merge 到 `main`。
-7. Production 部署后做真实域名 smoke test；确认无回归再删除分支。
+1. 小范围、低风险文案或样式修改可以在本地验证后直接 push `main`。
+2. 大范围视觉、API、数据库、支付、隐私或部署修改应从最新 `origin/main` 创建独立分支。
+3. 一次 PR 只负责一个清楚范围；用明确路径 stage，然后检查 `git diff --cached --stat` 和 `git diff --cached`。
+4. PR 中附 Preview URL、桌面/手机截图和验证结果；检查通过后由 Fiona 合并到 `main`。
+5. `main` 更新后检查 GitHub Actions 的 `Deploy production` workflow，并在正式域名完成 smoke test。
 
-建议为 `main` 开启：Require pull request、至少 1 个 approval、Require conversation resolution、禁止 force push。仓库目前没有可确认的自动 CI，因此在把 checks 设为 required 前，应先添加可靠的 GitHub Actions workflow。
+## 9. 生产发布自动化
 
-## 9. 精确 staging 清单
+`.github/workflows/deploy-production.yml` 在以下情况运行：
 
-### PR A：V6 页面与交接文档
+- Fiona (`fiona-xstation`) push 或合并到 `main`。
+- 有 `Write` 权限的维护者在 GitHub Actions 中手动选择 `Run workflow`。
 
-只 stage 下列文件：
+workflow 使用 GitHub Actions Secret `VERCEL_DEPLOY_HOOK_URL` 调用只绑定 `main` 的 Vercel Deploy Hook。Hook URL 等同部署凭据：不得打印、复制到聊天、写进代码或交接文档。怀疑泄露时应立即在 Vercel Project Settings > Git > Deploy Hooks 删除旧 hook，创建新 hook，并更新同名 GitHub Secret。
 
-```text
-.gitignore
-LANDING-PAGE-HANDOFF.md
-src/pages/home-v6.astro
-src/components/HomeV6Landing.astro
-src/styles/home-v6.css
-public/assets/home-v6-memory-hero-id.png
-public/assets/home-v6-family-moment-id.png
-public/assets/home-v6-homecoming-briefing-id.png
-public/assets/home-v4-package-response.png
-public/assets/home-v6-movie-night-id.png
-public/assets/home-v6-trust-boundary-id.png
-public/assets/home-v6-hardware-id.png
-```
-
-这份 PR 足以评审 V6 静态页面，但 `main` 当前没有 V6 所依赖的 API 代码。合并或发布前，PR B 必须先完成，或已经存在等价且验证过的后端。
-
-### PR B：V6 waitlist/analytics 最小后端
-
-必须由工程维护者单独审查，不能随视觉 PR 自动一起提交。建议范围：
-
-```text
-.env.example
-package.json
-package-lock.json
-tsconfig.json
-api/events.ts
-api/waitlist.ts
-src/server/analytics-events.ts
-src/server/analytics-sanitize.ts
-src/server/analytics.ts
-src/server/config.ts
-src/server/db.ts
-src/server/notify.ts
-src/server/resend-contacts.ts
-src/server/waitlist-consent.ts
-src/server/waitlist.ts
-db/analytics.sql
-db/waitlist.sql
-tests/analytics-sanitize.test.mjs
-tests/waitlist-consent.test.mjs
-```
-
-注意：当前 `package.json` 的 `npm test` 还引用 `tests/campaign-contract.test.mjs`。提交 PR B 前要么把该测试及其直接依赖 `src/data/campaign.ts` 一并作为经过确认的范围提交，要么在 PR B 中将测试脚本收窄；不能留下引用不存在文件的 test script。这个决定需要在 staged diff 中明确，不能靠全量 stage 解决。
+如果 workflow 显示成功，说明 Vercel 已接受生产部署任务；随后仍要检查正式域名。构建失败时，Fiona 可以从 GitHub commit 的 Vercel check 查看结果；涉及环境变量、域名、回滚或 Vercel 项目设置的问题仍需项目 Owner 处理。
 
 ### 绝对不要 stage
 
@@ -251,7 +208,7 @@ dist/
 .astro/
 ```
 
-V2-V5、`/15-homes`、admin、reservation/Stripe、cron、其他数据库 migration 和大范围 README 修改都不属于 PR A；除非负责人另外确认，不应混入。
+`main` 已包含当前线上所需的 V2-V6、`/15-homes`、admin、reservation/Stripe、cron 和数据库基线。后续修改仍应按功能范围拆分提交。
 
 ## 10. 验证与发布
 
@@ -285,10 +242,10 @@ Preview API 验收：
 
 发布流程：
 
-1. 确认 GitHub-Vercel 集成确实为 PR 生成 Preview；本地 `.vercel/project.json` 只能证明本地链接，不能替代 Dashboard 检查。
+1. 确认 GitHub-Vercel 集成为 PR 生成 Preview；本地 `.vercel/project.json` 不能替代远端检查。
 2. 在 Preview 完成视觉、功能、SEO、隐私和产品承诺审批。
-3. 合并到 `main` 后确认 Production deployment 成功。
-4. 在正式域名检查 canonical、OG 图、robots、API、表单和 analytics。
+3. Fiona 合并或 push 到 `main` 后，确认 GitHub Actions `Deploy production` 成功。
+4. 等待 Vercel 构建完成，在正式域名检查 canonical、OG 图、robots、API、表单和 analytics。
 5. `/home-v6` 变成根路径 `/` 或替换当前首页是独立产品/SEO决策，未经批准不要修改 `src/pages/index.astro`。
 
 ## 11. 需要产品负责人审批的内容
@@ -307,10 +264,10 @@ Preview API 验收：
 ## 12. 当前待办
 
 - [ ] 明确并实现 `home-v6` 的 consent scope/version，或改正表单文案。
-- [ ] 将本地 `.gitignore` 中新增的 `.tmp/` 和 `.neon` 规则纳入经过审查的提交，确保远端基线也不会收录本地状态。
-- [ ] 从混合工作树拆出 PR A 和经过后端审查的 PR B。
-- [ ] 为 `main` 开启 branch protection，并建立可靠 CI。
-- [ ] 确认同事具有 GitHub repo 与 Vercel 项目所需的最小权限。
+- [x] 将 `.tmp/` 和 `.neon` 规则纳入远端 `.gitignore`。
+- [x] 将当前线上前后端代码整理成可复现的 GitHub `main` 基线。
+- [x] Fiona 获得 GitHub `Write` 权限，可以直接 push `main`。
+- [x] 建立 Fiona `main` push 到 Vercel Production 的 GitHub Actions 自动发布。
 - [ ] 为 Preview 配置独立数据库，并执行 `db/waitlist.sql`、`db/analytics.sql`。
 - [ ] 优化大体积 PNG，并重新检查首屏 LCP 与移动流量。
 - [ ] 验证 SurveyMonkey、Discord 和 comparison source 链接。

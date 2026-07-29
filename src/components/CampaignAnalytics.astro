@@ -1,0 +1,115 @@
+---
+interface Props {
+  route: string;
+  completeOnLoad?: boolean;
+}
+
+const { route, completeOnLoad = false } = Astro.props;
+---
+
+<script is:inline define:vars={{ route, completeOnLoad }}>
+  (() => {
+    const utmKeys = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"];
+
+    function readUtm() {
+      const params = new URLSearchParams(window.location.search);
+      const stored = {};
+      try {
+        const previous = JSON.parse(window.sessionStorage.getItem("harbor_utm") || "{}");
+        if (previous && typeof previous === "object") Object.assign(stored, previous);
+      } catch {}
+
+      utmKeys.forEach((key) => {
+        const value = params.get(key);
+        if (value) stored[key] = value.slice(0, 160);
+      });
+      try {
+        window.sessionStorage.setItem("harbor_utm", JSON.stringify(stored));
+      } catch {}
+      return stored;
+    }
+
+    function sessionId() {
+      try {
+        const existing = window.sessionStorage.getItem("harbor_session_id");
+        if (existing) return existing;
+        const created = window.crypto?.randomUUID?.() || `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+        window.sessionStorage.setItem("harbor_session_id", created);
+        return created;
+      } catch {
+        return `${Date.now()}-${Math.random().toString(16).slice(2)}`;
+      }
+    }
+
+    function safeReferrer() {
+      if (!document.referrer) return "";
+      try {
+        const referrer = new URL(document.referrer);
+        return `${referrer.origin}${referrer.pathname}`.slice(0, 500);
+      } catch {
+        return "";
+      }
+    }
+
+    const utm = readUtm();
+    const visitorSession = sessionId();
+
+    window.harborTrack = function harborTrack(eventName, properties) {
+      const payload = {
+        event_name: eventName,
+        route,
+        path: window.location.pathname,
+        referrer: safeReferrer(),
+        session_id: visitorSession,
+        ...utm,
+        properties: properties || {}
+      };
+      const body = JSON.stringify(payload);
+      if (navigator.sendBeacon) {
+        navigator.sendBeacon("/api/events", new Blob([body], { type: "application/json" }));
+      } else {
+        fetch("/api/events", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body,
+          keepalive: true
+        }).catch(() => {});
+      }
+    };
+
+    document.querySelectorAll("[data-application-link]").forEach((link) => {
+      try {
+        const target = new URL(link.href);
+        utmKeys.forEach((key) => {
+          if (utm[key]) target.searchParams.set(key, utm[key]);
+        });
+        target.searchParams.set("source_route", route);
+        target.searchParams.set("referrer", safeReferrer());
+        target.searchParams.set("site_session_id", visitorSession);
+        link.href = target.toString();
+      } catch {}
+    });
+
+    document.querySelectorAll("[data-campaign-event]").forEach((link) => {
+      link.addEventListener("click", () => {
+        window.harborTrack(link.dataset.campaignEvent, {
+          link_kind: link.dataset.linkKind || "campaign"
+        });
+      });
+    });
+
+    window.harborTrack("page_view", { route });
+
+    if (completeOnLoad) {
+      const completionKey = `harbor_complete_${route}`;
+      let alreadyTracked = false;
+      try {
+        alreadyTracked = window.sessionStorage.getItem(completionKey) === "1";
+        if (!alreadyTracked) window.sessionStorage.setItem(completionKey, "1");
+      } catch {}
+      if (!alreadyTracked) {
+        window.harborTrack("road_home_form_complete", { completion_source: "thanks_page" });
+      }
+    }
+  })();
+</script>

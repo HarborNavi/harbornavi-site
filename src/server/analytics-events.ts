@@ -1,0 +1,40 @@
+export const exactAnalyticsEventNames = new Set([
+  "page_view",
+  "page_view_home_v2",
+  "early_bird_start",
+  "early_bird_submit",
+  "early_bird_saved",
+  "early_bird_error",
+  "profile_submit",
+  "profile_saved",
+  "profile_error",
+  "compatibility_check_start",
+  "compatibility_check_complete",
+  "price_view",
+  "price_intent_submit",
+  "reservation_start",
+  "reservation_complete",
+  "reservation_error",
+  "waitlist_start",
+  "waitlist_submit",
+  "waitlist_saved",
+  "waitlist_error",
+  "qualified_lead",
+  "beta_interview_request",
+  "discord_click",
+  "survey_click",
+  "road_home_apply_click",
+  "road_home_form_start",
+  "road_home_form_complete",
+  "kickstarter_prelaunch_click",
+  "youtube_live_click",
+  "youtube_replay_click",
+  "product_carousel_next",
+  "demo_option_package",
+  "demo_option_pet",
+  "demo_option_unusual"
+]);
+
+export function isAllowedAnalyticsEventName(eventName: string) {
+  return exactAnalyticsEventNames.has(eventName) || eventName.startsWith("scenario_");
+}

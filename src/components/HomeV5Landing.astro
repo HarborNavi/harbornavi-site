@@ -1,0 +1,628 @@
+---
+import "../styles/home-v5.css";
+import { campaign } from "../data/campaign";
+
+const discordUrl = "https://discord.gg/tC2bktRWWj";
+const surveyUrl = "https://www.surveymonkey.com/r/harbornavi";
+const heroImage = "/assets/home-v5-exceptions-hero.png";
+
+const exceptions = [
+  {
+    time: "7:00 AM",
+    kicker: "A slower morning",
+    title: "The baby slept in.",
+    rule: "Lights on at 7:00",
+    reality: "Still asleep",
+    image: "/assets/home-v5-sleeping-child-card.png",
+    imageAlt: "A child sleeping in bed later than the usual morning routine",
+    tone: "lavender"
+  },
+  {
+    time: "3:42 PM",
+    kicker: "An early arrival",
+    title: "The sitter came early.",
+    rule: "Access starts at 4:00",
+    reality: "Already at the door",
+    image: "/assets/home-v4-return-home-hero.png",
+    imageAlt: "A trusted visitor arriving at the front door earlier than expected",
+    tone: "teal"
+  },
+  {
+    time: "2:31 PM",
+    kicker: "A delivery changed",
+    title: "The package left again.",
+    rule: "Delivered at 2:14",
+    reality: "Removed 17 minutes later",
+    image: "/assets/home-v3-alert-that-mattered.png",
+    imageAlt: "A porch package event changing from delivered to removed",
+    tone: "ink"
+  }
+];
+
+const contextInputs = [
+  ["Selected camera event", "A package leaves the porch"],
+  ["Door and presence", "No household member is outside"],
+  ["Recent memory", "Delivery confirmed 17 minutes earlier"],
+  ["Household permission", "Porch response is pre-authorized"]
+];
+
+const contextQuestions = ["What changed?", "Does it matter now?", "Who is involved?", "What is allowed next?"];
+
+const connectionPaths = [
+  ["HA", "Home Assistant", "Bring existing entities, scenes, and automations into the same home picture."],
+  ["RT", "RTSP / ONVIF", "Use supported local camera paths without rebuilding around one brand."],
+  ["SI", "Selected integrations", "Add device state and actions from services you already rely on."],
+  ["ZB", "Zigbee", "Designed for direct support of common sensors, switches, and small devices."],
+  ["IR", "IR", "Designed to reach TVs and climate devices that still work best by remote."]
+];
+
+const hardwareValues = [
+  ["Local intelligence", "A dedicated K3-class compute design keeps everyday understanding and model work close to the home."],
+  ["Local memory", "A 16GB / 128GB base design, with two M.2 slots for longer private retention."],
+  ["Device connections", "Dual 2.5GbE, HDMI, Home Assistant, Zigbee, IR, and selected camera paths."],
+  ["Physical trust", "Fingerprint confirmation and an embedded secure element for sensitive setup changes."]
+];
+
+const comparisonProducts = [
+  { name: "Camera AI", note: "Reolink, Tapo, eufy" },
+  { name: "Cloud home AI", note: "Google Home, Alexa+ + Ring" },
+  { name: "Local automation stacks", note: "Home Assistant + Frigate, Homey Pro" },
+  { name: "Professional whole-home", note: "Josh.ai, Control4" },
+  { name: "HarborNavi", note: "The whole-home picture", featured: true }
+];
+
+const comparisonRows = [
+  ["Built around", "Video and security events", "Conversation, summaries, and control inside an account ecosystem", "Devices, entities, rules, and owner-built automations", "Dealer-designed whole-home control", "Selected home signals, memory, permissions, and actions in one household picture"],
+  ["Who pieces it together", "The camera vendor's event history", "The vendor cloud and supported services", "The owner or integrator", "The dealer or integrator", "HarborNavi's local system is designed to keep the situation together"],
+  ["When the routine changes", "Detect, search, or summarize video", "AI behavior inside supported services", "The owner adds conditions, helpers, and exceptions", "The dealer updates scenes and policies", "Clarify, wait, notify, or act from the shared picture"],
+  ["Memory and follow-up", "Footage and event history", "Account and service memory", "Possible with owner-built components", "System state and configured scenes", "Local household memory across events and conversations"],
+  ["From understanding to action", "Alerts and vendor-specific responses", "Voice and actions inside supported ecosystems", "Broad actions through user-built automations", "Broad dealer-configured actions", "Conversation, clarification, permission, then coordinated action"],
+  ["Setup and maintenance", "Vendor app", "Consumer account and cloud setup", "DIY or self-managed stack", "Professional installation", "Designed for self install with supported paths made clear"],
+  ["Data path and subscription", "Varies by vendor and model", "Advanced features and plans vary", "Local core is possible; add-ons vary", "Vendor, dealer, and service terms vary", "Core local features without a required subscription"]
+];
+
+const comparisonSources = [
+  { label: "Reolink", href: "https://reolink.com/blog/reolink-new-products-at-ces/" },
+  { label: "Tapo", href: "https://www.tp-link.com/us/home-networking/smart-hub/tapo-h500/" },
+  { label: "eufy", href: "https://www.eufy.com/products/t80301d1" },
+  { label: "Google Home", href: "https://store.google.com/us/product/google_home_speaker?hl=en_US" },
+  { label: "Alexa+", href: "https://www.aboutamazon.com/news/devices/amazon-new-echo-devices-alexa-plus" },
+  { label: "Home Assistant", href: "https://www.home-assistant.io/blog/2025/09/11/ai-in-home-assistant/" },
+  { label: "Frigate", href: "https://frigate.video/" },
+  { label: "Homey", href: "https://homey.app/en-us/homey-pro/" },
+  { label: "Josh.ai", href: "https://www.josh.ai/core/" },
+  { label: "Control4", href: "https://www.control4.com/solutions/voice-control" }
+];
+
+const faqItems = [
+  ["Is HarborNavi another camera recorder?", "A camera is one possible source. HarborNavi is designed around the situation that selected camera events, sensors, device state, recent memory, and household permissions describe together."],
+  ["Does it replace Home Assistant?", "Home Assistant remains a strong device and automation layer. HarborNavi adds a shared household picture, memory, clarification, and a simpler path from everyday language to a coordinated workflow."],
+  ["Will it work with every device?", "No. HarborNavi starts with supported paths such as Home Assistant, RTSP / ONVIF cameras, selected integrations, Zigbee, and IR. A clear device list will be published before orders open."],
+  ["When is fingerprint confirmation used?", "It is for sensitive setup changes such as adding a member, expanding permissions, or pairing a device. Ordinary questions and routines should not require a fingerprint every time."],
+  ["Does it require cloud AI?", "Core home memory, policy, and device workflows are designed to run locally. External models remain optional and follow a filtered outbound path when enabled."]
+];
+
+const structuredData = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "Product",
+  name: "HarborNavi",
+  category: "Local home intelligence",
+  slogan: "The spark that brings your home to life.",
+  description: "HarborNavi keeps selected home signals, memory, permissions, and actions in one private picture of the day, so the home can explain what changed and help with what happens next.",
+  url: "https://harbornavi.com/home-v5",
+  image: `https://harbornavi.com${heroImage}`,
+  brand: {
+    "@type": "Brand",
+    name: "HarborNavi"
+  }
+});
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="index,follow" />
+    <title>HarborNavi - At home, exceptions are the routine.</title>
+    <meta name="description" content="HarborNavi keeps selected home signals, memory, permissions, and actions in one private picture of the day, so the home can explain what changed and help with what happens next." />
+    <link rel="canonical" href="https://harbornavi.com/home-v5" />
+    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
+    <meta property="og:title" content="HarborNavi - At home, exceptions are the routine." />
+    <meta property="og:description" content="Local intelligence that keeps the home's changing situation together." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://harbornavi.com/home-v5" />
+    <meta property="og:image" content={`https://harbornavi.com${heroImage}`} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="HarborNavi - At home, exceptions are the routine." />
+    <meta name="twitter:description" content="Local intelligence that keeps the home's changing situation together." />
+    <meta name="twitter:image" content={`https://harbornavi.com${heroImage}`} />
+    <script is:inline type="application/ld+json" set:html={structuredData}></script>
+  </head>
+  <body class="home-v5-page" data-route="home-v5">
+    <div class="site-shell">
+      <header class="site-header">
+        <a class="brand" href="#top" aria-label="HarborNavi home">
+          <span class="brand-mark" aria-hidden="true"><img src="/favicon.svg" alt="" width="22" height="22" /></span>
+          <span>HarborNavi</span>
+        </a>
+        <nav aria-label="Page sections">
+          <a href="#context">How it works</a>
+          <a href="#proof">Stories</a>
+          <a href="#compatibility">Compatibility</a>
+          <a href="#compare">Compare</a>
+        </nav>
+        <a class="header-cta" href="#join">Join the launch list</a>
+      </header>
+
+      <main id="top">
+        <section class="hero" aria-labelledby="hero-title">
+          <div class="hero-copy">
+            <p class="category">HarborNavi <span aria-hidden="true">&middot;</span> Local intelligence for your home.</p>
+            <h1 id="hero-title">At home, exceptions are the routine.</h1>
+            <p class="hero-lead">The baby sleeps in. The sitter comes early. A package leaves after it arrives. Today those clues live in different apps and rules. HarborNavi is designed to turn them into one private picture of the day, so the home can tell you what changed and help with what happens next.</p>
+            <form class="email-form" data-early-form data-form-location="hero">
+              <label class="sr-only" for="v5-hero-email">Email address</label>
+              <input id="v5-hero-email" type="email" name="email" autocomplete="email" placeholder="Email address" aria-describedby="v5-hero-note v5-hero-error" required />
+              <input class="sr-only" name="company" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" />
+              <button type="submit">Join the launch list</button>
+            </form>
+            <p id="v5-hero-error" class="form-error" data-form-error aria-live="polite" hidden>We could not save your email. Please try again.</p>
+            <p id="v5-hero-note" class="form-note">
+              Get HarborNavi Kickstarter pre-launch and 15 Homes road updates. Unsubscribe anytime. <a href="/privacy">Privacy</a>
+            </p>
+          </div>
+          <div class="hero-visual">
+            <img src={heroImage} alt="A parent keeps the morning quiet while a child sleeps in bed, with HarborNavi visible in the bedroom" width="1536" height="1024" loading="eager" />
+            <div class="visual-signal signal-lights"><span>7:00</span><strong>Morning lights</strong><em>Held</em></div>
+            <div class="visual-signal signal-context"><span>Navi noticed</span><strong>Child still asleep</strong><em>Today is different</em></div>
+          </div>
+        </section>
+
+        <section id="exceptions" class="exceptions" aria-labelledby="exceptions-title" data-scenario-event="scenario_exception_problem">
+          <div class="section-heading split-heading">
+            <div>
+              <p class="eyebrow">Real homes have edge cases every day</p>
+              <h2 id="exceptions-title">Today's plan changed. The rules did not.</h2>
+            </div>
+            <p>A fixed routine sees a trigger. The household lives through the situation around it.</p>
+          </div>
+          <div class="exception-grid">
+            {exceptions.map((item, index) => (
+              <article class:list={["exception-card", item.tone]}>
+                <div class="exception-media">
+                  <img src={item.image} alt={item.imageAlt} width="1536" height="1024" loading="lazy" />
+                  <span class="exception-index">{String(index + 1).padStart(2, "0")}</span>
+                  <time>{item.time}</time>
+                </div>
+                <div class="exception-body">
+                  <p class="exception-kicker">{item.kicker}</p>
+                  <h3>{item.title}</h3>
+                  <div class="exception-shift">
+                    <span><small>The rule</small>{item.rule}</span>
+                    <i aria-hidden="true">&rarr;</i>
+                    <strong><small>Today's reality</small>{item.reality}</strong>
+                  </div>
+                </div>
+              </article>
+            ))}
+          </div>
+        </section>
+
+        <section id="context" class="context-section" aria-labelledby="context-title" data-scenario-event="scenario_shared_context">
+          <div class="context-copy">
+            <p class="eyebrow">Many clues, one situation</p>
+            <h2 id="context-title">One picture of the day you are actually having.</h2>
+            <p>HarborNavi is designed to bring selected camera events, sensor changes, device state, recent memory, and household permissions together on one local box. Instead of another isolated alert, you get the situation the home can remember, explain, and carry into what happens next.</p>
+            <p class="spark-line">The spark that brings your home to life.</p>
+          </div>
+          <div class="context-stage" aria-label="Home signals becoming one HarborNavi read">
+            <img src="/assets/home-v2-ai-box.png" alt="HarborNavi processing household signals locally" width="1536" height="1024" loading="lazy" />
+            <div class="context-signals">
+              {contextInputs.map(([label, value], index) => (
+                <div class:list={["context-signal", `context-signal-${index + 1}`]}>
+                  <span>{label}</span>
+                  <strong>{value}</strong>
+                </div>
+              ))}
+            </div>
+            <div class="context-checks">
+              <span>Navi checks</span>
+              {contextQuestions.map((question) => <em>{question}</em>)}
+            </div>
+            <div class="context-read">
+              <span>Navi's read</span>
+              <strong>Package removed</strong>
+              <p>Tell me now <b aria-hidden="true">&middot;</b> Save the evidence <b aria-hidden="true">&middot;</b> Supported response ready</p>
+            </div>
+          </div>
+        </section>
+
+        <section id="proof" class="proof-section" aria-label="HarborNavi scenario proofs">
+          <article class="proof-story package-story" data-scenario-event="scenario_package_response">
+            <div class="proof-copy">
+              <p class="eyebrow">Notice the exception</p>
+              <h2>The package arrived. Then it left.</h2>
+              <p>A delivery event means one thing. The same package leaving later can mean another. HarborNavi is designed to connect the useful evidence, send the key clip, and use a pre-authorized supported speaker, siren, or doorbell response. Any call for help still waits for you.</p>
+              <blockquote>Package removed. Your supported response is active. The key clip and evidence are saved.</blockquote>
+            </div>
+            <figure><img src="/assets/home-v4-package-response.png" alt="A package-removal event correlated with a supported household response" width="1536" height="1024" loading="lazy" /></figure>
+          </article>
+
+          <article class="proof-story briefing-story" data-scenario-event="scenario_patient_briefing">
+            <figure><img src="/assets/home-v3-dog-focus-timeline.png" alt="Household events becoming a concise local timeline" width="1536" height="1024" loading="lazy" /></figure>
+            <div class="proof-copy">
+              <p class="eyebrow">Keep the day without interrupting it</p>
+              <h2>Most of the day can wait until you are home.</h2>
+              <p>Routine motion, the dog on the sofa, and an open window do not all deserve a push notification. HarborNavi keeps the day in order, lets configured urgent conditions reach you, and saves the calm version for when you walk in.</p>
+              <div class="briefing-list">
+                <div><time>2:14 PM</time><span>Package delivered</span></div>
+                <div><time>4:32 PM</time><span>One pet moment kept</span></div>
+                <div><time>5:08 PM</time><span>Living-room window open for 18 minutes</span></div>
+              </div>
+            </div>
+          </article>
+
+          <article class="proof-story movie-story" data-scenario-event="scenario_natural_language_action">
+            <div class="proof-copy">
+              <p class="eyebrow">Ask before guessing</p>
+              <h2>&quot;Movie night&quot; changes the plan for the room.</h2>
+              <p>Start with the result. HarborNavi can clarify which room and devices you mean, map the Home Assistant, Zigbee, and IR paths available in the setup, and make a temporary exception understandable before it runs.</p>
+              <div class="conversation" aria-label="Example movie night conversation">
+                <p class="from-user"><span>You</span>Movie night.</p>
+                <p><span>HarborNavi</span>Living-room TV, lights at 20%, AC at 72&deg;F?</p>
+                <p class="from-user"><span>You</span>Yes, and mute routine alerts for two hours.</p>
+                <strong>4 devices &middot; 1 temporary exception &middot; Ready</strong>
+              </div>
+            </div>
+            <figure><img src="/assets/home-v4-movie-night-workflow.png" alt="A movie-night request coordinating lighting, television, and climate devices" width="1536" height="1024" loading="lazy" /></figure>
+          </article>
+
+          <aside class="trust-strip">
+            <div><p class="eyebrow">A clear local boundary</p><h2>Access changes still wait for you.</h2></div>
+            <p>Adding a member, expanding room permissions, or pairing a Bluetooth or Zigbee device changes who can see or control the home. Planned fingerprint confirmation keeps those setup changes at the box. Everyday questions and routines stay easy.</p>
+            <img src="/assets/home-v4-trust-boundary.png" alt="Local fingerprint confirmation for a sensitive household access change" width="1536" height="1024" loading="lazy" />
+          </aside>
+        </section>
+
+        <section id="compatibility" class="compatibility-section" aria-labelledby="compat-title">
+          <div class="section-heading split-heading">
+            <div><p class="eyebrow">Works with your home</p><h2 id="compat-title">Bring the devices you already use.</h2></div>
+            <p>Keep the cameras, sensors, lights, appliances, and Home Assistant setup that already make sense. HarborNavi lets supported devices contribute to the same home picture instead of asking the household to switch into one brand.</p>
+          </div>
+          <div class="connection-grid">
+            {connectionPaths.map(([marker, title, body]) => <article><span>{marker}</span><h3>{title}</h3><p>{body}</p></article>)}
+          </div>
+          <p class="compat-note">Compatibility varies by device and setup. A clear supported-device list will be available before orders open.</p>
+        </section>
+
+        <section class="hardware-section" aria-labelledby="hardware-title">
+          <div class="hardware-intro">
+            <div><p class="eyebrow">Dedicated local hardware</p><h2 id="hardware-title">Why the home memory stays at home.</h2></div>
+            <p>The box gives household memory, device links, and trust boundaries a stable place to live. Cloud models can remain an optional path instead of becoming the owner of the home's full picture.</p>
+          </div>
+          <div class="hardware-grid">
+            {hardwareValues.map(([title, body], index) => <article><span>{String(index + 1).padStart(2, "0")}</span><h3>{title}</h3><p>{body}</p></article>)}
+          </div>
+          <details class="spec-details">
+            <summary>Launch hardware direction</summary>
+            <dl>
+              <div><dt>Compute</dt><dd>SpacemiT K3 platform; up to 60 TOPS-class AI compute design</dd></div>
+              <div><dt>Memory</dt><dd>16GB LPDDR5X base configuration; higher-memory option planned</dd></div>
+              <div><dt>Storage</dt><dd>128GB eMMC base storage; two M.2 slots for optional SSDs</dd></div>
+              <div><dt>Network and display</dt><dd>Dual 2.5GbE and HDMI output</dd></div>
+              <div><dt>Device links</dt><dd>Home Assistant, native Zigbee, IR, and selected camera paths</dd></div>
+              <div><dt>Trust hardware</dt><dd>Fingerprint confirmation and embedded secure element</dd></div>
+            </dl>
+          </details>
+        </section>
+
+        <section id="compare" class="compare-section" aria-labelledby="compare-title" data-scenario-event="scenario_comparison">
+          <div class="section-heading split-heading">
+            <div><p class="eyebrow">Different products keep different pieces</p><h2 id="compare-title">Who keeps the situation together?</h2></div>
+            <p>Camera AI, cloud assistants, local hubs, and installed systems each solve a different part of the home. The practical difference is who keeps the full picture together, and what happens when the routine changes.</p>
+          </div>
+          <div class="compare-wrap" role="region" aria-label="Comparison of smart-home product approaches" tabindex="0">
+            <table>
+              <caption class="sr-only">Smart-home product approach comparison</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Approach</th>
+                  {comparisonProducts.map((product) => <th class:list={{ featured: product.featured }} scope="col"><strong>{product.name}</strong><span>{product.note}</span></th>)}
+                </tr>
+              </thead>
+              <tbody>
+                {comparisonRows.map(([label, ...values]) => <tr><th scope="row">{label}</th>{values.map((value, index) => <td class:list={{ featured: comparisonProducts[index].featured }}>{value}</td>)}</tr>)}
+              </tbody>
+            </table>
+          </div>
+          <div class="comparison-notes">
+            <p>Examples vary by model and plan. This comparison focuses on the job each category is usually built to do.</p>
+            <p class="source-links">Official sources: {comparisonSources.map((source, index) => <>{index > 0 && <span aria-hidden="true"> &middot; </span>}<a href={source.href} target="_blank" rel="noreferrer">{source.label}</a></>)}</p>
+          </div>
+        </section>
+
+        <section class="faq-section" aria-labelledby="faq-title">
+          <div class="faq-intro"><p class="eyebrow">Questions before launch</p><h2 id="faq-title">What HarborNavi is being built to do.</h2></div>
+          <div class="faq-list">
+            {faqItems.map(([question, answer]) => <details><summary>{question}</summary><p>{answer}</p></details>)}
+          </div>
+        </section>
+
+        <section id="join" class="final-section" aria-labelledby="final-title">
+          <p class="eyebrow">HarborNavi launch list</p>
+          <h2 id="final-title">Real life changes. Your home should keep up.</h2>
+          <p>Join for HarborNavi Kickstarter and 15 Homes road updates.</p>
+          <form class="email-form final-form" data-early-form data-form-location="final">
+            <label class="sr-only" for="v5-final-email">Email address</label>
+            <input id="v5-final-email" type="email" name="email" autocomplete="email" placeholder="Email address" aria-describedby="v5-final-note v5-final-error" required />
+            <input class="sr-only" name="company" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" />
+            <button type="submit">Join the launch list</button>
+          </form>
+          <p id="v5-final-error" class="form-error" data-form-error aria-live="polite" hidden>We could not save your email. Please try again.</p>
+          <p id="v5-final-note" class="form-note">
+            Get HarborNavi Kickstarter pre-launch and 15 Homes road updates. Unsubscribe anytime. <a href="/privacy">Privacy</a>
+          </p>
+        </section>
+      </main>
+
+      <footer>
+        <a class="brand" href="#top" aria-label="HarborNavi home"><span class="brand-mark" aria-hidden="true"><img src="/favicon.svg" alt="" width="22" height="22" /></span><span>HarborNavi</span></a>
+        <p>The spark that brings your home to life.</p>
+      </footer>
+
+      <div class="modal" data-success-modal hidden role="dialog" aria-modal="true" aria-labelledby="v5-success-title" aria-describedby="v5-success-description">
+        <button class="modal-backdrop" type="button" tabindex="-1" aria-label="Close thank you dialog" data-modal-close></button>
+        <div class="modal-panel">
+          <button class="modal-close" type="button" aria-label="Close thank you dialog" data-modal-close>&times;</button>
+          <p class="eyebrow">Thank you</p>
+          <h2 id="v5-success-title">You are on the HarborNavi launch list.</h2>
+          <p id="v5-success-description">Your email is saved for Kickstarter pre-launch and 15 Homes road updates.</p>
+          <div class="survey-invite">
+            <p class="survey-label">Optional &middot; About 3&ndash;5 minutes</p>
+            <h3>Help us build HarborNavi around real homes.</h3>
+            <p>Tell us which devices you already use and what you would most want HarborNavi to help with. Your answers will guide compatibility testing and product priorities.</p>
+          </div>
+          <div class="modal-actions">
+            <a class="modal-primary-link" href={surveyUrl} target="_blank" rel="noreferrer" data-survey-link>Take the short survey <span aria-hidden="true">&rarr;</span></a>
+            <a href={campaign.roadHomesPath} data-road-home-apply>Apply to host one of the 15 homes <span aria-hidden="true">&rarr;</span></a>
+            <a href={discordUrl} target="_blank" rel="noreferrer" data-discord-link>Join the optional Discord discussion <span aria-hidden="true">&rarr;</span></a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script is:inline>
+      const route = document.body.dataset.route || "home-v5";
+      const utmKeys = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"];
+
+      function getSessionId() {
+        const key = "harbornavi_session_id";
+        let value = window.sessionStorage.getItem(key);
+        if (!value) {
+          value = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+          window.sessionStorage.setItem(key, value);
+        }
+        return value;
+      }
+
+      function getUtmPayload() {
+        const params = new URLSearchParams(window.location.search);
+        const current = {};
+        let hasCurrent = false;
+        utmKeys.forEach((key) => {
+          const value = params.get(key) || "";
+          current[key] = value;
+          hasCurrent = hasCurrent || Boolean(value);
+        });
+        if (hasCurrent) {
+          window.sessionStorage.setItem("harbornavi_utm", JSON.stringify(current));
+          return current;
+        }
+        try {
+          return JSON.parse(window.sessionStorage.getItem("harbornavi_utm") || "{}");
+        } catch {
+          return {};
+        }
+      }
+
+      function analyticsPayload(eventName, properties) {
+        const utm = getUtmPayload();
+        return {
+          event_name: eventName,
+          route,
+          path: window.location.pathname,
+          referrer: document.referrer,
+          form_location: properties?.form_location || "",
+          session_id: getSessionId(),
+          utm_source: utm.utm_source || "",
+          utm_medium: utm.utm_medium || "",
+          utm_campaign: utm.utm_campaign || "",
+          utm_content: utm.utm_content || "",
+          utm_term: utm.utm_term || "",
+          properties: properties || {}
+        };
+      }
+
+      window.harborTrack = function harborTrack(eventName, properties) {
+        window.harborEvents = window.harborEvents || [];
+        window.harborEvents.push({
+          eventName,
+          properties: properties || {},
+          timestamp: new Date().toISOString()
+        });
+
+        const body = JSON.stringify(analyticsPayload(eventName, properties || {}));
+        if (navigator.sendBeacon) {
+          const queued = navigator.sendBeacon("/api/events", new Blob([body], { type: "application/json" }));
+          if (queued) return;
+        }
+        fetch("/api/events", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body,
+          keepalive: true
+        }).catch(() => {});
+      };
+
+      const successModal = document.querySelector("[data-success-modal]");
+      let previousFocus = null;
+
+      function modalFocusables() {
+        if (!successModal) return [];
+        return Array.from(successModal.querySelectorAll("button:not([disabled]), a[href], input:not([disabled]), [tabindex]:not([tabindex='-1'])"));
+      }
+
+      function openSuccessModal() {
+        if (!successModal) return;
+        previousFocus = document.activeElement;
+        successModal.hidden = false;
+        document.body.classList.add("v5-modal-open");
+        successModal.querySelector(".modal-close")?.focus();
+      }
+
+      function closeSuccessModal() {
+        if (!successModal || successModal.hidden) return;
+        successModal.hidden = true;
+        document.body.classList.remove("v5-modal-open");
+        previousFocus?.focus?.();
+      }
+
+      window.harborTrack("page_view", { route });
+
+      document.querySelectorAll("[data-early-form]").forEach((form) => {
+        const input = form.querySelector("input[type='email']");
+        const error = form.parentElement?.querySelector("[data-form-error]");
+        let started = false;
+
+        input?.addEventListener("focus", () => {
+          if (started) return;
+          started = true;
+          window.harborTrack("early_bird_start", {
+            route,
+            form_location: form.dataset.formLocation || "unknown"
+          });
+        });
+
+        form.addEventListener("submit", async (event) => {
+          event.preventDefault();
+          const data = new FormData(form);
+          const button = form.querySelector("button[type='submit']");
+          const utm = getUtmPayload();
+          const formLocation = form.dataset.formLocation || "unknown";
+
+          if (error) error.hidden = true;
+          input?.removeAttribute("aria-invalid");
+          window.harborTrack("early_bird_submit", {
+            route,
+            form_location: formLocation,
+            has_email: Boolean(data.get("email"))
+          });
+
+          button?.setAttribute("disabled", "disabled");
+          form.classList.add("submitting");
+
+          try {
+            const response = await fetch("/api/waitlist", {
+              method: "POST",
+              headers: { "content-type": "application/json" },
+              body: JSON.stringify({
+                email: data.get("email"),
+                company: data.get("company"),
+                route,
+                form_location: formLocation,
+                path: window.location.pathname,
+                referrer: document.referrer,
+                utm_source: utm.utm_source || "",
+                utm_medium: utm.utm_medium || "",
+                utm_campaign: utm.utm_campaign || "",
+                utm_content: utm.utm_content || "",
+                utm_term: utm.utm_term || ""
+              })
+            });
+
+            if (!response.ok) throw new Error("Waitlist request failed");
+
+            window.harborTrack("early_bird_saved", {
+              route,
+              form_location: formLocation
+            });
+            form.reset();
+            openSuccessModal();
+          } catch {
+            window.harborTrack("early_bird_error", {
+              route,
+              form_location: formLocation
+            });
+            if (error) error.hidden = false;
+            input?.setAttribute("aria-invalid", "true");
+          } finally {
+            button?.removeAttribute("disabled");
+            form.classList.remove("submitting");
+          }
+        });
+      });
+
+      document.querySelectorAll("[data-modal-close]").forEach((button) => {
+        button.addEventListener("click", closeSuccessModal);
+      });
+
+      document.querySelectorAll("[data-discord-link]").forEach((link) => {
+        link.addEventListener("click", () => {
+          window.harborTrack("discord_click", { route });
+        });
+      });
+
+      document.querySelectorAll("[data-survey-link]").forEach((link) => {
+        link.addEventListener("click", () => {
+          window.harborTrack("survey_click", { route });
+        });
+      });
+
+      document.querySelectorAll("[data-road-home-apply]").forEach((link) => {
+        link.addEventListener("click", () => {
+          window.harborTrack("road_home_apply_click", { route, target_route: "15-homes" });
+        });
+      });
+
+      const observedScenarioEvents = new Set();
+      const scenarioObserver = "IntersectionObserver" in window
+        ? new IntersectionObserver((entries, observer) => {
+            entries.forEach((entry) => {
+              if (!entry.isIntersecting) return;
+              const eventName = entry.target.dataset.scenarioEvent;
+              if (!eventName || observedScenarioEvents.has(eventName)) return;
+              observedScenarioEvents.add(eventName);
+              window.harborTrack(eventName, { route });
+              observer.unobserve(entry.target);
+            });
+          }, { threshold: 0.35 })
+        : null;
+
+      document.querySelectorAll("[data-scenario-event]").forEach((section) => {
+        scenarioObserver?.observe(section);
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (!successModal || successModal.hidden) return;
+        if (event.key === "Escape") {
+          closeSuccessModal();
+          return;
+        }
+        if (event.key !== "Tab") return;
+
+        const focusables = modalFocusables();
+        if (!focusables.length) return;
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      });
+    </script>
+  </body>
+</html>

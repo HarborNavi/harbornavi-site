@@ -261,6 +261,26 @@ textarea {
   box-shadow: var(--shadow);
 }
 
+.honeypot-field {
+  position: absolute;
+  left: -9999px;
+  width: 1px;
+  height: 1px;
+  opacity: 0;
+  pointer-events: none;
+}
+
+.form-error {
+  margin: 0;
+  color: #8b1f1f;
+  font-weight: 700;
+}
+
+button:disabled {
+  cursor: wait;
+  opacity: 0.7;
+}
+
 .quick-waitlist-form label {
   display: grid;
   gap: 8px;

@@ -87,10 +87,12 @@ const structuredData = JSON.stringify({
                     Email
                     <input name="email" type="email" autocomplete="email" placeholder="you@example.com" required />
                   </label>
+                  <input class="honeypot-field" name="company" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" />
                   <button class="primary-button" type="submit">Join the email list</button>
                   <p class="form-success" data-form-success hidden>
                     Thanks. We will follow up when early access opens.
                   </p>
+                  <p class="form-error" data-form-error hidden>Something went wrong. Please try again in a moment.</p>
                 </form>
               </div>
             </div>
@@ -361,10 +363,12 @@ const structuredData = JSON.stringify({
             What do you wish your home camera could catch for you?
             <textarea name="pain_point" rows="4" placeholder="Tell us the moment you keep missing."></textarea>
           </label>
+          <input class="honeypot-field" name="company" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" />
           <button class="primary-button form-button" type="submit">Join early access</button>
           <p class="form-success" data-form-success hidden>
             Thanks. We will follow up when early access opens.
           </p>
+          <p class="form-error" data-form-error hidden>Something went wrong. Please try again in a moment.</p>
         </form>
       </section>
 
@@ -389,18 +393,78 @@ const structuredData = JSON.stringify({
     </footer>
 
     <script is:inline>
-      window.harborTrack =
-        window.harborTrack ||
-        function harborTrack(eventName, properties) {
-          window.harborEvents = window.harborEvents || [];
-          window.harborEvents.push({
-            eventName,
-            properties: properties || {},
-            timestamp: new Date().toISOString()
-          });
-        };
-
       const route = document.body.dataset.route || "unknown";
+      const utmKeys = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"];
+
+      function getSessionId() {
+        const key = "harbornavi_session_id";
+        let value = window.sessionStorage.getItem(key);
+        if (!value) {
+          value = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+          window.sessionStorage.setItem(key, value);
+        }
+        return value;
+      }
+
+      function getUtmPayload() {
+        const params = new URLSearchParams(window.location.search);
+        const current = {};
+        let hasCurrent = false;
+        utmKeys.forEach((key) => {
+          const value = params.get(key) || "";
+          current[key] = value;
+          hasCurrent = hasCurrent || Boolean(value);
+        });
+        if (hasCurrent) {
+          window.sessionStorage.setItem("harbornavi_utm", JSON.stringify(current));
+          return current;
+        }
+        try {
+          return JSON.parse(window.sessionStorage.getItem("harbornavi_utm") || "{}");
+        } catch {
+          return {};
+        }
+      }
+
+      function analyticsPayload(eventName, properties) {
+        const utm = getUtmPayload();
+        return {
+          event_name: eventName,
+          route,
+          path: window.location.pathname,
+          referrer: document.referrer,
+          form_location: properties?.form_location || properties?.form_kind || "",
+          session_id: getSessionId(),
+          utm_source: utm.utm_source || "",
+          utm_medium: utm.utm_medium || "",
+          utm_campaign: utm.utm_campaign || "",
+          utm_content: utm.utm_content || "",
+          utm_term: utm.utm_term || "",
+          properties: properties || {}
+        };
+      }
+
+      window.harborTrack = function harborTrack(eventName, properties) {
+        window.harborEvents = window.harborEvents || [];
+        window.harborEvents.push({
+          eventName,
+          properties: properties || {},
+          timestamp: new Date().toISOString()
+        });
+
+        const body = JSON.stringify(analyticsPayload(eventName, properties || {}));
+        if (navigator.sendBeacon) {
+          const queued = navigator.sendBeacon("/api/events", new Blob([body], { type: "application/json" }));
+          if (queued) return;
+        }
+        fetch("/api/events", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body,
+          keepalive: true
+        }).catch(() => {});
+      };
+
       window.harborTrack("page_view", { route });
 
       document.querySelectorAll("[data-track]").forEach((element) => {
@@ -428,27 +492,76 @@ const structuredData = JSON.stringify({
       });
 
       document.querySelectorAll("[data-waitlist-form]").forEach((form) => {
-        form.addEventListener("submit", (event) => {
+        form.addEventListener("submit", async (event) => {
           event.preventDefault();
           const data = new FormData(form);
           const betaWillingness = data.get("beta_willingness");
+          const formKind = form.dataset.formKind || "full";
+          const success = form.querySelector("[data-form-success]");
+          const error = form.querySelector("[data-form-error]");
+          const button = form.querySelector("button[type='submit']");
+          const utm = getUtmPayload();
+
+          if (success) success.hidden = true;
+          if (error) error.hidden = true;
+
           window.harborTrack("waitlist_submit", {
             route,
-            form_kind: form.dataset.formKind || "full",
+            form_kind: formKind,
             has_email: Boolean(data.get("email")),
             main_interest: data.get("main_interest") || "",
             has_camera_setup: Boolean(data.get("camera_setup")),
             beta_willingness: betaWillingness || ""
           });
-          if (betaWillingness === "own_footage" || data.get("pain_point")) {
-            window.harborTrack("qualified_lead", { route });
-          }
-          if (betaWillingness === "own_footage") {
-            window.harborTrack("beta_interview_request", { route });
-          }
-          const success = form.querySelector("[data-form-success]");
-          if (success) {
-            success.hidden = false;
+
+          button?.setAttribute("disabled", "disabled");
+          try {
+            const response = await fetch("/api/waitlist", {
+              method: "POST",
+              headers: { "content-type": "application/json" },
+              body: JSON.stringify({
+                email: data.get("email"),
+                company: data.get("company"),
+                route,
+                form_location: formKind,
+                path: window.location.pathname,
+                referrer: document.referrer,
+                utm_source: utm.utm_source || "",
+                utm_medium: utm.utm_medium || "",
+                utm_campaign: utm.utm_campaign || "",
+                utm_content: utm.utm_content || "",
+                utm_term: utm.utm_term || "",
+                primary_interest: data.get("main_interest"),
+                camera_setup: data.get("camera_setup"),
+                beta_intent: betaWillingness
+              })
+            });
+            if (!response.ok) {
+              throw new Error("Waitlist request failed");
+            }
+
+            window.harborTrack("waitlist_saved", {
+              route,
+              form_kind: formKind,
+              main_interest: data.get("main_interest") || "",
+              beta_willingness: betaWillingness || ""
+            });
+            if (betaWillingness === "own_footage" || data.get("pain_point")) {
+              window.harborTrack("qualified_lead", { route });
+            }
+            if (betaWillingness === "own_footage") {
+              window.harborTrack("beta_interview_request", { route });
+            }
+            form.reset();
+            if (success) success.hidden = false;
+          } catch {
+            window.harborTrack("waitlist_error", {
+              route,
+              form_kind: formKind
+            });
+            if (error) error.hidden = false;
+          } finally {
+            button?.removeAttribute("disabled");
           }
         });
       });

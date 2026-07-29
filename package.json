@@ -6,10 +6,16 @@
   "scripts": {
     "dev": "astro dev --host 127.0.0.1",
     "build": "astro build",
-    "preview": "astro preview --host 127.0.0.1"
+    "preview": "astro preview --host 127.0.0.1",
+    "typecheck": "tsc --noEmit",
+    "test": "node --test tests/analytics-sanitize.test.mjs tests/campaign-contract.test.mjs tests/waitlist-consent.test.mjs"
   },
   "devDependencies": {
+    "@types/node": "^26.1.0",
     "astro": "^7.0.4",
     "typescript": "^6.0.3"
+  },
+  "dependencies": {
+    "@neondatabase/serverless": "^1.1.0"
   }
 }

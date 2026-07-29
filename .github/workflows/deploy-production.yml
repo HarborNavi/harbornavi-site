@@ -1,0 +1,48 @@
+name: Deploy production
+
+on:
+  push:
+    branches:
+      - main
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+concurrency:
+  group: harbornavi-production
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    if: github.actor == 'fiona-xstation' || github.event_name == 'workflow_dispatch'
+    runs-on: ubuntu-latest
+    steps:
+      - name: Trigger Vercel production deployment
+        env:
+          VERCEL_DEPLOY_HOOK_URL: ${{ secrets.VERCEL_DEPLOY_HOOK_URL }}
+        shell: bash
+        run: |
+          set -euo pipefail
+
+          if [[ -z "${VERCEL_DEPLOY_HOOK_URL:-}" ]]; then
+            echo "VERCEL_DEPLOY_HOOK_URL is not configured."
+            exit 1
+          fi
+
+          response="$(curl \
+            --fail-with-body \
+            --silent \
+            --show-error \
+            --retry 3 \
+            --retry-all-errors \
+            --request POST \
+            "$VERCEL_DEPLOY_HOOK_URL")"
+
+          job_id="$(jq -r '.job.id // empty' <<<"$response")"
+          if [[ -z "$job_id" ]]; then
+            echo "Vercel did not return a deployment job ID."
+            exit 1
+          fi
+
+          echo "Vercel accepted production deployment job: $job_id"
