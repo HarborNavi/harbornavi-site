@@ -1,11 +1,20 @@
 import assert from "node:assert/strict";
-import { readFile } from "node:fs/promises";
+import { readFile, readdir } from "node:fs/promises";
 import test from "node:test";
 
 import { isAllowedAnalyticsEventName } from "../src/server/analytics-events.ts";
 
 const root = new URL("../", import.meta.url);
 const source = async (path) => readFile(new URL(path, root), "utf8");
+
+async function filesUnder(path) {
+  const entries = await readdir(new URL(path, root), { withFileTypes: true });
+  const files = await Promise.all(entries.map((entry) => {
+    const child = `${path}${entry.name}`;
+    return entry.isDirectory() ? filesUnder(`${child}/`) : [child];
+  }));
+  return files.flat();
+}
 
 test("campaign dates and public route stay on the approved contract", async () => {
   const config = await source("src/data/campaign.ts");
@@ -92,6 +101,22 @@ test("public roots redirect to home-v6 and archived pages stay out of the sitema
   }
   assert.match(sitemap, /<loc>https:\/\/harbornavi\.com\/home-v6<\/loc>/);
   assert.doesNotMatch(sitemap, /<loc>https:\/\/harbornavi\.com\/home-v[45]<\/loc>/);
+});
+
+test("Vercel routing stays within the Hobby function limit", async () => {
+  const vercel = JSON.parse(await source("vercel.json"));
+  const apiFunctions = (await filesUnder("api/")).filter((path) => /\.[cm]?[jt]s$/.test(path));
+
+  assert.ok(apiFunctions.length <= 12, `expected at most 12 Vercel functions, found ${apiFunctions.length}`);
+  assert.deepEqual(
+    vercel.rewrites.find((rewrite) => rewrite.source === "/api/waitlist/profile"),
+    {
+      source: "/api/waitlist/profile",
+      destination: "/api/waitlist?action=profile"
+    }
+  );
+  assert.equal(vercel.crons.find((cron) => cron.path === "/api/cron/retry-waitlist")?.schedule, "0 2 * * *");
+  assert.match(await source(".github/workflows/retry-waitlist.yml"), /cron: "17 \* \* \* \*"/);
 });
 
 test("privacy copy documents the V6 double-opt-in and historical-page boundary", async () => {

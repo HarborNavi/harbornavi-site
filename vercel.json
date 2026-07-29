@@ -13,6 +13,10 @@
   ],
   "rewrites": [
     {
+      "source": "/api/waitlist/profile",
+      "destination": "/api/waitlist?action=profile"
+    },
+    {
       "source": "/api/reservations/status",
       "destination": "/api/reservations?action=status"
     },
