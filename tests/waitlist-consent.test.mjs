@@ -1,4 +1,5 @@
 import assert from "node:assert/strict";
+import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 import {
@@ -30,4 +31,20 @@ test("home-v6 pending-confirmation metadata is fixed by the server", () => {
   });
   assert.deepEqual(serverConsentMetadata("home-v5", now), {});
   assert.deepEqual(serverConsentMetadata("home-v4", now), {});
+});
+
+test("dynamic JSONB metadata values declare their PostgreSQL type", async () => {
+  const source = await readFile(new URL("../src/server/waitlist.ts", import.meta.url), "utf8");
+  const typedValues = [
+    "consentScope",
+    "consentVersion",
+    "requestedAt",
+    "providerId",
+    "topicId"
+  ];
+
+  for (const value of typedValues) {
+    assert.match(source, new RegExp(`\\$\\{${value}\\}::text`));
+  }
+  assert.equal((source.match(/\$\{error\.slice\(0, 500\)\}::text/g) || []).length, 3);
 });

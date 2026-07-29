@@ -358,8 +358,8 @@ export async function prepareWaitlistConsent(
     update waitlist_leads
     set
       metadata = metadata || jsonb_build_object(
-        'consent_scope', ${consentScope},
-        'consent_version', ${consentVersion},
+        'consent_scope', ${consentScope}::text,
+        'consent_version', ${consentVersion}::text,
         'consent_requested_at', case
           when metadata->>'consent_version' = ${consentVersion}
             and (
@@ -370,8 +370,8 @@ export async function prepareWaitlistConsent(
                 and nullif(metadata->>'confirmation_email_attempted_at', '')::timestamptz > now() - interval '5 minutes'
               )
             )
-          then coalesce(metadata->>'consent_requested_at', ${requestedAt})
-          else ${requestedAt}
+          then coalesce(metadata->>'consent_requested_at', ${requestedAt}::text)
+          else ${requestedAt}::text
         end,
         'consent_status', case
           when metadata->>'consent_version' = ${consentVersion}
@@ -435,7 +435,7 @@ export async function markConfirmationEmailSent(leadId: string, providerId: stri
       metadata = metadata || jsonb_build_object(
         'confirmation_email_status', 'sent',
         'confirmation_email_sent_at', now()::text,
-        'confirmation_email_provider_id', ${providerId},
+        'confirmation_email_provider_id', ${providerId}::text,
         'confirmation_email_error', null
       ),
       updated_at = now()
@@ -450,7 +450,7 @@ export async function markConfirmationEmailFailed(leadId: string, error: string)
     set
       metadata = metadata || jsonb_build_object(
         'confirmation_email_status', 'failed',
-        'confirmation_email_error', ${error.slice(0, 500)}
+        'confirmation_email_error', ${error.slice(0, 500)}::text
       ),
       updated_at = now()
     where id = ${leadId}
@@ -519,7 +519,7 @@ export async function markContactSynced(leadId: string, topicId: string | null) 
       metadata = metadata || jsonb_build_object(
         'contact_sync_status', 'synced',
         'contact_synced_at', now()::text,
-        'contact_sync_topic_id', ${topicId},
+        'contact_sync_topic_id', ${topicId}::text,
         'contact_sync_error', null
       ),
       updated_at = now()
@@ -534,7 +534,7 @@ export async function markContactSyncFailed(leadId: string, error: string) {
     set
       metadata = metadata || jsonb_build_object(
         'contact_sync_status', 'failed',
-        'contact_sync_error', ${error.slice(0, 500)}
+        'contact_sync_error', ${error.slice(0, 500)}::text
       ),
       updated_at = now()
     where id = ${leadId}
@@ -610,7 +610,7 @@ export async function markOperatorNotificationFailed(leadId: string, error: stri
     set
       metadata = metadata || jsonb_build_object(
         'operator_notification_status', 'failed',
-        'operator_notification_error', ${error.slice(0, 500)}
+        'operator_notification_error', ${error.slice(0, 500)}::text
       ),
       updated_at = now()
     where id = ${leadId}
