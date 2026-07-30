@@ -123,7 +123,26 @@ test("public roots redirect to home-v6 and archived pages stay out of the sitema
     });
   }
   assert.match(sitemap, /<loc>https:\/\/harbornavi\.com\/home-v6<\/loc>/);
+  assert.match(sitemap, /<loc>https:\/\/harbornavi\.com\/home-v7<\/loc>/);
   assert.doesNotMatch(sitemap, /<loc>https:\/\/harbornavi\.com\/home-v[45]<\/loc>/);
+});
+
+test("home-v7 and admin666 are isolated from the retained production routes", async () => {
+  const homeV6 = await source("src/components/HomeV6Landing.astro");
+  const homeV7Page = await source("src/pages/home-v7.astro");
+  const homeV7 = await source("src/components/HomeV7Landing.astro");
+  const admin = await source("src/pages/admin.astro");
+  const admin666 = await source("src/pages/admin666.astro");
+
+  assert.match(homeV7Page, /HomeV7Landing/);
+  assert.match(homeV7, /https:\/\/harbornavi\.com\/home-v7/);
+  assert.match(homeV7, /data-route="home-v7"/);
+  assert.match(homeV7, /Be One of the First 5 Pilot Families/);
+  assert.doesNotMatch(homeV6, /Be One of the First 5 Pilot Families/);
+  assert.match(admin666, /data-tab-button="pilot-applications"/);
+  assert.match(admin666, /data-tab-button="media"/);
+  assert.doesNotMatch(admin, /data-tab-button="pilot-applications"/);
+  assert.doesNotMatch(admin, /data-tab-button="media"/);
 });
 
 test("Vercel routing stays within the Hobby function limit", async () => {

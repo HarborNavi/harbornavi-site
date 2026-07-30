@@ -1,0 +1,21 @@
+---
+import type { RouteKey } from "../data/landingPages";
+
+interface Props {
+  activeRoute?: RouteKey | "privacy";
+}
+
+const { activeRoute } = Astro.props;
+const ctaHref = activeRoute === "privacy" ? "/home-v7#join" : "#waitlist";
+---
+
+<header class="site-header">
+  <a class="brand" href="/home-v7" aria-label="HarborNavi home">
+    <span class="brand-mark" aria-hidden="true">
+      <img src="/harbornavi-logo-mark.png" alt="" width="62" height="34" />
+    </span>
+    <span>HarborNavi</span>
+  </a>
+  <p class="header-note">Private beta list</p>
+  <a class="header-cta" href={ctaHref} data-track="waitlist_start">Join waitlist</a>
+</header>

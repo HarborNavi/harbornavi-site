@@ -1,0 +1,1257 @@
+---
+import "../styles/admin666.css";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="noindex,nofollow" />
+    <title>Growth Admin | HarborNavi</title>
+    <link rel="icon" href="/favicon.png" type="image/png" sizes="512x512" />
+  </head>
+  <body class="admin-page">
+    <header class="admin-header">
+      <a class="admin-brand" href="/home-v7" aria-label="HarborNavi home">
+        <img src="/harbornavi-logo-mark.png" alt="" width="42" height="23" />
+        <span>HarborNavi</span>
+      </a>
+      <nav aria-label="Admin links">
+        <a href="/home-v7">Home v7</a>
+        <a href="/pilot-families">Pilot Program</a>
+        <button type="button" data-logout hidden>Sign out</button>
+      </nav>
+    </header>
+
+    <main>
+      <section class="admin-shell admin-login" data-login-panel aria-labelledby="login-title">
+        <div>
+          <p class="admin-eyebrow">Private admin</p>
+          <h1 id="login-title">Growth cockpit</h1>
+          <p>Sign in with the admin password configured in Vercel.</p>
+        </div>
+        <form class="login-form" data-login-form>
+          <label>
+            Admin password
+            <input name="password" type="password" autocomplete="current-password" required />
+          </label>
+          <button type="submit">Sign in</button>
+          <p class="admin-message" data-login-message hidden></p>
+        </form>
+      </section>
+
+      <section class="admin-shell leads-panel" data-leads-panel aria-labelledby="admin-title" hidden>
+        <div class="leads-head">
+          <div>
+            <p class="admin-eyebrow">Early access</p>
+            <h1 id="admin-title">Growth cockpit</h1>
+          </div>
+          <div class="lead-actions">
+            <select data-range aria-label="Analytics range">
+              <option value="7">7 days</option>
+              <option value="30">30 days</option>
+              <option value="all">All time</option>
+            </select>
+            <button type="button" data-refresh-analytics>Refresh dashboard</button>
+            <button type="button" data-refresh>Refresh leads</button>
+            <button type="button" data-refresh-health>Check system</button>
+            <button type="button" data-export>Export CSV</button>
+          </div>
+        </div>
+
+        <div class="admin-tabs" role="tablist" aria-label="Admin views">
+          <button type="button" class="active" data-tab-button="dashboard">Dashboard</button>
+          <button type="button" data-tab-button="leads">Leads</button>
+          <button type="button" data-tab-button="pilot-applications">Pilot Applications</button>
+          <button type="button" data-tab-button="media">Media</button>
+          <button type="button" data-tab-button="system">System</button>
+        </div>
+
+        <section class="tab-panel" data-tab-panel="pilot-applications" hidden>
+          <div class="leads-head">
+            <div>
+              <p class="admin-eyebrow">Pilot Families</p>
+              <h2>Program applications</h2>
+              <p>Review the six answers submitted through the Pilot Families application. Technical request metadata is not shown here.</p>
+            </div>
+            <div class="lead-actions">
+              <button type="button" data-refresh-pilot-applications>Refresh applications</button>
+              <button type="button" data-export-pilot-applications>Export CSV</button>
+            </div>
+          </div>
+
+          <div class="metric-grid pilot-application-metrics" aria-label="Pilot application metrics">
+            <article><span>Total applications</span><strong data-pilot-total>0</strong></article>
+            <article><span>New</span><strong data-pilot-new>0</strong></article>
+            <article><span>Selected</span><strong data-pilot-selected>0</strong></article>
+          </div>
+
+          <div class="pilot-application-filters" aria-label="Pilot application filters">
+            <select data-pilot-filter-status aria-label="Filter pilot applications by status">
+              <option value="">All statuses</option>
+              <option value="new">New</option>
+              <option value="reviewing">Reviewing</option>
+              <option value="selected">Selected</option>
+              <option value="not_selected">Not selected</option>
+            </select>
+            <input data-pilot-filter-search type="search" placeholder="Search name, email, ZIP, devices, or answers" />
+          </div>
+
+          <p class="admin-message" data-pilot-applications-message hidden></p>
+          <div class="lead-table-wrap">
+            <table class="pilot-applications-table">
+              <thead>
+                <tr>
+                  <th>Applicant</th>
+                  <th>ZIP Code</th>
+                  <th>Smart devices</th>
+                  <th>Why interested</th>
+                  <th>Referral</th>
+                  <th>Status</th>
+                  <th>Submitted</th>
+                </tr>
+              </thead>
+              <tbody data-pilot-applications-body>
+                <tr><td colspan="7">No pilot applications loaded yet.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="tab-panel" data-tab-panel="media" hidden>
+          <div class="leads-head">
+            <div>
+              <p class="admin-eyebrow">Visual library</p>
+              <h2>Page media</h2>
+              <p>Upload JPG, PNG, or GIF images. Two carousel positions are upload-managed; the Pilot Families campaign stays in the first position.</p>
+            </div>
+          </div>
+          <form class="media-upload" data-media-upload>
+            <label>
+              Upload image
+              <input type="file" name="file" accept="image/jpeg,image/png,image/gif" required />
+            </label>
+            <label>
+              Use in
+              <select name="slot">
+                <option value="hero-carousel">Hero carousel</option>
+                <option value="page">Other page media</option>
+              </select>
+            </label>
+            <label>
+              Alt text
+              <input type="text" name="alt_text" maxlength="240" placeholder="Describe what the image shows" required />
+            </label>
+            <button type="submit">Upload image</button>
+          </form>
+          <p class="admin-message" data-media-message hidden></p>
+          <div class="media-grid" data-media-list>
+            <p class="admin-message">No media loaded yet.</p>
+          </div>
+        </section>
+
+        <section class="tab-panel" data-tab-panel="dashboard">
+          <div class="metric-grid analytics-metrics" aria-label="Growth metrics">
+            <article>
+              <span>Page views</span>
+              <strong data-analytics-page-views>0</strong>
+            </article>
+            <article>
+              <span>Form starts</span>
+              <strong data-analytics-form-starts>0</strong>
+            </article>
+            <article>
+              <span>Form submits</span>
+              <strong data-analytics-form-submits>0</strong>
+            </article>
+            <article>
+              <span>Saved leads</span>
+              <strong data-analytics-saved-leads>0</strong>
+            </article>
+            <article>
+              <span>Conversion</span>
+              <strong data-analytics-conversion>0%</strong>
+            </article>
+            <article>
+              <span>Discord clicks</span>
+              <strong data-analytics-discord>0</strong>
+            </article>
+            <article>
+              <span>Compatibility profiles</span>
+              <strong data-analytics-compatibility>0</strong>
+            </article>
+            <article>
+              <span>Positive at $449</span>
+              <strong data-analytics-price-rate>0%</strong>
+            </article>
+            <article>
+              <span>Founder reservations</span>
+              <strong data-analytics-reservations>0</strong>
+            </article>
+          </div>
+
+          <div class="dashboard-grid">
+            <article class="admin-panel">
+              <h2>Funnel by route and source</h2>
+              <div class="lead-table-wrap">
+                <table class="compact-table">
+                  <thead>
+                    <tr>
+                      <th>Route</th>
+                      <th>Source</th>
+                      <th>Campaign</th>
+                      <th>Form</th>
+                      <th>Views</th>
+                      <th>Starts</th>
+                      <th>Submits</th>
+                      <th>Saved</th>
+                      <th>Discord</th>
+                    </tr>
+                  </thead>
+                  <tbody data-funnel-body>
+                    <tr><td colspan="9">No analytics loaded yet.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </article>
+            <article class="admin-panel">
+              <h2>Event mix</h2>
+              <div class="lead-table-wrap">
+                <table class="compact-table narrow">
+                  <thead>
+                    <tr>
+                      <th>Event</th>
+                      <th>Count</th>
+                    </tr>
+                  </thead>
+                  <tbody data-events-body>
+                    <tr><td colspan="2">No events loaded yet.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </article>
+            <article class="admin-panel">
+              <h2>Lead interests</h2>
+              <div class="lead-table-wrap">
+                <table class="compact-table narrow">
+                  <thead>
+                    <tr>
+                      <th>Interest</th>
+                      <th>Leads</th>
+                    </tr>
+                  </thead>
+                  <tbody data-interests-body>
+                    <tr><td colspan="2">No profiles loaded yet.</td></tr>
+                  </tbody>
+                </table>
+              </div>
+            </article>
+            <article class="admin-panel">
+              <h2>Camera connection paths</h2>
+              <div class="lead-table-wrap">
+                <table class="compact-table narrow">
+                  <thead><tr><th>Connection</th><th>Leads</th></tr></thead>
+                  <tbody data-connections-body><tr><td colspan="2">No profiles loaded yet.</td></tr></tbody>
+                </table>
+              </div>
+            </article>
+            <article class="admin-panel">
+              <h2>Camera brands</h2>
+              <div class="lead-table-wrap">
+                <table class="compact-table narrow">
+                  <thead><tr><th>Brand</th><th>Leads</th></tr></thead>
+                  <tbody data-brands-body><tr><td colspan="2">No brands loaded yet.</td></tr></tbody>
+                </table>
+              </div>
+            </article>
+            <article class="admin-panel">
+              <h2>$449 price intent</h2>
+              <div class="lead-table-wrap">
+                <table class="compact-table narrow">
+                  <thead><tr><th>Intent</th><th>Leads</th></tr></thead>
+                  <tbody data-price-body><tr><td colspan="2">No price profiles loaded yet.</td></tr></tbody>
+                </table>
+              </div>
+            </article>
+            <article class="admin-panel">
+              <h2>Founder reservation status</h2>
+              <div class="lead-table-wrap">
+                <table class="compact-table narrow">
+                  <thead><tr><th>Status</th><th>Leads</th></tr></thead>
+                  <tbody data-reservations-body><tr><td colspan="2">No reservations loaded yet.</td></tr></tbody>
+                </table>
+              </div>
+            </article>
+          </div>
+          <p class="admin-message" data-analytics-message hidden></p>
+        </section>
+
+        <section class="tab-panel" data-tab-panel="leads" hidden>
+          <div class="lead-filters" aria-label="Lead filters">
+            <select data-filter-status aria-label="Filter by status">
+              <option value="">All statuses</option>
+              <option value="new">New</option>
+              <option value="qualified">Qualified</option>
+              <option value="contacted">Contacted</option>
+              <option value="not_fit">Not fit</option>
+            </select>
+            <select data-filter-interest aria-label="Filter by interest">
+              <option value="">All interests</option>
+            </select>
+            <select data-filter-brand aria-label="Filter by camera brand">
+              <option value="">All camera brands</option>
+            </select>
+            <select data-filter-connection aria-label="Filter by camera connection">
+              <option value="">All connection paths</option>
+            </select>
+            <select data-filter-price aria-label="Filter by price intent">
+              <option value="">All price intents</option>
+              <option value="definitely">Definitely</option>
+              <option value="probably">Probably</option>
+              <option value="not_sure">Not sure</option>
+              <option value="no">No</option>
+            </select>
+            <select data-filter-reservation aria-label="Filter by Founder reservation">
+              <option value="">All reservation states</option>
+              <option value="none">None</option>
+              <option value="checkout_started">Checkout started</option>
+              <option value="paid">Paid</option>
+              <option value="refund_pending">Refund pending</option>
+              <option value="refunded">Refunded</option>
+              <option value="expired">Expired</option>
+            </select>
+            <input data-filter-source type="search" placeholder="Filter source, campaign, or referrer" />
+          </div>
+
+          <div class="metric-grid" aria-label="Waitlist metrics">
+            <article>
+              <span>Total leads</span>
+              <strong data-total-leads>0</strong>
+            </article>
+            <article>
+              <span>New</span>
+              <strong data-new-leads>0</strong>
+            </article>
+            <article>
+              <span>Qualified</span>
+              <strong data-qualified-leads>0</strong>
+            </article>
+          </div>
+
+          <p class="admin-message" data-leads-message hidden></p>
+
+          <div class="lead-table-wrap">
+            <table>
+              <thead>
+                <tr>
+                  <th>Email</th>
+                  <th>Route</th>
+                  <th>Source</th>
+                  <th>Submitted</th>
+                  <th>Email service</th>
+                  <th>Interest</th>
+                  <th>Camera setup</th>
+                  <th>Price</th>
+                  <th>Founder</th>
+                  <th>Status</th>
+                  <th>Notes</th>
+                </tr>
+              </thead>
+              <tbody data-leads-body>
+                <tr>
+                  <td colspan="11">No leads loaded yet.</td>
+                </tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="tab-panel" data-tab-panel="system" hidden>
+          <div class="status-grid" aria-label="System status">
+            <article data-status-card="environment">
+              <span>Required env</span>
+              <strong data-status-label>Unknown</strong>
+              <small data-status-detail>Not checked yet.</small>
+            </article>
+            <article data-status-card="database">
+              <span>Database</span>
+              <strong data-status-label>Unknown</strong>
+              <small data-status-detail>Not checked yet.</small>
+            </article>
+            <article data-status-card="table">
+              <span>Waitlist table</span>
+              <strong data-status-label>Unknown</strong>
+              <small data-status-detail>Not checked yet.</small>
+            </article>
+            <article data-status-card="analytics">
+              <span>Analytics table</span>
+              <strong data-status-label>Unknown</strong>
+              <small data-status-detail>Not checked yet.</small>
+            </article>
+            <article data-status-card="reservations">
+              <span>Reservations table</span>
+              <strong data-status-label>Unknown</strong>
+              <small data-status-detail>Not checked yet.</small>
+            </article>
+            <article data-status-card="stripe">
+              <span>Stripe reservations</span>
+              <strong data-status-label>Unknown</strong>
+              <small data-status-detail>Not checked yet.</small>
+            </article>
+            <article data-status-card="operator-notifications">
+              <span>Operator lead alerts</span>
+              <strong data-status-label>Unknown</strong>
+              <small data-status-detail>Not checked yet.</small>
+            </article>
+            <article data-status-card="subscriber-confirmation">
+              <span>Subscriber confirmation</span>
+              <strong data-status-label>Unknown</strong>
+              <small data-status-detail>Not checked yet.</small>
+            </article>
+            <article data-status-card="contact-sync">
+              <span>Kickstarter topic sync</span>
+              <strong data-status-label>Unknown</strong>
+              <small data-status-detail>Not checked yet.</small>
+            </article>
+            <article data-status-card="waitlist-retry">
+              <span>Waitlist retry job</span>
+              <strong data-status-label>Unknown</strong>
+              <small data-status-detail>Not checked yet.</small>
+            </article>
+          </div>
+        </section>
+      </section>
+    </main>
+
+    <template data-lead-row-template>
+      <tr>
+        <td>
+          <a data-email></a>
+          <small data-count></small>
+        </td>
+        <td>
+          <span data-route></span>
+          <small data-form-location></small>
+        </td>
+        <td>
+          <span data-source></span>
+          <small data-referrer></small>
+        </td>
+        <td data-created></td>
+        <td>
+          <span data-consent-status></span>
+          <small data-email-service-status></small>
+        </td>
+        <td>
+          <span data-interest></span>
+          <small data-beta-intent></small>
+        </td>
+        <td>
+          <span data-camera-brands></span>
+          <small data-camera-connection></small>
+          <small data-camera-models></small>
+          <small data-camera-setup></small>
+        </td>
+        <td>
+          <span data-price-intent></span>
+          <small data-purchase-blocker></small>
+        </td>
+        <td>
+          <span data-reservation-status></span>
+          <small data-profile-status></small>
+        </td>
+        <td>
+          <select data-status>
+            <option value="new">New</option>
+            <option value="qualified">Qualified</option>
+            <option value="contacted">Contacted</option>
+            <option value="not_fit">Not fit</option>
+          </select>
+        </td>
+        <td>
+          <textarea data-notes rows="2" placeholder="Follow-up notes"></textarea>
+          <button type="button" data-save>Save</button>
+        </td>
+      </tr>
+    </template>
+
+    <script is:inline>
+      const tokenKey = "harbornavi_admin_token";
+      let leads = [];
+      let analytics = null;
+      let media = [];
+      let pilotApplications = [];
+
+      const loginPanel = document.querySelector("[data-login-panel]");
+      const leadsPanel = document.querySelector("[data-leads-panel]");
+      const logoutButton = document.querySelector("[data-logout]");
+      const loginForm = document.querySelector("[data-login-form]");
+      const loginMessage = document.querySelector("[data-login-message]");
+      const leadsMessage = document.querySelector("[data-leads-message]");
+      const analyticsMessage = document.querySelector("[data-analytics-message]");
+      const mediaMessage = document.querySelector("[data-media-message]");
+      const mediaUpload = document.querySelector("[data-media-upload]");
+      const mediaList = document.querySelector("[data-media-list]");
+      const pilotApplicationsMessage = document.querySelector("[data-pilot-applications-message]");
+      const pilotApplicationsBody = document.querySelector("[data-pilot-applications-body]");
+      const pilotStatusFilter = document.querySelector("[data-pilot-filter-status]");
+      const pilotSearchFilter = document.querySelector("[data-pilot-filter-search]");
+      const leadsBody = document.querySelector("[data-leads-body]");
+      const rowTemplate = document.querySelector("[data-lead-row-template]");
+      const rangeSelect = document.querySelector("[data-range]");
+      const statusFilter = document.querySelector("[data-filter-status]");
+      const interestFilter = document.querySelector("[data-filter-interest]");
+      const brandFilter = document.querySelector("[data-filter-brand]");
+      const connectionFilter = document.querySelector("[data-filter-connection]");
+      const priceFilter = document.querySelector("[data-filter-price]");
+      const reservationFilter = document.querySelector("[data-filter-reservation]");
+      const sourceFilter = document.querySelector("[data-filter-source]");
+      const statusCards = {
+        environment: document.querySelector('[data-status-card="environment"]'),
+        database: document.querySelector('[data-status-card="database"]'),
+        table: document.querySelector('[data-status-card="table"]'),
+        analytics: document.querySelector('[data-status-card="analytics"]'),
+        reservations: document.querySelector('[data-status-card="reservations"]'),
+        stripe: document.querySelector('[data-status-card="stripe"]'),
+        operatorNotifications: document.querySelector('[data-status-card="operator-notifications"]'),
+        subscriberConfirmation: document.querySelector('[data-status-card="subscriber-confirmation"]'),
+        contactSync: document.querySelector('[data-status-card="contact-sync"]'),
+        waitlistRetry: document.querySelector('[data-status-card="waitlist-retry"]')
+      };
+
+      function getToken() {
+        return window.sessionStorage.getItem(tokenKey);
+      }
+
+      function setToken(token) {
+        window.sessionStorage.setItem(tokenKey, token);
+      }
+
+      function clearToken() {
+        window.sessionStorage.removeItem(tokenKey);
+      }
+
+      function setMessage(element, message, tone = "info") {
+        if (!element) return;
+        element.textContent = message;
+        element.dataset.tone = tone;
+        element.hidden = !message;
+      }
+
+      function showLoggedIn(loggedIn) {
+        loginPanel.hidden = loggedIn;
+        leadsPanel.hidden = !loggedIn;
+        logoutButton.hidden = !loggedIn;
+      }
+
+      function activateTab(name) {
+        document.querySelectorAll("[data-tab-button]").forEach((button) => {
+          const active = button.dataset.tabButton === name;
+          button.classList.toggle("active", active);
+        });
+        document.querySelectorAll("[data-tab-panel]").forEach((panel) => {
+          panel.hidden = panel.dataset.tabPanel !== name;
+        });
+      }
+
+      function formatDate(value) {
+        if (!value) return "";
+        return new Intl.DateTimeFormat(undefined, {
+          month: "short",
+          day: "numeric",
+          hour: "2-digit",
+          minute: "2-digit"
+        }).format(new Date(value));
+      }
+
+      function leadSource(lead) {
+        return [lead.utm_source, lead.utm_medium, lead.utm_campaign].filter(Boolean).join(" / ") || "direct";
+      }
+
+      function missingNames(values) {
+        return Object.entries(values || {})
+          .filter(([, ready]) => !ready)
+          .map(([name]) => name)
+          .join(", ");
+      }
+
+      function setStatusCard(name, label, detail, tone = "neutral") {
+        const card = statusCards[name];
+        if (!card) return;
+        card.dataset.tone = tone;
+        card.querySelector("[data-status-label]").textContent = label;
+        card.querySelector("[data-status-detail]").textContent = detail;
+      }
+
+      function updateLeadMetrics() {
+        const filtered = filteredLeads();
+        document.querySelector("[data-total-leads]").textContent = String(filtered.length);
+        document.querySelector("[data-new-leads]").textContent = String(filtered.filter((lead) => lead.status === "new").length);
+        document.querySelector("[data-qualified-leads]").textContent = String(
+          filtered.filter((lead) => lead.status === "qualified").length
+        );
+      }
+
+      function syncInterestOptions() {
+        const current = interestFilter.value;
+        const interests = [...new Set(leads.map((lead) => lead.primary_interest).filter(Boolean))].sort();
+        interestFilter.innerHTML = '<option value="">All interests</option>';
+        interests.forEach((interest) => {
+          const option = document.createElement("option");
+          option.value = interest;
+          option.textContent = interest;
+          interestFilter.appendChild(option);
+        });
+        interestFilter.value = interests.includes(current) ? current : "";
+
+        const currentBrand = brandFilter.value;
+        const brands = [...new Set(leads.flatMap((lead) => lead.camera_brands || []))].sort();
+        brandFilter.innerHTML = '<option value="">All camera brands</option>';
+        brands.forEach((brand) => {
+          const option = document.createElement("option");
+          option.value = brand;
+          option.textContent = brand;
+          brandFilter.appendChild(option);
+        });
+        brandFilter.value = brands.includes(currentBrand) ? currentBrand : "";
+
+        const currentConnection = connectionFilter.value;
+        const connections = [...new Set(leads.map((lead) => lead.camera_connection).filter(Boolean))].sort();
+        connectionFilter.innerHTML = '<option value="">All connection paths</option>';
+        connections.forEach((connection) => {
+          const option = document.createElement("option");
+          option.value = connection;
+          option.textContent = connection;
+          connectionFilter.appendChild(option);
+        });
+        connectionFilter.value = connections.includes(currentConnection) ? currentConnection : "";
+      }
+
+      function filteredLeads() {
+        const status = statusFilter.value;
+        const interest = interestFilter.value;
+        const brand = brandFilter.value;
+        const connection = connectionFilter.value;
+        const price = priceFilter.value;
+        const reservation = reservationFilter.value;
+        const source = sourceFilter.value.trim().toLowerCase();
+        return leads.filter((lead) => {
+          if (status && lead.status !== status) return false;
+          if (interest && lead.primary_interest !== interest) return false;
+          if (brand && !(lead.camera_brands || []).includes(brand)) return false;
+          if (connection && lead.camera_connection !== connection) return false;
+          if (price && lead.price_intent !== price) return false;
+          if (reservation && (lead.founder_reservation_status || "none") !== reservation) return false;
+          if (source) {
+            const haystack = [
+              leadSource(lead),
+              lead.referrer || "",
+              lead.route || "",
+              lead.form_location || "",
+              lead.primary_interest || "",
+              (lead.camera_brands || []).join(" "),
+              lead.camera_models || "",
+              lead.camera_connection || "",
+              lead.price_intent || "",
+              lead.purchase_blocker || ""
+            ]
+              .join(" ")
+              .toLowerCase();
+            if (!haystack.includes(source)) return false;
+          }
+          return true;
+        });
+      }
+
+      function renderLeads() {
+        syncInterestOptions();
+        const visible = filteredLeads();
+        leadsBody.innerHTML = "";
+        if (!visible.length) {
+          leadsBody.innerHTML = '<tr><td colspan="10">No matching leads.</td></tr>';
+          updateLeadMetrics();
+          return;
+        }
+
+        visible.forEach((lead) => {
+          const row = rowTemplate.content.firstElementChild.cloneNode(true);
+          const email = row.querySelector("[data-email]");
+          email.textContent = lead.email;
+          email.href = `mailto:${lead.email}`;
+          row.querySelector("[data-count]").textContent = `${lead.submission_count || 1} submission(s)`;
+          row.querySelector("[data-route]").textContent = lead.route || "";
+          row.querySelector("[data-form-location]").textContent = lead.form_location || "";
+          row.querySelector("[data-source]").textContent = leadSource(lead);
+          row.querySelector("[data-referrer]").textContent = lead.referrer || "";
+          row.querySelector("[data-created]").textContent = formatDate(lead.created_at);
+          const service = lead.metadata || {};
+          row.querySelector("[data-consent-status]").textContent = service.consent_status || "not requested";
+          row.querySelector("[data-email-service-status]").textContent = [
+            service.confirmation_email_status ? `confirmation: ${service.confirmation_email_status}` : "",
+            service.contact_sync_status ? `topic: ${service.contact_sync_status}` : "",
+            service.operator_notification_status ? `alert: ${service.operator_notification_status}` : ""
+          ].filter(Boolean).join(" · ");
+          row.querySelector("[data-interest]").textContent = lead.primary_interest || "";
+          row.querySelector("[data-beta-intent]").textContent = lead.beta_intent || "";
+          row.querySelector("[data-camera-brands]").textContent = (lead.camera_brands || []).join(", ");
+          row.querySelector("[data-camera-connection]").textContent = lead.camera_connection || "";
+          row.querySelector("[data-camera-models]").textContent = lead.camera_models || "";
+          row.querySelector("[data-camera-setup]").textContent = lead.camera_setup || "";
+          row.querySelector("[data-price-intent]").textContent = lead.price_intent || "";
+          row.querySelector("[data-purchase-blocker]").textContent = lead.purchase_blocker || "";
+          row.querySelector("[data-reservation-status]").textContent = lead.founder_reservation_status || "none";
+          row.querySelector("[data-profile-status]").textContent = lead.profile_completed_at ? "Profile saved" : "";
+          row.querySelector("[data-status]").value = lead.status || "new";
+          row.querySelector("[data-notes]").value = lead.notes || "";
+          row.querySelector("[data-save]").addEventListener("click", () => saveLead(row, lead));
+          leadsBody.appendChild(row);
+        });
+
+        updateLeadMetrics();
+      }
+
+      function filteredPilotApplications() {
+        const status = pilotStatusFilter.value;
+        const search = pilotSearchFilter.value.trim().toLowerCase();
+        return pilotApplications.filter((application) => {
+          if (status && application.status !== status) return false;
+          if (!search) return true;
+          return [
+            application.name,
+            application.email,
+            application.zip_code,
+            application.smart_devices,
+            application.interest_reason,
+            application.referral_source
+          ].filter(Boolean).join(" ").toLowerCase().includes(search);
+        });
+      }
+
+      function updatePilotApplicationMetrics() {
+        const visible = filteredPilotApplications();
+        document.querySelector("[data-pilot-total]").textContent = String(visible.length);
+        document.querySelector("[data-pilot-new]").textContent = String(visible.filter((application) => application.status === "new").length);
+        document.querySelector("[data-pilot-selected]").textContent = String(visible.filter((application) => application.status === "selected").length);
+      }
+
+      function renderPilotApplications() {
+        const visible = filteredPilotApplications();
+        pilotApplicationsBody.innerHTML = "";
+        if (!visible.length) {
+          pilotApplicationsBody.innerHTML = '<tr><td colspan="7">No matching pilot applications.</td></tr>';
+          updatePilotApplicationMetrics();
+          return;
+        }
+
+        visible.forEach((application) => {
+          const row = document.createElement("tr");
+          const applicant = document.createElement("td");
+          const name = document.createElement("strong");
+          name.textContent = application.name;
+          const email = document.createElement("a");
+          email.href = `mailto:${application.email}`;
+          email.textContent = application.email;
+          applicant.append(name, email);
+
+          [application.zip_code, application.smart_devices, application.interest_reason, application.referral_source].forEach((value) => {
+            const cell = document.createElement("td");
+            cell.textContent = value || "";
+            row.appendChild(cell);
+          });
+
+          const status = document.createElement("td");
+          const statusLabel = document.createElement("span");
+          statusLabel.className = "pilot-status";
+          statusLabel.dataset.status = application.status || "new";
+          statusLabel.textContent = (application.status || "new").replaceAll("_", " ");
+          status.appendChild(statusLabel);
+
+          const submitted = document.createElement("td");
+          submitted.textContent = formatDate(application.created_at);
+
+          row.prepend(applicant);
+          row.append(status, submitted);
+          pilotApplicationsBody.appendChild(row);
+        });
+
+        updatePilotApplicationMetrics();
+      }
+
+      function renderRows(tbody, rows, columns, emptyMessage) {
+        tbody.innerHTML = "";
+        if (!rows.length) {
+          const row = document.createElement("tr");
+          const cell = document.createElement("td");
+          cell.colSpan = columns.length;
+          cell.textContent = emptyMessage;
+          row.appendChild(cell);
+          tbody.appendChild(row);
+          return;
+        }
+        rows.forEach((item) => {
+          const row = document.createElement("tr");
+          columns.forEach((column) => {
+            const cell = document.createElement("td");
+            cell.textContent = String(item[column] ?? "");
+            row.appendChild(cell);
+          });
+          tbody.appendChild(row);
+        });
+      }
+
+      function renderAnalytics() {
+        const summary = analytics?.summary || {};
+        document.querySelector("[data-analytics-page-views]").textContent = String(summary.page_views || 0);
+        document.querySelector("[data-analytics-form-starts]").textContent = String(summary.form_starts || 0);
+        document.querySelector("[data-analytics-form-submits]").textContent = String(summary.form_submits || 0);
+        document.querySelector("[data-analytics-saved-leads]").textContent = String(summary.saved_leads || 0);
+        document.querySelector("[data-analytics-conversion]").textContent = `${summary.conversion_rate || 0}%`;
+        document.querySelector("[data-analytics-discord]").textContent = String(summary.discord_clicks || 0);
+        document.querySelector("[data-analytics-compatibility]").textContent = String(summary.compatibility_completes || 0);
+        document.querySelector("[data-analytics-price-rate]").textContent = `${summary.positive_price_rate || 0}%`;
+        document.querySelector("[data-analytics-reservations]").textContent = String(summary.founder_reservations || 0);
+        renderRows(
+          document.querySelector("[data-funnel-body]"),
+          analytics?.funnel || [],
+          ["route", "source", "campaign", "form_location", "page_views", "form_starts", "form_submits", "saved_leads", "discord_clicks"],
+          "No funnel data yet."
+        );
+        renderRows(
+          document.querySelector("[data-events-body]"),
+          analytics?.events || [],
+          ["event_name", "count"],
+          "No event data yet."
+        );
+        renderRows(
+          document.querySelector("[data-interests-body]"),
+          analytics?.lead_interests || [],
+          ["primary_interest", "count"],
+          "No lead profile data yet."
+        );
+        renderRows(
+          document.querySelector("[data-connections-body]"),
+          analytics?.camera_connections || [],
+          ["camera_connection", "count"],
+          "No connection data yet."
+        );
+        renderRows(
+          document.querySelector("[data-brands-body]"),
+          analytics?.camera_brands || [],
+          ["camera_brand", "count"],
+          "No camera brands yet."
+        );
+        renderRows(
+          document.querySelector("[data-price-body]"),
+          analytics?.price_intents || [],
+          ["price_intent", "count"],
+          "No price profiles yet."
+        );
+        renderRows(
+          document.querySelector("[data-reservations-body]"),
+          analytics?.reservation_statuses || [],
+          ["reservation_status", "count"],
+          "No Founder reservations yet."
+        );
+      }
+
+      async function apiFetch(path, options = {}) {
+        const headers = {
+          authorization: `Bearer ${getToken()}`,
+          ...(options.headers || {})
+        };
+        if (!(options.body instanceof FormData)) headers["content-type"] = "application/json";
+        const response = await fetch(path, {
+          ...options,
+          headers
+        });
+        if (response.status === 401) {
+          clearToken();
+          showLoggedIn(false);
+          throw new Error("Please sign in again.");
+        }
+        const body = await response.json().catch(() => ({}));
+        if (!response.ok) {
+          throw new Error(body.error || "Request failed");
+        }
+        return body;
+      }
+
+      function formatBytes(value) {
+        if (!value) return "Built-in asset";
+        if (value < 1024 * 1024) return `${Math.round(value / 1024)} KB`;
+        return `${(value / 1024 / 1024).toFixed(1)} MB`;
+      }
+
+      function renderMedia() {
+        mediaList.innerHTML = "";
+        if (!media.length) {
+          mediaList.innerHTML = '<p class="admin-message">No uploaded media yet.</p>';
+          return;
+        }
+        media.forEach((asset) => {
+          const card = document.createElement("article");
+          card.className = "media-card";
+          const image = document.createElement("img");
+          image.src = asset.url;
+          image.alt = asset.alt_text || asset.filename;
+          image.loading = "lazy";
+          const details = document.createElement("div");
+          details.className = "media-card-details";
+          const title = document.createElement("strong");
+          title.textContent = asset.filename;
+          const meta = document.createElement("small");
+          meta.textContent = `${asset.slot} · ${formatBytes(asset.size_bytes)}`;
+          const alt = document.createElement("small");
+          alt.textContent = asset.alt_text || "No alt text";
+          const actions = document.createElement("div");
+          actions.className = "media-card-actions";
+          const toggle = document.createElement("button");
+          toggle.type = "button";
+          toggle.textContent = asset.active ? "Enabled" : "Enable";
+          toggle.addEventListener("click", () => setMediaActive(asset, !asset.active));
+          const remove = document.createElement("button");
+          remove.type = "button";
+          remove.textContent = "Delete";
+          remove.addEventListener("click", () => deleteMedia(asset));
+          actions.append(toggle, remove);
+          details.append(title, meta, alt, actions);
+          card.append(image, details);
+          mediaList.appendChild(card);
+        });
+      }
+
+      async function loadPilotApplications() {
+        setMessage(pilotApplicationsMessage, "Loading pilot applications...");
+        try {
+          const body = await apiFetch("/api/admin/pilot-applications");
+          pilotApplications = body.applications || [];
+          renderPilotApplications();
+          setMessage(pilotApplicationsMessage, "");
+        } catch (error) {
+          setMessage(pilotApplicationsMessage, error.message, "error");
+        }
+      }
+
+      async function loadMedia() {
+        setMessage(mediaMessage, "Loading media...");
+        try {
+          const body = await apiFetch("/api/assets");
+          media = body.assets || [];
+          renderMedia();
+          setMessage(mediaMessage, "");
+        } catch (error) {
+          setMessage(mediaMessage, error.message, "error");
+        }
+      }
+
+      async function setMediaActive(asset, active) {
+        try {
+          await apiFetch("/api/assets", {
+            method: "POST",
+            body: JSON.stringify({ action: "set-active", id: asset.id, active })
+          });
+          asset.active = active;
+          renderMedia();
+          setMessage(mediaMessage, active ? "Image enabled." : "Image disabled.", "success");
+        } catch (error) {
+          setMessage(mediaMessage, error.message, "error");
+        }
+      }
+
+      async function deleteMedia(asset) {
+        if (!window.confirm(`Delete ${asset.filename}?`)) return;
+        try {
+          await apiFetch("/api/assets", { method: "DELETE", body: JSON.stringify({ id: asset.id }) });
+          media = media.filter((item) => item.id !== asset.id);
+          renderMedia();
+          setMessage(mediaMessage, "Image deleted.", "success");
+        } catch (error) {
+          setMessage(mediaMessage, error.message, "error");
+        }
+      }
+
+      async function loadAnalytics() {
+        setMessage(analyticsMessage, "Loading dashboard...");
+        try {
+          const body = await apiFetch(`/api/admin/analytics?range=${rangeSelect.value}`);
+          analytics = body.analytics;
+          renderAnalytics();
+          setMessage(analyticsMessage, "");
+        } catch (error) {
+          setMessage(analyticsMessage, error.message, "error");
+        }
+      }
+
+      async function loadLeads() {
+        setMessage(leadsMessage, "Loading leads...");
+        try {
+          const body = await apiFetch("/api/admin/leads");
+          leads = body.leads || [];
+          renderLeads();
+          setMessage(leadsMessage, "");
+        } catch (error) {
+          setMessage(leadsMessage, error.message, "error");
+        }
+      }
+
+      async function loadAdminHealth() {
+        Object.keys(statusCards).forEach((name) => setStatusCard(name, "Checking", "", "neutral"));
+        try {
+          const body = await apiFetch("/api/admin/health");
+          const missingRequired = missingNames(body.environment);
+          setStatusCard(
+            "environment",
+            missingRequired ? "Missing" : "Ready",
+            missingRequired || "All required variables are present.",
+            missingRequired ? "error" : "success"
+          );
+
+          const database = body.database || {};
+          setStatusCard(
+            "database",
+            database.connected ? "Connected" : "Not ready",
+            database.error || "Connection check passed.",
+            database.connected ? "success" : "error"
+          );
+          setStatusCard(
+            "table",
+            database.table_ready ? "Ready" : "Missing",
+            database.table_ready ? `${database.lead_count ?? 0} saved lead(s).` : "Run db/waitlist.sql in Neon.",
+            database.table_ready ? "success" : "error"
+          );
+          setStatusCard(
+            "analytics",
+            database.analytics_table_ready ? "Ready" : "Missing",
+            database.analytics_table_ready ? "analytics_events is available." : "Run db/analytics.sql in Neon.",
+            database.analytics_table_ready ? "success" : "error"
+          );
+
+          setStatusCard(
+            "reservations",
+            database.reservations_table_ready ? "Ready" : "Missing",
+            database.reservations_table_ready
+              ? `${database.reservation_count ?? 0} Founder reservation(s).`
+              : "Run db/growth-v4.sql in Neon.",
+            database.reservations_table_ready ? "success" : "error"
+          );
+
+          const missingStripe = missingNames(body.reservations?.variables);
+          setStatusCard(
+            "stripe",
+            body.reservations?.enabled ? "Enabled" : "Closed",
+            missingStripe || `Automatic refunds start ${body.reservations?.refund_at || "after a launch date is set"}.`,
+            body.reservations?.enabled ? "success" : "neutral"
+          );
+
+          const emailServices = database.email_services || {};
+          const missingNotification = missingNames(body.operator_notifications?.variables);
+          setStatusCard(
+            "operatorNotifications",
+            body.operator_notifications?.configured ? "Configured" : "Missing",
+            missingNotification || `${emailServices.failed_operator_notifications || 0} failed alert(s).`,
+            body.operator_notifications?.configured ? "success" : "error"
+          );
+
+          const missingConfirmation = missingNames(body.subscriber_confirmation?.variables);
+          setStatusCard(
+            "subscriberConfirmation",
+            body.subscriber_confirmation?.configured ? "Configured" : "Missing",
+            missingConfirmation || `${emailServices.pending_confirmations || 0} pending, ${emailServices.failed_confirmations || 0} failed.`,
+            body.subscriber_confirmation?.configured ? "success" : "error"
+          );
+
+          const contactProvider = body.contact_sync?.provider || {};
+          setStatusCard(
+            "contactSync",
+            body.contact_sync?.ready ? "Ready" : "Not ready",
+            contactProvider.error || `${contactProvider.topic?.name || "Kickstarter topic"}; ${emailServices.pending_contact_syncs || 0} pending, ${emailServices.failed_contact_syncs || 0} failed.`,
+            body.contact_sync?.ready ? "success" : "error"
+          );
+
+          setStatusCard(
+            "waitlistRetry",
+            body.waitlist_retry?.configured ? "Configured" : "Missing",
+            body.waitlist_retry?.configured ? "GitHub runs hourly; Vercel runs a daily fallback." : "CRON_SECRET is missing.",
+            body.waitlist_retry?.configured ? "success" : "error"
+          );
+        } catch (error) {
+          Object.keys(statusCards).forEach((name) => setStatusCard(name, "Error", error.message, "error"));
+        }
+      }
+
+      async function saveLead(row, lead) {
+        const button = row.querySelector("[data-save]");
+        button.disabled = true;
+        try {
+          const body = await apiFetch("/api/admin/update-lead", {
+            method: "POST",
+            body: JSON.stringify({
+              id: lead.id,
+              status: row.querySelector("[data-status]").value,
+              notes: row.querySelector("[data-notes]").value
+            })
+          });
+          Object.assign(lead, body.lead);
+          setMessage(leadsMessage, `Saved ${lead.email}.`, "success");
+          renderLeads();
+        } catch (error) {
+          setMessage(leadsMessage, error.message, "error");
+        } finally {
+          button.disabled = false;
+        }
+      }
+
+      function exportCsv() {
+        const headers = [
+          "email",
+          "route",
+          "form_location",
+          "source",
+          "primary_interest",
+          "camera_setup",
+          "camera_brands",
+          "camera_models",
+          "camera_connection",
+          "beta_intent",
+          "price_intent",
+          "purchase_blocker",
+          "founder_reservation_status",
+          "status",
+          "submission_count",
+          "created_at",
+          "profile_completed_at",
+          "notes"
+        ];
+        const rows = filteredLeads().map((lead) => [
+          lead.email,
+          lead.route || "",
+          lead.form_location || "",
+          leadSource(lead),
+          lead.primary_interest || "",
+          lead.camera_setup || "",
+          (lead.camera_brands || []).join(" | "),
+          lead.camera_models || "",
+          lead.camera_connection || "",
+          lead.beta_intent || "",
+          lead.price_intent || "",
+          lead.purchase_blocker || "",
+          lead.founder_reservation_status || "none",
+          lead.status || "",
+          lead.submission_count || 1,
+          lead.created_at || "",
+          lead.profile_completed_at || "",
+          lead.notes || ""
+        ]);
+        const csv = [headers, ...rows]
+          .map((row) => row.map((value) => `"${String(value).replaceAll('"', '""')}"`).join(","))
+          .join("\n");
+        const url = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
+        const link = Object.assign(document.createElement("a"), {
+          href: url,
+          download: `harbornavi-waitlist-${new Date().toISOString().slice(0, 10)}.csv`
+        });
+        link.click();
+        URL.revokeObjectURL(url);
+      }
+
+      function exportPilotApplicationsCsv() {
+        const headers = [
+          "name",
+          "email",
+          "zip_code",
+          "smart_devices",
+          "interest_reason",
+          "referral_source",
+          "status",
+          "created_at",
+          "updated_at"
+        ];
+        const rows = filteredPilotApplications().map((application) => headers.map((header) => application[header] || ""));
+        const csv = [headers, ...rows]
+          .map((row) => row.map((value) => `"${String(value).replaceAll('"', '""')}"`).join(","))
+          .join("\n");
+        const url = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
+        const link = Object.assign(document.createElement("a"), {
+          href: url,
+          download: `harbornavi-pilot-applications-${new Date().toISOString().slice(0, 10)}.csv`
+        });
+        link.click();
+        URL.revokeObjectURL(url);
+      }
+
+      loginForm.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        setMessage(loginMessage, "Signing in...");
+        const data = new FormData(loginForm);
+        try {
+          const response = await fetch("/api/admin/login", {
+            method: "POST",
+            headers: {
+              "content-type": "application/json"
+            },
+            body: JSON.stringify({ password: data.get("password") })
+          });
+          const body = await response.json().catch(() => ({}));
+          if (!response.ok) {
+            throw new Error(body.error || "Sign in failed");
+          }
+          setToken(body.token);
+          loginForm.reset();
+          setMessage(loginMessage, "");
+          showLoggedIn(true);
+          await Promise.all([loadAnalytics(), loadAdminHealth(), loadLeads(), loadPilotApplications(), loadMedia()]);
+        } catch (error) {
+          setMessage(loginMessage, error.message, "error");
+        }
+      });
+
+      document.querySelectorAll("[data-tab-button]").forEach((button) => {
+        button.addEventListener("click", () => activateTab(button.dataset.tabButton));
+      });
+      rangeSelect.addEventListener("change", loadAnalytics);
+      document.querySelector("[data-refresh-analytics]").addEventListener("click", loadAnalytics);
+      document.querySelector("[data-refresh-health]").addEventListener("click", loadAdminHealth);
+      document.querySelector("[data-refresh]").addEventListener("click", loadLeads);
+      document.querySelector("[data-export]").addEventListener("click", exportCsv);
+      document.querySelector("[data-refresh-pilot-applications]").addEventListener("click", loadPilotApplications);
+      document.querySelector("[data-export-pilot-applications]").addEventListener("click", exportPilotApplicationsCsv);
+      [statusFilter, interestFilter, brandFilter, connectionFilter, priceFilter, reservationFilter].forEach((filter) =>
+        filter.addEventListener("change", renderLeads)
+      );
+      sourceFilter.addEventListener("input", renderLeads);
+      pilotStatusFilter.addEventListener("change", renderPilotApplications);
+      pilotSearchFilter.addEventListener("input", renderPilotApplications);
+      mediaUpload.addEventListener("submit", async (event) => {
+        event.preventDefault();
+        const button = mediaUpload.querySelector("button[type='submit']");
+        button.disabled = true;
+        setMessage(mediaMessage, "Uploading image...");
+        try {
+          const body = await apiFetch("/api/assets", { method: "POST", body: new FormData(mediaUpload) });
+          media.unshift(body.asset);
+          mediaUpload.reset();
+          renderMedia();
+          setMessage(mediaMessage, "Image uploaded. Enable it when ready.", "success");
+        } catch (error) {
+          setMessage(mediaMessage, error.message, "error");
+        } finally {
+          button.disabled = false;
+        }
+      });
+      logoutButton.addEventListener("click", () => {
+        clearToken();
+        leads = [];
+        analytics = null;
+        media = [];
+        pilotApplications = [];
+        showLoggedIn(false);
+      });
+
+      if (getToken()) {
+        showLoggedIn(true);
+        Promise.all([loadAnalytics(), loadAdminHealth(), loadLeads(), loadPilotApplications(), loadMedia()]);
+      }
+    </script>
+  </body>
+</html>

@@ -1,0 +1,782 @@
+---
+import "../styles/home-v7.css";
+
+const discordUrl = "https://discord.gg/tC2bktRWWj";
+const surveyUrl = "https://www.surveymonkey.com/r/harbornavi";
+const heroImage = "/assets/home-v6-memory-hero-id.webp";
+const heroSocialImage = "/assets/home-v6-memory-hero-id.png";
+const heroCarouselSlides = [
+  {
+    url: "/assets/home-v6-pilot-families-v1.png",
+    alt: "A family trying HarborNavi together during an early pilot experience.",
+    eyebrow: "HarborNavi Pilot Program",
+    title: "Be One of the First 5 Pilot Families",
+    description: "Help shape HarborNavi - get early access, earn up to $500 in rewards.",
+    cta: "Apply to Join →",
+    href: "/pilot-families"
+  },
+  {
+    url: "/assets/home-v6-memory-hero-id.webp",
+    alt: "A family sharing a small moment at home while HarborNavi keeps the memory private.",
+    eyebrow: "Keep what matters",
+    title: "The moments that make home, remembered."
+  },
+  {
+    url: "/assets/home-v6-movie-night-id.webp",
+    alt: "A movie night moment captured as part of a private home timeline.",
+    eyebrow: "Private by design",
+    title: "Your home memories stay close to home."
+  }
+];
+
+const memoryLayers = [
+  {
+    index: "01",
+    label: "Storage",
+    title: "Remember",
+    body: "HarborNavi-managed family photos, selected clips, event records, device changes, and the growing home timeline stay on local storage.",
+    detail: "Private retention that can grow with optional SSDs."
+  },
+  {
+    index: "02",
+    label: "Home Agent",
+    title: "Understand",
+    body: "Navi connects what happened across time, prepares a briefing, answers follow-up questions, and asks when a detail is missing.",
+    detail: "The day stays connected instead of becoming separate alerts."
+  },
+  {
+    index: "03",
+    label: "Home devices",
+    title: "Respond",
+    body: "Everyday words can become temporary plans across supported devices, while household permissions keep sensitive changes in the right hands.",
+    detail: "Each result becomes part of what the home knows next."
+  }
+];
+
+const connectionPaths = [
+  ["HA", "Home Assistant", "Use supported entities, scenes, and automations already in the home."],
+  ["RT", "RTSP / ONVIF", "Bring selected local camera streams and events into the home timeline."],
+  ["SI", "Selected integrations", "Add device state and actions where the path is supported and useful."],
+  ["ZB", "Planned Zigbee", "Designed for common sensors, switches, and small devices after validation."],
+  ["IR", "Planned IR", "Designed for televisions and climate devices that still work best by remote."]
+];
+
+const hardwareValues = [
+  ["Private home memory", "128GB eMMC is the planned base. Two M.2 slots can extend HarborNavi-managed photos, clips, events, and home history."],
+  ["Local intelligence", "A dedicated K3-class compute direction gives memory and home workflows a stable place to run."],
+  ["Device links", "Dual 2.5GbE, HDMI, Home Assistant paths, selected cameras, planned Zigbee, and planned IR."],
+  ["Physical trust", "Planned fingerprint confirmation and an embedded secure element support sensitive setup boundaries."]
+];
+
+const comparisonProducts = [
+  { name: "HarborNavi", note: "Private home memory", featured: true },
+  { name: "Camera AI", note: "Reolink, Tapo, eufy" },
+  { name: "Cloud home AI", note: "Google Home, Alexa+ + Ring" },
+  { name: "Local automation stacks", note: "Home Assistant + Frigate, Homey Pro" },
+  { name: "Professional whole-home", note: "Josh.ai, Control4" }
+];
+
+const comparisonRows = [
+  ["Built around", "Selected home signals, memory, permissions, and actions in one household picture", "Video and security events", "Conversation, summaries, and control inside an account ecosystem", "Devices, entities, rules, and owner-built automations", "Dealer-designed whole-home control"],
+  ["Who pieces it together", "HarborNavi keeps the household picture together locally", "The camera vendor's event history", "The vendor cloud and supported services", "The owner or integrator", "The dealer or integrator"],
+  ["When the routine changes", "Clarify, wait, notify, or act from what the home remembers", "Detect, search, or summarize video", "AI behavior inside supported services", "The owner adds conditions, helpers, and exceptions", "The dealer updates scenes and policies"],
+  ["Memory and follow-up", "Local household memory across events and conversations", "Footage and event history", "Account and service memory", "Possible with owner-built components", "System state and configured scenes"],
+  ["From understanding to action", "Conversation, clarification, permission, then coordinated action", "Alerts and vendor-specific responses", "Voice and actions inside supported ecosystems", "Broad actions through user-built automations", "Broad dealer-configured actions"],
+  ["Setup and maintenance", "Designed for self-install with supported paths made clear", "Vendor app", "Consumer account and cloud setup", "DIY or self-managed stack", "Professional installation"],
+  ["Data path and subscription", "Core local features without a required subscription", "Varies by vendor and model", "Advanced features and plans vary", "Local core is possible; add-ons vary", "Vendor, dealer, and service terms vary"]
+];
+
+const comparisonSources = [
+  { label: "Reolink", href: "https://reolink.com/blog/reolink-new-products-at-ces/" },
+  { label: "Tapo", href: "https://www.tp-link.com/us/home-networking/smart-hub/tapo-h500/" },
+  { label: "eufy", href: "https://www.eufy.com/products/t80301d1" },
+  { label: "Google Home", href: "https://store.google.com/us/product/google_home_speaker?hl=en_US" },
+  { label: "Alexa+", href: "https://www.aboutamazon.com/news/devices/amazon-new-echo-devices-alexa-plus" },
+  { label: "Home Assistant", href: "https://www.home-assistant.io/blog/2025/09/11/ai-in-home-assistant/" },
+  { label: "Frigate", href: "https://frigate.video/" },
+  { label: "Homey", href: "https://homey.app/en-us/homey-pro/" },
+  { label: "Josh.ai", href: "https://www.josh.ai/core/" },
+  { label: "Control4", href: "https://www.control4.com/solutions/voice-control" }
+];
+
+const faqItems = [
+  ["Is HarborNavi a NAS?", "HarborNavi uses NAS-like local storage for the memories it manages: selected family photos, clips, event records, and home history. The first product is centered on that private home memory, rather than replacing every general-purpose file server, backup, or media-server workflow."],
+  ["Is it another camera recorder?", "Cameras are one memory source. HarborNavi is designed to connect selected camera moments with sensors, device state, recent history, and household permissions, then make that history useful in conversation and action."],
+  ["Does it replace Home Assistant?", "Home Assistant remains a strong device and automation layer. HarborNavi adds memory, follow-up conversation, and a simpler path from everyday language to a coordinated temporary plan."],
+  ["Will it work with every device?", "No. HarborNavi starts with supported Home Assistant paths, selected RTSP / ONVIF cameras, selected integrations, planned Zigbee, and planned IR. A clear device list will be published before orders open."],
+  ["When is fingerprint confirmation used?", "It is planned for sensitive setup changes such as adding a member, expanding permissions, or pairing a device. Ordinary questions and routines should stay easy."],
+  ["Does it require cloud AI?", "Core home memory, permissions, and device workflows are designed to stay local. External models remain optional and follow a filtered outbound path when enabled."]
+];
+
+const structuredData = JSON.stringify({
+  "@context": "https://schema.org",
+  "@type": "Product",
+  name: "HarborNavi",
+  category: "Local home memory and intelligence",
+  slogan: "Home is where the heart is. And where your memories live.",
+  description: "HarborNavi keeps the moments that define your home private and forever.",
+  url: "https://harbornavi.com/home-v7",
+  image: `https://harbornavi.com${heroSocialImage}`,
+  brand: {
+    "@type": "Brand",
+    name: "HarborNavi"
+  }
+});
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="index,follow" />
+    <title>HarborNavi - Home is where the heart is.</title>
+    <meta name="description" content="HarborNavi keeps the moments that define your home private and forever." />
+    <link rel="canonical" href="https://harbornavi.com/home-v7" />
+    <link rel="icon" href="/favicon.png" type="image/png" sizes="512x512" />
+    <meta property="og:title" content="Home is where the heart is. And where your memories live." />
+    <meta property="og:description" content="HarborNavi keeps the moments that define your home private and forever." />
+    <meta property="og:type" content="website" />
+    <meta property="og:url" content="https://harbornavi.com/home-v7" />
+    <meta property="og:image" content={`https://harbornavi.com${heroSocialImage}`} />
+    <meta name="twitter:card" content="summary_large_image" />
+    <meta name="twitter:title" content="Home is where the heart is. And where your memories live." />
+    <meta name="twitter:description" content="HarborNavi keeps the moments that define your home private and forever." />
+    <meta name="twitter:image" content={`https://harbornavi.com${heroSocialImage}`} />
+    <script is:inline type="application/ld+json" set:html={structuredData}></script>
+  </head>
+  <body class="home-v6-page" data-route="home-v7">
+    <div class="site-shell">
+      <header class="site-header">
+        <a class="brand" href="#top" aria-label="HarborNavi home">
+          <span class="brand-mark" aria-hidden="true"><img src="/harbornavi-logo-mark.png" alt="" width="42" height="23" /></span>
+          <span>HarborNavi</span>
+        </a>
+        <nav aria-label="Page sections">
+          <a href="#memory">Memory</a>
+          <a href="#how-it-works">How it works</a>
+          <a href="#compatibility">Compatibility</a>
+          <a href="#hardware">Hardware</a>
+          <a href="#compare">Compare</a>
+        </nav>
+        <a class="header-cta" href="#join">Join the launch list</a>
+      </header>
+
+      <main id="top">
+        <section class="hero-carousel" data-hero-carousel aria-label="HarborNavi highlights">
+          <div class="hero-carousel-track" data-carousel-slides>
+            {heroCarouselSlides.map((slide, index) => (
+              <article class="hero-carousel-slide" data-carousel-slide aria-hidden={index === 0 ? "false" : "true"} hidden={index !== 0}>
+                <img src={slide.url} alt={slide.alt} width="1536" height="1024" loading={index === 0 ? "eager" : "lazy"} decoding="async" />
+                {slide.href ? (
+                  <a class="hero-carousel-link" href={slide.href} aria-label={`${slide.title}. ${slide.cta}`}>
+                    <div class="hero-carousel-overlay">
+                      <p>{slide.eyebrow}</p>
+                      <h2>{slide.title}</h2>
+                      {slide.description && <span>{slide.description}</span>}
+                      {slide.cta && <strong>{slide.cta}</strong>}
+                    </div>
+                  </a>
+                ) : (
+                  <div class="hero-carousel-overlay">
+                    <p>{slide.eyebrow}</p>
+                    <h2>{slide.title}</h2>
+                  </div>
+                )}
+              </article>
+            ))}
+          </div>
+          <div class="hero-carousel-controls">
+            <div class="hero-carousel-dots" data-carousel-dots aria-label="Choose a highlight">
+              {heroCarouselSlides.map((_, index) => (
+                <button type="button" data-carousel-dot={index} aria-label={`Show highlight ${index + 1}`} aria-current={index === 0 ? "true" : "false"}></button>
+              ))}
+            </div>
+            <div class="hero-carousel-arrows">
+              <button type="button" data-carousel-prev aria-label="Previous highlight">&larr;</button>
+              <button type="button" data-carousel-next aria-label="Next highlight">&rarr;</button>
+            </div>
+          </div>
+        </section>
+        <section class="hero" aria-labelledby="hero-title">
+          <h1 id="hero-title">Home is where the heart is. And where your memories live.</h1>
+          <div class="hero-copy">
+            <p class="category">HarborNavi: Keeping the moments that define your home, private and forever.</p>
+            <div class="hero-description">
+              <p>What makes a house a home? It&rsquo;s the laughter echoing in the living room, your child&rsquo;s proud little wins, and even the chaotic, fleeting everyday moments. These aren&rsquo;t just events&mdash;they are the memories that define who you are.</p>
+              <p>HarborNavi gathers these precious pieces of your life into one secure, private home memory. So when you walk through the door, you&rsquo;re not just arriving; you&rsquo;re connecting. Ask Navi about the moments you missed, and keep the heart of your home alive.</p>
+            </div>
+            <form class="email-form" data-early-form data-form-location="hero">
+              <label class="sr-only" for="v6-hero-email">Email address</label>
+              <input id="v6-hero-email" type="email" name="email" autocomplete="email" placeholder="Email address" aria-describedby="v6-hero-note v6-hero-error" required />
+              <input class="sr-only" name="company" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" />
+              <button type="submit">Join the launch list</button>
+            </form>
+            <p id="v6-hero-error" class="form-error" data-form-error aria-live="polite" hidden>We could not save your email. Please try again.</p>
+            <p id="v6-hero-note" class="form-note">Confirm by email to receive HarborNavi Kickstarter pre-launch updates. Unsubscribe anytime. <a href="/privacy">Privacy</a></p>
+          </div>
+          <figure class="hero-visual">
+            <img src={heroImage} alt="A child sharing a drawing with family as a pet runs beside HarborNavi and selected home memories gather locally" width="1536" height="1024" loading="eager" fetchpriority="high" />
+          </figure>
+        </section>
+
+        <section id="memory" class="memory-story" aria-labelledby="memory-title" data-scenario-event="scenario_family_memory">
+          <figure class="memory-visual">
+            <img src="/assets/home-v6-family-moment-id.webp" alt="A child's small achievement becoming an easy-to-find family memory" width="1536" height="1024" loading="lazy" />
+          </figure>
+          <div class="memory-copy">
+            <p class="eyebrow">The life already happening at home</p>
+            <h2 id="memory-title">The best parts should not disappear into 24 hours of footage.</h2>
+            <p>The moments you choose to keep stay in one private timeline, together with when and where they happened. Ask for one later instead of scrubbing through recordings or searching across apps.</p>
+            <div class="moment-lines" aria-label="Examples of family memories">
+              <div><span>Photos and clips</span><strong>Kept together</strong></div>
+              <div><span>Time and place</span><strong>Remembered</strong></div>
+              <div><span>Private timeline</span><strong>Stored at home</strong></div>
+            </div>
+          </div>
+        </section>
+
+        <section class="briefing-story" aria-labelledby="briefing-title" data-scenario-event="scenario_home_briefing">
+          <div class="briefing-copy">
+            <p class="eyebrow">A memory you can ask</p>
+            <h2 id="briefing-title">Come home to the short version.</h2>
+            <p>Navi keeps up with the day without turning every event into a notification. Routine moments can wait. Configured urgent changes can reach you. When you walk in, Navi can give you the calm version and answer what happened next.</p>
+            <div class="briefing-list" aria-label="Example home briefing">
+              <div><time>2:14 PM</time><span>Package delivered</span><em>Routine</em></div>
+              <div><time>4:32 PM</time><span>Pet moment worth keeping</span><em>Saved</em></div>
+              <div><time>5:08 PM</time><span>Window stayed open</span><em>Mention at home</em></div>
+            </div>
+          </div>
+          <figure>
+            <img src="/assets/home-v6-homecoming-briefing-id.webp" alt="A family member coming home to a dog, with HarborNavi ready to share the short version of the day" width="1536" height="1024" loading="lazy" />
+          </figure>
+        </section>
+
+        <section id="how-it-works" class="layers-section" aria-labelledby="layers-title" data-scenario-event="scenario_memory_understand_act">
+          <div class="section-heading centered-heading">
+            <p class="eyebrow">One place. One job.</p>
+            <h2 id="layers-title">One local box, built around your home.</h2>
+            <p class="stack-equation">Storage + Home Agent + Home devices</p>
+          </div>
+          <div class="layer-flow">
+            {memoryLayers.map((layer, index) => (
+              <>
+                <article class:list={["layer", `layer-${index + 1}`]}>
+                  <div class="layer-meta"><span>{layer.index}</span><em>{layer.label}</em></div>
+                  <h3>{layer.title}</h3>
+                  <p>{layer.body}</p>
+                  <small>{layer.detail}</small>
+                </article>
+                {index < memoryLayers.length - 1 && <span class="layer-arrow" aria-hidden="true">&rarr;</span>}
+              </>
+            ))}
+          </div>
+          <div class="memory-loop"><span aria-hidden="true">&larr;</span><p>The response becomes part of the next memory, so the home does not start from zero each time.</p></div>
+        </section>
+
+        <section class="proof-section" aria-label="HarborNavi in action">
+          <article class="proof-story package-story" data-scenario-event="scenario_package_response">
+            <div class="proof-copy">
+              <p class="eyebrow">When something needs you now</p>
+              <h2>The package is leaving. Navi speaks up.</h2>
+              <p>A delivery at 2:14 PM is routine. Someone carrying it away at 2:31 is not. HarborNavi can connect the door camera and presence signals, notify you, save the key clip, and prepare an allowed response through a supported speaker, siren, or doorbell. Any further escalation still belongs to you.</p>
+              <blockquote>Package removed after delivery. Owner notified. Supported porch warning ready.</blockquote>
+            </div>
+            <figure><img src="/assets/home-v4-package-response.webp" alt="A package-removal event prompting an immediate owner notification and supported porch response" width="1536" height="1024" loading="lazy" /></figure>
+          </article>
+
+          <article class="proof-story movie-story" data-scenario-event="scenario_natural_language_action">
+            <figure><img src="/assets/home-v6-movie-night-id.webp" alt="A movie-night request coordinating lighting, television, and climate devices" width="1536" height="1024" loading="lazy" /></figure>
+            <div class="proof-copy">
+              <p class="eyebrow">Memory makes language useful</p>
+              <h2>&quot;Movie night&quot; should be enough.</h2>
+              <p>HarborNavi can use room and device mappings already established in the home, ask about anything unclear, and turn the answer into a temporary plan instead of another permanent rule to maintain.</p>
+              <div class="conversation" aria-label="Example movie night conversation">
+                <p class="from-user"><span>You</span>Movie night.</p>
+                <p><span>HarborNavi</span>Living-room TV, lights at 20%, AC at 72&deg;F?</p>
+                <p class="from-user"><span>You</span>Yes, and mute routine alerts for two hours.</p>
+                <strong>4 devices &middot; 1 temporary plan &middot; Ready to enable</strong>
+              </div>
+            </div>
+          </article>
+
+          <aside class="trust-story" data-scenario-event="scenario_trust_boundary">
+            <div class="trust-copy">
+              <p class="eyebrow">Memory still has boundaries</p>
+              <h2>Sensitive changes still wait for you.</h2>
+              <p>Adding a member, expanding room permissions, or pairing a Bluetooth or Zigbee device changes who can see or control the home. Planned fingerprint confirmation keeps those setup changes at the box. Everyday questions and ordinary routines stay easy.</p>
+            </div>
+            <figure><img src="/assets/home-v6-trust-boundary-id.webp" alt="Local fingerprint confirmation on HarborNavi for a sensitive household access change" width="1536" height="1024" loading="lazy" /></figure>
+          </aside>
+        </section>
+
+        <section id="compatibility" class="compatibility-section" aria-labelledby="compat-title">
+          <div class="section-heading split-heading">
+            <div><p class="eyebrow">Works with your home</p><h2 id="compat-title">Keep the home you already have.</h2></div>
+            <p>Keep the cameras, sensors, lights, appliances, and Home Assistant setup that already make sense. Supported paths can contribute to the same home memory without asking the household to switch into one brand.</p>
+          </div>
+          <div class="connection-grid">
+            {connectionPaths.map(([marker, title, body]) => <article><span>{marker}</span><h3>{title}</h3><p>{body}</p></article>)}
+          </div>
+          <p class="compat-note">Compatibility varies by device and setup. A clear supported-device list will be available before orders open.</p>
+        </section>
+
+        <section id="hardware" class="hardware-section" aria-labelledby="hardware-title">
+          <div class="hardware-intro">
+            <div><p class="eyebrow">Dedicated local hardware</p><h2 id="hardware-title">Memory needs a home of its own.</h2></div>
+            <p>A dedicated box gives family memory, local intelligence, device links, and trust boundaries a stable place to live. Optional cloud models can help without becoming the owner of the home's full history.</p>
+          </div>
+          <div class="hardware-body">
+            <figure class="hardware-visual"><img src="/assets/home-v6-hardware-id.webp" alt="HarborNavi local home hardware with a glossy black top, fingerprint control, and purple status light" width="1536" height="1024" loading="lazy" /></figure>
+            <div class="hardware-grid">
+              {hardwareValues.map(([title, body], index) => <article><span>{String(index + 1).padStart(2, "0")}</span><h3>{title}</h3><p>{body}</p></article>)}
+            </div>
+          </div>
+          <details class="spec-details">
+            <summary>Planned launch hardware</summary>
+            <dl>
+              <div><dt>Compute</dt><dd>SpacemiT K3 target platform; up to 60 TOPS-class AI compute design</dd></div>
+              <div><dt>Memory</dt><dd>16GB LPDDR5X planned base configuration; higher-memory option under consideration</dd></div>
+              <div><dt>Storage</dt><dd>128GB eMMC planned base; two M.2 slots for optional SSDs that extend HarborNavi-managed retention</dd></div>
+              <div><dt>Network and display</dt><dd>Dual 2.5GbE and HDMI output</dd></div>
+              <div><dt>Device links</dt><dd>Home Assistant, selected camera paths, planned Zigbee, and planned IR</dd></div>
+              <div><dt>Trust hardware</dt><dd>Planned fingerprint confirmation and embedded secure element</dd></div>
+            </dl>
+          </details>
+        </section>
+
+        <section id="compare" class="compare-section" aria-labelledby="compare-title" data-scenario-event="scenario_comparison">
+          <div class="section-heading split-heading">
+            <div>
+              <p class="eyebrow">Different products keep different pieces</p>
+              <h2 id="compare-title">Who keeps the situation together?</h2>
+            </div>
+            <p>Camera AI, cloud assistants, local hubs, and installed systems each solve a different part of the home. The practical difference is who keeps the full picture together, and what happens when the routine changes.</p>
+          </div>
+          <div class="compare-wrap" role="region" aria-label="Comparison of smart-home product approaches" tabindex="0">
+            <table>
+              <caption class="sr-only">Smart-home product approach comparison</caption>
+              <thead>
+                <tr>
+                  <th scope="col">Approach</th>
+                  {comparisonProducts.map((product) => <th class:list={{ featured: product.featured }} scope="col"><strong>{product.name}</strong><span>{product.note}</span></th>)}
+                </tr>
+              </thead>
+              <tbody>
+                {comparisonRows.map(([label, ...values]) => <tr><th scope="row">{label}</th>{values.map((value, index) => <td class:list={{ featured: comparisonProducts[index].featured }}>{value}</td>)}</tr>)}
+              </tbody>
+            </table>
+          </div>
+          <div class="comparison-notes">
+            <p>Examples vary by model and plan. This comparison focuses on the job each category is usually built to do.</p>
+            <p class="source-links">Official sources, checked July 2026: {comparisonSources.map((source, index) => <>{index > 0 && <span aria-hidden="true"> &middot; </span>}<a href={source.href} target="_blank" rel="noreferrer">{source.label}</a></>)}</p>
+          </div>
+        </section>
+
+        <section class="faq-section" aria-labelledby="faq-title">
+          <div class="faq-intro"><p class="eyebrow">Questions before launch</p><h2 id="faq-title">What this home memory is being built to do.</h2></div>
+          <div class="faq-list">
+            {faqItems.map(([question, answer]) => <details><summary>{question}</summary><p>{answer}</p></details>)}
+          </div>
+        </section>
+
+        <section id="join" class="final-section" aria-labelledby="final-title">
+          <p class="eyebrow">HarborNavi launch list</p>
+          <h2 id="final-title">What should your home remember?</h2>
+          <p>Join for HarborNavi Kickstarter pre-launch updates.</p>
+          <form class="email-form final-form" data-early-form data-form-location="final">
+            <label class="sr-only" for="v6-final-email">Email address</label>
+            <input id="v6-final-email" type="email" name="email" autocomplete="email" placeholder="Email address" aria-describedby="v6-final-note v6-final-error" required />
+            <input class="sr-only" name="company" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" />
+            <button type="submit">Join the launch list</button>
+          </form>
+          <p id="v6-final-error" class="form-error" data-form-error aria-live="polite" hidden>We could not save your email. Please try again.</p>
+          <p id="v6-final-note" class="form-note">Confirm by email to receive HarborNavi Kickstarter pre-launch updates. Unsubscribe anytime. <a href="/privacy">Privacy</a></p>
+        </section>
+      </main>
+
+      <footer>
+        <a class="brand" href="#top" aria-label="HarborNavi home"><span class="brand-mark" aria-hidden="true"><img src="/harbornavi-logo-mark.png" alt="" width="42" height="23" /></span><span>HarborNavi</span></a>
+        <p>The spark that brings your home to life.</p>
+      </footer>
+
+      <div class="modal" data-success-modal hidden role="dialog" aria-modal="true" aria-labelledby="v6-success-title" aria-describedby="v6-success-description">
+        <button class="modal-backdrop" type="button" tabindex="-1" aria-label="Close thank you dialog" data-modal-close></button>
+        <div class="modal-panel">
+          <button class="modal-close" type="button" aria-label="Close thank you dialog" data-modal-close>&times;</button>
+          <p class="eyebrow" data-success-eyebrow>Check your inbox</p>
+          <h2 id="v6-success-title" data-success-title>Confirm your email to join the launch list.</h2>
+          <p id="v6-success-description" data-success-description>We sent a confirmation link. Your address will not receive Kickstarter updates until you confirm it.</p>
+          <div class="survey-invite" data-confirmation-extras>
+            <p class="survey-label">Optional &middot; About 3&ndash;5 minutes</p>
+            <h3>Help us build HarborNavi around real homes.</h3>
+            <p>Tell us which devices you already use and what you would most want HarborNavi to help with. Your answers will guide compatibility testing and product priorities.</p>
+          </div>
+          <div class="modal-actions" data-confirmation-extras>
+            <a class="modal-primary-link" href={surveyUrl} target="_blank" rel="noreferrer" data-survey-link>Take the short survey <span aria-hidden="true">&rarr;</span></a>
+            <a href={discordUrl} target="_blank" rel="noreferrer" data-discord-link>Join the optional Discord discussion <span aria-hidden="true">&rarr;</span></a>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <script is:inline>
+      const route = document.body.dataset.route || "home-v7";
+      const utmKeys = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"];
+
+      function getSessionId() {
+        const key = "harbornavi_session_id";
+        let value = window.sessionStorage.getItem(key);
+        if (!value) {
+          value = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+          window.sessionStorage.setItem(key, value);
+        }
+        return value;
+      }
+
+      function getUtmPayload() {
+        const params = new URLSearchParams(window.location.search);
+        const current = {};
+        let hasCurrent = false;
+        utmKeys.forEach((key) => {
+          const value = params.get(key) || "";
+          current[key] = value;
+          hasCurrent = hasCurrent || Boolean(value);
+        });
+        if (hasCurrent) {
+          window.sessionStorage.setItem("harbornavi_utm", JSON.stringify(current));
+          return current;
+        }
+        try {
+          return JSON.parse(window.sessionStorage.getItem("harbornavi_utm") || "{}");
+        } catch {
+          return {};
+        }
+      }
+
+      function analyticsPayload(eventName, properties) {
+        const utm = getUtmPayload();
+        return {
+          event_name: eventName,
+          route,
+          path: window.location.pathname,
+          referrer: document.referrer,
+          form_location: properties?.form_location || "",
+          session_id: getSessionId(),
+          utm_source: utm.utm_source || "",
+          utm_medium: utm.utm_medium || "",
+          utm_campaign: utm.utm_campaign || "",
+          utm_content: utm.utm_content || "",
+          utm_term: utm.utm_term || "",
+          properties: properties || {}
+        };
+      }
+
+      window.harborTrack = function harborTrack(eventName, properties) {
+        window.harborEvents = window.harborEvents || [];
+        window.harborEvents.push({
+          eventName,
+          properties: properties || {},
+          timestamp: new Date().toISOString()
+        });
+
+        const body = JSON.stringify(analyticsPayload(eventName, properties || {}));
+        if (navigator.sendBeacon) {
+          const queued = navigator.sendBeacon("/api/events", new Blob([body], { type: "application/json" }));
+          if (queued) return;
+        }
+        fetch("/api/events", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body,
+          keepalive: true
+        }).catch(() => {});
+      };
+
+      const successModal = document.querySelector("[data-success-modal]");
+      let previousFocus = null;
+
+      function modalFocusables() {
+        if (!successModal) return [];
+        return Array.from(successModal.querySelectorAll("button:not([disabled]), a[href], input:not([disabled]), [tabindex]:not([tabindex='-1'])"));
+      }
+
+      function openSuccessModal() {
+        if (!successModal) return;
+        previousFocus = document.activeElement;
+        successModal.hidden = false;
+        document.body.classList.add("v6-modal-open");
+        successModal.querySelector(".modal-close")?.focus();
+      }
+
+      function closeSuccessModal() {
+        if (!successModal || successModal.hidden) return;
+        successModal.hidden = true;
+        document.body.classList.remove("v6-modal-open");
+        previousFocus?.focus?.();
+      }
+
+      function setSuccessModalState(state) {
+        if (!successModal) return;
+        const eyebrow = successModal.querySelector("[data-success-eyebrow]");
+        const title = successModal.querySelector("[data-success-title]");
+        const description = successModal.querySelector("[data-success-description]");
+        const extras = successModal.querySelectorAll("[data-confirmation-extras]");
+        const content = {
+          pending: {
+            eyebrow: "Check your inbox",
+            title: "Confirm your email to join the launch list.",
+            description: "We sent a confirmation link. Your address will not receive Kickstarter updates until you confirm it.",
+            extras: true
+          },
+          confirmed: {
+            eyebrow: "Confirmed",
+            title: "You are on the HarborNavi launch list.",
+            description: "Your email is confirmed for HarborNavi Kickstarter pre-launch updates.",
+            extras: true
+          },
+          "sync-failed": {
+            eyebrow: "Email confirmed",
+            title: "Your confirmation is saved.",
+            description: "We are finishing the connection to the launch list automatically. You do not need to submit again.",
+            extras: true
+          },
+          invalid: {
+            eyebrow: "Link unavailable",
+            title: "This confirmation link is invalid or expired.",
+            description: "Submit your email again to receive a new confirmation link.",
+            extras: false
+          },
+          "service-error": {
+            eyebrow: "Temporary issue",
+            title: "We could not finish your confirmation.",
+            description: "Please open the confirmation link again in a few minutes.",
+            extras: false
+          }
+        }[state] || null;
+        if (!content) return;
+        if (eyebrow) eyebrow.textContent = content.eyebrow;
+        if (title) title.textContent = content.title;
+        if (description) description.textContent = content.description;
+        extras.forEach((element) => { element.hidden = !content.extras; });
+      }
+
+      window.harborTrack("page_view", { route });
+
+      const heroCarousel = document.querySelector("[data-hero-carousel]");
+      const carouselSlides = Array.from(document.querySelectorAll("[data-carousel-slide]"));
+      const carouselDots = Array.from(document.querySelectorAll("[data-carousel-dot]"));
+      let carouselIndex = 0;
+      let carouselTimer = null;
+
+      function showCarouselSlide(index) {
+        if (!carouselSlides.length) return;
+        carouselIndex = (index + carouselSlides.length) % carouselSlides.length;
+        carouselSlides.forEach((slide, slideIndex) => {
+          const active = slideIndex === carouselIndex;
+          slide.hidden = !active;
+          slide.setAttribute("aria-hidden", String(!active));
+        });
+        carouselDots.forEach((dot, dotIndex) => {
+          dot.setAttribute("aria-current", String(dotIndex === carouselIndex));
+        });
+      }
+
+      function restartCarousel() {
+        if (carouselTimer) window.clearInterval(carouselTimer);
+        if (carouselSlides.length > 1 && !window.matchMedia("(prefers-reduced-motion: reduce)").matches) {
+          carouselTimer = window.setInterval(() => showCarouselSlide(carouselIndex + 1), 6500);
+        }
+      }
+
+      function applyUploadedCarouselAssets(assets) {
+        if (!Array.isArray(assets) || !assets.length) return;
+        const activeAssets = assets.slice(0, 2);
+        carouselSlides.slice(1).forEach((slide, index) => {
+          const asset = activeAssets[index];
+          if (!asset) return;
+          const image = slide.querySelector("img");
+          if (image) {
+            image.src = asset.url;
+            image.alt = asset.alt_text || "HarborNavi highlight";
+          }
+        });
+        showCarouselSlide(0);
+        restartCarousel();
+      }
+
+      if (heroCarousel) {
+        heroCarousel.querySelector("[data-carousel-prev]")?.addEventListener("click", () => {
+          showCarouselSlide(carouselIndex - 1);
+          restartCarousel();
+        });
+        heroCarousel.querySelector("[data-carousel-next]")?.addEventListener("click", () => {
+          showCarouselSlide(carouselIndex + 1);
+          restartCarousel();
+        });
+        carouselDots.forEach((dot) => {
+          dot.addEventListener("click", () => {
+            showCarouselSlide(Number(dot.dataset.carouselDot));
+            restartCarousel();
+          });
+        });
+        heroCarousel.addEventListener("mouseenter", () => carouselTimer && window.clearInterval(carouselTimer));
+        heroCarousel.addEventListener("mouseleave", restartCarousel);
+        heroCarousel.addEventListener("focusin", () => carouselTimer && window.clearInterval(carouselTimer));
+        heroCarousel.addEventListener("focusout", restartCarousel);
+        restartCarousel();
+        fetch("/api/assets")
+          .then((response) => response.ok ? response.json() : null)
+          .then((body) => applyUploadedCarouselAssets(body?.assets))
+          .catch(() => {});
+      }
+
+      const confirmationUrl = new URL(window.location.href);
+      const confirmationStatus = confirmationUrl.searchParams.get("confirmation");
+      if (confirmationStatus) {
+        setSuccessModalState(confirmationStatus);
+        openSuccessModal();
+        if (confirmationStatus === "confirmed" || confirmationStatus === "sync-failed") {
+          window.harborTrack("email_confirmation_complete", { route });
+        }
+        confirmationUrl.searchParams.delete("confirmation");
+        window.history.replaceState({}, "", `${confirmationUrl.pathname}${confirmationUrl.search}${confirmationUrl.hash}`);
+      }
+
+      document.querySelectorAll("[data-early-form]").forEach((form) => {
+        const input = form.querySelector("input[type='email']");
+        const error = form.parentElement?.querySelector("[data-form-error]");
+        let started = false;
+
+        input?.addEventListener("focus", () => {
+          if (started) return;
+          started = true;
+          window.harborTrack("early_bird_start", {
+            route,
+            form_location: form.dataset.formLocation || "unknown"
+          });
+        });
+
+        form.addEventListener("submit", async (event) => {
+          event.preventDefault();
+          const data = new FormData(form);
+          const button = form.querySelector("button[type='submit']");
+          const utm = getUtmPayload();
+          const formLocation = form.dataset.formLocation || "unknown";
+
+          if (error) error.hidden = true;
+          input?.removeAttribute("aria-invalid");
+          window.harborTrack("early_bird_submit", {
+            route,
+            form_location: formLocation,
+            has_email: Boolean(data.get("email"))
+          });
+
+          button?.setAttribute("disabled", "disabled");
+          form.classList.add("submitting");
+
+          try {
+            const response = await fetch("/api/waitlist", {
+              method: "POST",
+              headers: { "content-type": "application/json" },
+              body: JSON.stringify({
+                email: data.get("email"),
+                company: data.get("company"),
+                route,
+                form_location: formLocation,
+                path: window.location.pathname,
+                referrer: document.referrer,
+                utm_source: utm.utm_source || "",
+                utm_medium: utm.utm_medium || "",
+                utm_campaign: utm.utm_campaign || "",
+                utm_content: utm.utm_content || "",
+                utm_term: utm.utm_term || ""
+              })
+            });
+
+            const responseBody = await response.json().catch(() => ({}));
+            if (!response.ok) throw new Error(responseBody.error || "Waitlist request failed");
+
+            window.harborTrack("early_bird_saved", {
+              route,
+              form_location: formLocation
+            });
+            form.reset();
+            setSuccessModalState(responseBody.subscription_status === "confirmed" ? "confirmed" : "pending");
+            openSuccessModal();
+          } catch (requestError) {
+            window.harborTrack("early_bird_error", {
+              route,
+              form_location: formLocation
+            });
+            if (error) {
+              error.textContent = requestError instanceof Error
+                ? requestError.message
+                : "We could not save your email. Please try again.";
+              error.hidden = false;
+            }
+            input?.setAttribute("aria-invalid", "true");
+          } finally {
+            button?.removeAttribute("disabled");
+            form.classList.remove("submitting");
+          }
+        });
+      });
+
+      document.querySelectorAll("[data-modal-close]").forEach((button) => {
+        button.addEventListener("click", closeSuccessModal);
+      });
+
+      document.querySelectorAll("[data-discord-link]").forEach((link) => {
+        link.addEventListener("click", () => {
+          window.harborTrack("discord_click", { route });
+        });
+      });
+
+      document.querySelectorAll("[data-survey-link]").forEach((link) => {
+        link.addEventListener("click", () => {
+          window.harborTrack("survey_click", { route });
+        });
+      });
+
+      const observedScenarioEvents = new Set();
+      const scenarioObserver = "IntersectionObserver" in window
+        ? new IntersectionObserver((entries, observer) => {
+            entries.forEach((entry) => {
+              if (!entry.isIntersecting) return;
+              const eventName = entry.target.dataset.scenarioEvent;
+              if (!eventName || observedScenarioEvents.has(eventName)) return;
+              observedScenarioEvents.add(eventName);
+              window.harborTrack(eventName, { route });
+              observer.unobserve(entry.target);
+            });
+          }, { threshold: 0.35 })
+        : null;
+
+      document.querySelectorAll("[data-scenario-event]").forEach((section) => {
+        scenarioObserver?.observe(section);
+      });
+
+      document.addEventListener("keydown", (event) => {
+        if (!successModal || successModal.hidden) return;
+        if (event.key === "Escape") {
+          closeSuccessModal();
+          return;
+        }
+        if (event.key !== "Tab") return;
+
+        const focusables = modalFocusables();
+        if (!focusables.length) return;
+        const first = focusables[0];
+        const last = focusables[focusables.length - 1];
+        if (event.shiftKey && document.activeElement === first) {
+          event.preventDefault();
+          last.focus();
+        } else if (!event.shiftKey && document.activeElement === last) {
+          event.preventDefault();
+          first.focus();
+        }
+      });
+    </script>
+  </body>
+</html>

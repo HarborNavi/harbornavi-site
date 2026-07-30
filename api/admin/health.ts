@@ -4,14 +4,29 @@ import { getResendContactSyncConfig, probeResendContactSync } from "../../src/se
 import { getFounderReservationConfig } from "../../src/server/stripe.js";
 import { getWaitlistHealth } from "../../src/server/waitlist.js";
 import { getWaitlistConfirmationConfig } from "../../src/server/waitlist-email.js";
+import { handleMediaRequest } from "../../src/server/media.js";
+import { listPilotApplications } from "../../src/server/pilot-applications.js";
 
 function configured(name: string) {
   return Boolean(getOptionalEnv(name));
 }
 
 export async function GET(request: Request) {
+  const action = new URL(request.url).searchParams.get("action");
+  if (action === "assets") {
+    return handleMediaRequest(request);
+  }
   if (!verifyAdminToken(getBearerToken(request))) {
     return jsonResponse({ error: "Unauthorized" }, { status: 401 });
+  }
+  if (action === "pilot-applications") {
+    try {
+      const applications = await listPilotApplications();
+      return jsonResponse({ ok: true, applications });
+    } catch (error) {
+      console.error(error);
+      return jsonResponse({ error: "Unable to load pilot applications" }, { status: 500 });
+    }
   }
 
   const requiredEnv = {
@@ -125,4 +140,14 @@ export async function GET(request: Request) {
       refund_at: reservations.refund_at
     }
   });
+}
+
+export async function POST(request: Request) {
+  if (new URL(request.url).searchParams.get("action") === "assets") return handleMediaRequest(request);
+  return jsonResponse({ error: "Method not allowed" }, { status: 405 });
+}
+
+export async function DELETE(request: Request) {
+  if (new URL(request.url).searchParams.get("action") === "assets") return handleMediaRequest(request);
+  return jsonResponse({ error: "Method not allowed" }, { status: 405 });
 }
