@@ -1,6 +1,6 @@
 import { del, put } from "@vercel/blob";
 import { getBearerToken, verifyAdminToken } from "./auth.js";
-import { getOptionalEnv, jsonResponse } from "./config.js";
+import { jsonResponse } from "./config.js";
 import { sql } from "./db.js";
 
 const maxFileSize = 10 * 1024 * 1024;
@@ -96,15 +96,13 @@ export async function handleMediaRequest(request: Request) {
       const file = form.get("file");
       const slot = String(form.get("slot") || "page");
       const altText = String(form.get("alt_text") || "").trim().slice(0, 240);
-      const blobToken = getOptionalEnv("BLOB_READ_WRITE_TOKEN");
       if (!(file instanceof File)) return jsonResponse({ error: "Choose an image file." }, { status: 400 });
       if (!allowedMimeTypes.has(file.type)) return jsonResponse({ error: "Only JPG, PNG, and GIF images are supported." }, { status: 400 });
       if (file.size > maxFileSize) return jsonResponse({ error: "Images must be 10 MB or smaller." }, { status: 400 });
       if (!allowedSlots.has(slot)) return jsonResponse({ error: "Invalid media slot." }, { status: 400 });
-      if (!blobToken) return jsonResponse({ error: "BLOB_READ_WRITE_TOKEN is not configured." }, { status: 503 });
       try {
         const safeName = file.name.replace(/[^a-zA-Z0-9._-]/g, "-").slice(-120) || "upload";
-        const blob = await put(`harbornavi/${slot}/${Date.now()}-${safeName}`, file, { access: "public", addRandomSuffix: true, contentType: file.type, token: blobToken });
+        const blob = await put(`harbornavi/${slot}/${Date.now()}-${safeName}`, file, { access: "public", addRandomSuffix: true, contentType: file.type });
         const rows = await sql()`insert into site_media (slot, url, filename, mime_type, size_bytes, alt_text) values (${slot}, ${blob.url}, ${file.name}, ${file.type}, ${file.size}, ${altText}) returning id, slot, url, filename, mime_type, size_bytes, alt_text, active, created_at`;
         return jsonResponse({ asset: serializeMedia(rows[0] as Record<string, unknown>) }, { status: 201 });
       } catch (error) {
@@ -137,7 +135,7 @@ export async function handleMediaRequest(request: Request) {
     try {
       const rows = await sql()`delete from site_media where id = ${payload.id} returning url`;
       if (!rows.length) return jsonResponse({ error: "Media asset not found." }, { status: 404 });
-      if (String(rows[0].url).startsWith("http")) await del(String(rows[0].url), { token: getOptionalEnv("BLOB_READ_WRITE_TOKEN") });
+      if (String(rows[0].url).startsWith("http")) await del(String(rows[0].url));
       return jsonResponse({ ok: true });
     } catch (error) {
       console.error(error);

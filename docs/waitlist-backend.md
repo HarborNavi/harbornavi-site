@@ -43,8 +43,9 @@ Required only for the admin dashboard:
 ```text
 ADMIN_PASSWORD
 ADMIN_SESSION_SECRET
-BLOB_READ_WRITE_TOKEN
 ```
+
+Connect a public Vercel Blob store to the project for `/admin666` media uploads. Vercel injects `BLOB_STORE_ID` and a short-lived OIDC token at runtime, so no manually managed Blob token is required in Production or Preview. `BLOB_READ_WRITE_TOKEN` remains an optional fallback for local or non-Vercel development.
 
 Required for the complete V6 confirmation and retry path:
 
