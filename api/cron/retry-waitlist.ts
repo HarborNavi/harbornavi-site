@@ -1,5 +1,6 @@
 import { getOptionalEnv, jsonResponse } from "../../src/server/config.js";
 import { getKickstarterTopic } from "../../src/server/resend-contacts.js";
+import { contactConsentScopeForRoute } from "../../src/server/waitlist-consent.js";
 import {
   deliverOperatorNotification,
   deliverWaitlistConfirmation,
@@ -55,7 +56,7 @@ export async function GET(request: Request) {
       }
 
       if (
-        (lead.route !== "home-v6" || state.consent_confirmed_at) &&
+        (contactConsentScopeForRoute(lead.route) === "none" || state.consent_confirmed_at) &&
         ["pending", "failed", "sending"].includes(state.operator_notification_status)
       ) {
         try {

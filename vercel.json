@@ -13,8 +13,20 @@
   ],
   "rewrites": [
     {
+      "source": "/api/assets",
+      "destination": "/api/admin/health?action=assets"
+    },
+    {
+      "source": "/api/admin/pilot-applications",
+      "destination": "/api/admin/health?action=pilot-applications"
+    },
+    {
       "source": "/api/waitlist/profile",
       "destination": "/api/waitlist?action=profile"
+    },
+    {
+      "source": "/api/pilot-application",
+      "destination": "/api/waitlist?action=pilot"
     },
     {
       "source": "/api/reservations/status",

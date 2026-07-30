@@ -1,26 +1,30 @@
 # HarborNavi Waitlist Backend
 
-Status: current V6 product pre-launch and 15 Homes campaign cockpit
+Status: V6 production baseline plus isolated V7 pilot campaign
 
 ## Shape
 
-- Public pages: `/home-v6`, `/15-homes`, `/15-homes/thanks`, `/privacy`, plus retained comparison routes
+- Public pages: `/home-v6`, `/home-v7`, `/pilot-families`, `/15-homes`, `/15-homes/thanks`, `/privacy`, plus retained comparison routes
 - Entry redirects: `/` and `/home` permanently redirect to `/home-v6`
 - Archived pages: `/home-v4` and `/home-v5` are `noindex` references with inactive forms
 - Submit API: `/api/waitlist`
+- Pilot application API: `/api/pilot-application`
 - Confirmation API: `/api/waitlist/confirm`
 - Optional profile API: `/api/waitlist/profile`
 - Event API: `/api/events`
-- Admin page: `/admin`
-- Admin APIs: `/api/admin/login`, `/api/admin/health`, `/api/admin/leads`, `/api/admin/update-lead`, `/api/admin/analytics`
+- Admin pages: retained `/admin` baseline and campaign dashboard `/admin666`
+- Admin APIs: `/api/admin/login`, `/api/admin/health`, `/api/admin/leads`, `/api/admin/pilot-applications`, `/api/admin/update-lead`, `/api/admin/analytics`
+- Media API: `/api/assets` (public active-hero delivery plus authenticated upload, activation, and deletion)
 - Reservation APIs: `/api/reservations/status`, `/api/reservations/checkout`, `/api/reservations/session`
 - Stripe webhook and refund worker: `/api/stripe/webhook`, `/api/cron/refund-reservations`
 - Waitlist retry worker: `/api/cron/retry-waitlist`, called hourly by GitHub Actions with a daily Vercel Cron fallback
-- Database: Neon Postgres tables `waitlist_leads`, `analytics_events`, and `founder_reservations`
+- Database: Neon Postgres tables `waitlist_leads`, `analytics_events`, `founder_reservations`, `site_media`, and `pilot_family_applications`
+- Media storage: public Vercel Blob store with Neon `site_media` metadata
 - Subscriber confirmation and operator notification: Resend Email API
 - Confirmed marketing-contact sync: Resend Contacts with one Kickstarter Topic
 
 The public site remains static. Vercel serves API functions from the same project, so no extra backend server is required.
+The campaign functions also initialize `site_media` and `pilot_family_applications` idempotently on first use; the SQL files remain available for pre-deploy migration and audit.
 
 Production and Preview are intentionally isolated. Vercel Production uses the Neon `main` branch; Vercel Preview uses
 the schema-only Neon `preview` branch. Do not point Preview back to the production connection string. Schema changes must
@@ -39,6 +43,7 @@ Required only for the admin dashboard:
 ```text
 ADMIN_PASSWORD
 ADMIN_SESSION_SECRET
+BLOB_READ_WRITE_TOKEN
 ```
 
 Required for the complete V6 confirmation and retry path:
@@ -115,6 +120,8 @@ Run the base SQL files in Neon:
 ```sql
 -- db/waitlist.sql
 -- db/analytics.sql
+-- db/media.sql
+-- db/pilot-families.sql
 ```
 
 For an existing database, also run the idempotent migration:
@@ -139,17 +146,19 @@ The v4 migration adds:
 
 `db/analytics.sql` creates first-party event storage with route, path, referrer, form location, session id, UTM fields, JSON properties, and timestamp indexes.
 
+`db/pilot-families.sql` creates a separate application table for the six Pilot Families questions. The public form posts to `/api/pilot-application`, which validates and upserts by normalized email. It does not create waitlist consent, send confirmation email, or sync the applicant to the Kickstarter marketing Topic.
+
 ## Waitlist Flow
 
 `/api/waitlist` validates email, ignores honeypot submissions, upserts the lead by email, and increments
-`submission_count`. Only normalized `route=home-v6` starts marketing consent. V4, V5, and unknown routes have scope
+`submission_count`. Only normalized `route=home-v6` or `route=home-v7` starts marketing consent. V4, V5, and unknown routes have scope
 `none` and cannot enter the marketing Topic.
 
-For V6, the server writes its own pending consent metadata after the primary save; it never accepts these values from
+For V6 and V7, the server writes its own route-specific pending consent metadata after the primary save; it never accepts these values from
 the browser:
 
 - `consent_scope=kickstarter_updates`
-- `consent_version=home_v6_2026_07`
+- `consent_version=home_v6_2026_07` or `home_v7_2026_07`
 - `consent_requested_at=<server ISO timestamp>`
 - `consent_status=pending_confirmation`
 
@@ -240,10 +249,12 @@ Tracked events include:
 
 ## Admin Dashboard
 
-`/admin` has three tabs:
+`/admin666` has five tabs while `/admin` retains its previous production interface:
 
 - Dashboard: 7-day, 30-day, or all-time funnel metrics.
 - Leads: lead table with status/source/interest/camera/connection/price/reservation filters, notes, status updates, and expanded CSV export.
+- Pilot Applications: authenticated view and CSV export of the six Pilot Families application answers, review status, and submission time. Request metadata is not returned to the browser.
+- Media: JPG, PNG, and GIF upload management for the two editable hero-carousel positions; the Pilot Families campaign remains fixed first.
 - System: environment, database, waitlist, analytics, reservation table, Stripe gate, subscriber confirmation,
   Resend Contact sync, operator notification, Topic, and retry-state health.
 

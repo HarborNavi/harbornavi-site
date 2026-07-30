@@ -18,6 +18,7 @@ import {
   waitlistIntegrationState
 } from "../src/server/waitlist.js";
 import { waitlistConfirmationBaseUrl } from "../src/server/waitlist-email.js";
+import { savePilotApplication } from "../src/server/pilot-applications.js";
 
 export function OPTIONS() {
   return jsonResponse({ ok: true });
@@ -83,8 +84,39 @@ async function postWaitlistProfile(request: Request) {
   }
 }
 
+async function postPilotApplication(request: Request) {
+  let payload: Record<string, unknown>;
+  try {
+    payload = await request.json();
+  } catch {
+    return jsonResponse({ error: "Invalid JSON body" }, { status: 400 });
+  }
+  if (typeof payload.company === "string" && payload.company.trim()) return jsonResponse({ ok: true, ignored: true });
+  try {
+    const result = await savePilotApplication({
+      name: payload.name,
+      email: payload.email,
+      zip_code: payload.zip_code,
+      smart_devices: payload.smart_devices,
+      interest_reason: payload.interest_reason,
+      referral_source: payload.referral_source,
+      metadata: {
+        user_agent: request.headers.get("user-agent") || "",
+        accept_language: request.headers.get("accept-language") || ""
+      }
+    });
+    if ("error" in result) return jsonResponse({ error: result.error }, { status: 400 });
+    return jsonResponse({ ok: true, application: result.application }, { status: 201 });
+  } catch (error) {
+    console.error(error);
+    return jsonResponse({ error: "Unable to save pilot application" }, { status: 500 });
+  }
+}
+
 export async function POST(request: Request) {
-  if (new URL(request.url).searchParams.get("action") === "profile") {
+  const action = new URL(request.url).searchParams.get("action");
+  if (action === "pilot") return postPilotApplication(request);
+  if (action === "profile") {
     return postWaitlistProfile(request);
   }
 
