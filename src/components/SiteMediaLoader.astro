@@ -1,0 +1,40 @@
+<script>
+  const mediaElements = Array.from(document.querySelectorAll("[data-media-slot]"));
+
+  if (mediaElements.length) {
+    fetch("/api/assets")
+      .then((response) => (response.ok ? response.json() : null))
+      .then((body) => {
+        const assets = Array.isArray(body?.assets) ? body.assets.filter((asset) => asset?.active !== false) : [];
+        const assetsBySlot = new Map();
+
+        assets.forEach((asset) => {
+          if (asset?.slot && asset.slot !== "hero-carousel" && asset.slot !== "page") {
+            assetsBySlot.set(asset.slot, asset);
+          }
+        });
+
+        const legacyCarousel = assets.filter((asset) => asset?.slot === "hero-carousel");
+        if (!assetsBySlot.has("home-carousel-memory") && legacyCarousel[0]) {
+          assetsBySlot.set("home-carousel-memory", legacyCarousel[0]);
+        }
+        if (!assetsBySlot.has("home-carousel-movie") && legacyCarousel[1]) {
+          assetsBySlot.set("home-carousel-movie", legacyCarousel[1]);
+        }
+
+        mediaElements.forEach((element) => {
+          const asset = assetsBySlot.get(element.dataset.mediaSlot);
+          if (!asset?.url) return;
+          if (element instanceof HTMLLinkElement) {
+            element.href = asset.url;
+            return;
+          }
+          if (element instanceof HTMLImageElement) {
+            element.src = asset.url;
+            if (asset.alt_text) element.alt = asset.alt_text;
+          }
+        });
+      })
+      .catch(() => {});
+  }
+</script>

@@ -16,6 +16,7 @@ This project is intentionally separate from the HarborNavi product coordination 
 - `/15-homes`: public 15 Homes Across America field-test, host-application, and viewing hub.
 - `/15-homes/thanks`: application receipt page for the external host form; receipt does not mean selection.
 - `/pilot-families`: first-five-family pilot details and application form.
+- `/about-harbor`: Harbor Innovations founding story, principles, prior projects, and Pilot Program entry point.
 - `/package`: package alert beta positioning.
 - `/pets`: pet highlights beta positioning.
 - `/privacy`: product waitlist and 15 Homes campaign privacy direction.
@@ -31,7 +32,7 @@ This project is intentionally separate from the HarborNavi product coordination 
 - `/api/events`: first-party analytics event endpoint.
 - `/api/admin/*`: admin login, health check, analytics, and lead management endpoints.
 - `/api/admin/pilot-applications`: authenticated Pilot Families application list, routed through the existing admin health function.
-- `/api/assets`: public hero-carousel delivery plus authenticated admin media upload and activation.
+- `/api/assets`: public delivery of active website-image overrides plus authenticated admin upload, assignment, activation, and deletion.
 - `/api/pilot-application`: Pilot Families application endpoint, routed through the existing waitlist function without marketing consent.
 
 ## Commands
@@ -64,5 +65,5 @@ Astro dev serves `/package/` correctly, but bare `/package` can collide with `pa
 - Existing Neon projects should apply `db/growth-v4.sql` before deploying the v4 APIs.
 - Analytics is first-party and stored in Neon; no GA, PostHog, Plausible, or paid pixels are installed.
 - Campaign analytics accepts `road_home_apply_click`, `road_home_form_start`, `road_home_form_complete`, `kickstarter_prelaunch_click`, `youtube_live_click`, and `youtube_replay_click`. Application answers and PII are not sent with those events.
-- The private `/admin666` Media tab uploads JPG, PNG, and GIF files to Vercel Blob and stores their metadata in `site_media`. The pilot campaign stays fixed in the first carousel position; admins can manage the other two positions. Connected Vercel deployments authenticate with OIDC through `BLOB_STORE_ID`; `BLOB_READ_WRITE_TOKEN` is only an optional local or legacy fallback.
+- The private `/admin666` Media tab uploads JPG, PNG, and GIF files to Vercel Blob and stores their metadata in `site_media`. Image controls are grouped by exact page location for site branding, Home V7, Pilot Families, and About Harbor. Uploading to a location immediately replaces its current image; restoring the default disables the override without deleting upload history. Legacy `hero-carousel` and `page` uploads can be reassigned to a specific location. Connected Vercel deployments authenticate with OIDC through `BLOB_STORE_ID`; `BLOB_READ_WRITE_TOKEN` is only an optional local or legacy fallback.
 - Pilot Families applications are stored separately in `pilot_family_applications`; submitting this form does not join the Kickstarter marketing Topic. The two new tables are initialized idempotently on first use, while `db/media.sql` and `db/pilot-families.sql` remain the explicit migration records.

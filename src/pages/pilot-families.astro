@@ -1,5 +1,6 @@
 ---
 import SiteHeader from "../components/SiteHeaderV7.astro";
+import SiteMediaLoader from "../components/SiteMediaLoader.astro";
 import "../styles/global-v7.css";
 import "../styles/pilot-families.css";
 ---
@@ -11,61 +12,61 @@ import "../styles/pilot-families.css";
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>First 5 Pilot Families | HarborNavi</title>
     <meta name="description" content="Apply for HarborNavi's two-week Pilot Families program. Selected families receive a new device, lifetime subscription-free access, and a $500 completion bonus." />
-    <link rel="icon" href="/favicon.png" type="image/png" sizes="512x512" />
+    <link rel="icon" href="/favicon.png" type="image/png" sizes="512x512" data-media-slot="site-favicon" />
     <link rel="canonical" href="https://harbornavi.com/pilot-families" />
   </head>
   <body class="pilot-page" data-route="pilot-families">
-    <SiteHeader />
+    <SiteHeader activeRoute="pilot-families" note="Pilot program" ctaHref="#apply" ctaLabel="Join the pilot program" />
     <main>
       <section class="pilot-hero" aria-labelledby="pilot-title">
-        <img src="/assets/home-v6-pilot-families-v1.png" alt="A family trying HarborNavi together during an early pilot experience" width="1801" height="873" fetchpriority="high" />
+        <img src="/assets/home-v6-pilot-families-v1.png" alt="A family trying HarborNavi together during an early pilot experience" width="1801" height="873" fetchpriority="high" data-media-slot="pilot-hero" />
         <div class="pilot-hero-overlay"></div>
         <div class="pilot-hero-copy">
           <p class="eyebrow">HarborNavi Pilot Program</p>
-          <h1 id="pilot-title">Be One of the First 5 Pilot Families</h1>
-          <p>Join a two-week, at-home pilot. Receive a new HarborNavi, lifetime subscription-free access, and a $500 completion bonus.</p>
-          <a class="pilot-primary" href="#waitlist">Apply to Join <span aria-hidden="true">→</span></a>
+          <h1 id="pilot-title">Join the First 5 Pilot Families</h1>
+          <p>Pilot your home with HarborNavi. Two weeks. Yours to keep. +$500.</p>
+          <a class="pilot-primary" href="#apply">Apply to Join <span aria-hidden="true">→</span></a>
         </div>
       </section>
 
       <section class="pilot-intro section-shell" aria-labelledby="pilot-intro-title">
         <div>
           <p class="eyebrow">Five homes. Real feedback.</p>
-          <h2 id="pilot-intro-title">Help us build HarborNavi around the way families actually live.</h2>
+          <h2 id="pilot-intro-title">Help us build HarborNavi for real family life.</h2>
         </div>
-        <p>Selected households will use HarborNavi for two weeks with their existing smart-home setup, share practical feedback, and help us improve the experience before a wider release.</p>
+        <p>Use HarborNavi with your current smart-home setup for two weeks, then tell us what worked and what should change.</p>
       </section>
 
       <section class="pilot-details section-shell" aria-label="Pilot family benefits">
         <article>
           <span>01</span>
           <h3>A new HarborNavi</h3>
-          <p>Each selected family receives a brand-new HarborNavi device for the pilot and keeps it after completing the program.</p>
+          <p>Receive a brand-new HarborNavi device and keep it after completing the pilot.</p>
         </article>
         <article>
           <span>02</span>
           <h3>No subscription fees, for life</h3>
-          <p>Your pilot device includes lifetime subscription-free access to the HarborNavi product experience.</p>
+          <p>Keep lifetime subscription-free access on your pilot device.</p>
         </article>
         <article>
           <span>03</span>
           <h3>$500 completion bonus</h3>
-          <p>Each of the first five pilot families can receive an additional $500 after completing the agreed pilot milestones.</p>
+          <p>Earn an additional $500 after completing the agreed milestones.</p>
         </article>
       </section>
 
       <section class="pilot-commitment section-shell" aria-labelledby="commitment-title">
         <div class="pilot-commitment-copy">
           <p class="eyebrow">A focused two-week pilot</p>
-          <h2 id="commitment-title">Use HarborNavi in real life, then show us what worked.</h2>
-          <p>The pilot is designed to be useful without becoming a second job. Final scheduling, reward milestones, and participation terms are shared before a selected family confirms.</p>
+          <h2 id="commitment-title">Use it at home. Show us what works.</h2>
+          <p>The pilot fits into normal family life. You will see the schedule, milestones, and terms before deciding.</p>
         </div>
         <div class="pilot-commitment-grid">
           <article>
             <p class="eyebrow">What pilot families do</p>
             <h3>Install, use, and document the experience.</h3>
             <ul>
-              <li>Install HarborNavi with guided setup support.</li>
+              <li>Set up HarborNavi in about 30 minutes with live, step-by-step support.</li>
               <li>Use it in normal household routines for two weeks.</li>
               <li>Share structured feedback through short check-ins.</li>
               <li>Record one or two short vlogs about the experience.</li>
@@ -100,10 +101,10 @@ import "../styles/pilot-families.css";
       <section class="pilot-process section-shell" aria-labelledby="process-title">
         <div class="pilot-process-copy">
           <p class="eyebrow">How selection works</p>
-          <h2 id="process-title">A short application, followed by a conversation.</h2>
-          <p>We will review setup compatibility, availability, and the kind of feedback each applicant hopes to contribute. Applying does not guarantee selection or create a marketing subscription.</p>
+          <h2 id="process-title">Apply, talk with us, then decide.</h2>
+          <p>We review compatibility, availability, and the feedback you hope to share. Applying does not guarantee selection or create a marketing subscription.</p>
           <ol>
-            <li><strong>Apply</strong><span>Tell us about your household and current setup.</span></li>
+            <li><strong>Apply</strong><span>Share your current smart-home setup and why the pilot interests you.</span></li>
             <li><strong>Review</strong><span>The HarborNavi team reviews applications for pilot fit.</span></li>
             <li><strong>Confirm</strong><span>Selected families receive the final schedule, milestones, reward terms, and participation agreement before deciding.</span></li>
           </ol>
@@ -123,8 +124,12 @@ import "../styles/pilot-families.css";
         </div>
         <div class="pilot-faq-list">
           <details>
-            <summary>What's expected of pilot testers?</summary>
-            <p>Install HarborNavi with guided support, use it in your normal household routines for two weeks, complete short feedback check-ins, and record one or two short vlogs about the experience.</p>
+            <summary>What will my family need to do?</summary>
+            <p>Plan for a 30-minute guided setup, use HarborNavi in normal routines for two weeks, complete short feedback check-ins, and record one or two short vlogs.</p>
+          </details>
+          <details>
+            <summary>How difficult is installation?</summary>
+            <p>Most pilot homes should finish setup in about 30 minutes. A HarborNavi team member will guide you live, step by step, with remote or in-person support depending on location.</p>
           </details>
           <details>
             <summary>What equipment do I need?</summary>
@@ -145,7 +150,7 @@ import "../styles/pilot-families.css";
         </div>
       </section>
 
-      <section id="waitlist" class="pilot-application section-shell" aria-labelledby="application-title">
+      <section id="apply" class="pilot-application section-shell" aria-labelledby="application-title">
         <div class="pilot-application-intro">
           <p class="eyebrow">Pilot application</p>
           <h2 id="application-title">Apply for the HarborNavi pilot.</h2>
@@ -175,8 +180,9 @@ import "../styles/pilot-families.css";
         </form>
       </section>
     </main>
-    <footer class="site-footer"><span>HarborNavi</span><a href="/home-v7">Home</a><a href="/privacy">Privacy</a></footer>
+    <footer class="site-footer"><span>HarborNavi</span><a href="/home-v7">Home</a><a href="/about-harbor">About Harbor</a><a href="/privacy">Privacy</a></footer>
 
+    <SiteMediaLoader />
     <script is:inline>
       const pilotForm = document.querySelector("[data-pilot-form]");
       const pilotMessage = document.querySelector("[data-pilot-message]");

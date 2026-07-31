@@ -1,0 +1,110 @@
+---
+import SiteHeader from "../components/SiteHeaderV7.astro";
+import SiteMediaLoader from "../components/SiteMediaLoader.astro";
+import "../styles/global-v7.css";
+import "../styles/about-harbor.css";
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <meta name="robots" content="index,follow" />
+    <title>About Harbor Innovations | HarborNavi</title>
+    <meta name="description" content="Why Harbor Innovations is building HarborNavi: a private, local memory and intelligence layer for the home." />
+    <link rel="icon" href="/favicon.png" type="image/png" sizes="512x512" data-media-slot="site-favicon" />
+    <link rel="canonical" href="https://harbornavi.com/about-harbor" />
+  </head>
+  <body class="about-page" data-route="about-harbor">
+    <SiteHeader activeRoute="about" note="About Harbor" ctaHref="/pilot-families#apply" ctaLabel="Join the pilot program" />
+    <main>
+      <section class="about-hero" aria-labelledby="about-title">
+        <img src="/assets/home-v6-memory-hero-id.webp" alt="A family sharing an everyday moment at home while HarborNavi keeps selected memories local" width="1536" height="1024" fetchpriority="high" data-media-slot="about-hero" />
+        <div class="about-hero-shade"></div>
+        <div class="about-hero-copy">
+          <p class="eyebrow">Local intelligence for the place that matters most</p>
+          <h1 id="about-title">Harbor Innovations</h1>
+          <p class="about-hero-line">Why we left Big Tech to build a memory for the home.</p>
+          <a href="#founding-story">Read our story <span aria-hidden="true">↓</span></a>
+        </div>
+      </section>
+
+      <section id="founding-story" class="about-story section-shell" aria-labelledby="story-title">
+        <div class="about-section-label"><span>01</span><p>Founding story</p></div>
+        <div class="about-story-copy">
+          <h2 id="story-title">Our homes kept recording. They still forgot us.</h2>
+          <p>An important family moment could be captured, then buried in a full day of footage. A smart speaker could know tomorrow's schedule, yet anyone nearby could ask. A package could disappear before an alert became useful.</p>
+          <p>Something was broken about how homes remember. The signals existed, but context, privacy, and action lived in separate systems. We decided to build the missing layer ourselves.</p>
+          <blockquote>Home technology should remember for the family, not learn from the family for someone else.</blockquote>
+        </div>
+      </section>
+
+      <section class="about-beliefs" aria-labelledby="beliefs-title">
+        <div class="section-shell">
+          <div class="about-section-label"><span>02</span><p>What we believe</p></div>
+          <h2 id="beliefs-title">Two principles guide every product decision.</h2>
+          <div class="belief-lines">
+            <p><span aria-hidden="true">01</span>A home memory should last a lifetime.</p>
+            <p><span aria-hidden="true">02</span>Privacy is not a premium feature.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="about-projects section-shell" aria-labelledby="projects-title">
+        <div class="about-section-label"><span>03</span><p>What we built before</p></div>
+        <div class="about-projects-heading">
+          <h2 id="projects-title">HarborNavi grows from years of local AI work.</h2>
+          <p>Hardware, operating systems, and real workflows taught us that local intelligence must be capable, understandable, and easy to live with.</p>
+        </div>
+        <article class="project-row">
+          <figure><img src="/assets/home-v2-ai-box.png" alt="A compact local AI workstation representing the Nexus hardware foundation" width="1536" height="1024" loading="lazy" data-media-slot="about-nexus" /></figure>
+          <div><span>Project 01</span><h3>Nexus AI Workstation</h3><p>Our local AI hardware foundation: dedicated compute, upgradeable storage, and practical on-device workflows.</p></div>
+        </article>
+        <article class="project-row project-row-reverse">
+          <figure><img src="/assets/home-v6-hardware-id.webp" alt="HarborNavi hardware running the local Harbor OS intelligence layer" width="1536" height="1024" loading="lazy" data-media-slot="about-harbor-os" /></figure>
+          <div><span>Project 02</span><h3>Harbor OS</h3><p>The software layer that brings local models, devices, permissions, and explainable actions into one system.</p></div>
+        </article>
+      </section>
+
+      <section class="about-voices" aria-labelledby="voices-title">
+        <div class="section-shell about-voices-grid">
+          <div>
+            <div class="about-section-label"><span>04</span><p>Advisors, backers & early voices</p></div>
+            <h2 id="voices-title">Built with people who challenge the details.</h2>
+            <p>We are working with product builders, smart-home experts, and early families. Names and formal endorsements will be published only with permission.</p>
+          </div>
+          <div class="voice-themes" aria-label="Themes from early product feedback">
+            <p><span>01</span>Local-first should feel simpler, not more technical.</p>
+            <p><span>02</span>Interoperability matters more than another closed ecosystem.</p>
+            <p><span>03</span>Family memory must stay owner-controlled.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="about-now section-shell" aria-labelledby="now-title">
+        <div class="about-section-label"><span>05</span><p>Why now</p></div>
+        <div class="about-now-heading">
+          <h2 id="now-title">Three things changed.</h2>
+          <p>The technology became ready just as families began demanding a better privacy model.</p>
+        </div>
+        <div class="now-grid">
+          <article><span>01</span><h3>Edge AI became capable</h3><p>60 TOPS-class hardware can run meaningful models where the data lives.</p></article>
+          <article><span>02</span><h3>Device interoperability matured</h3><p>Home Assistant made a broad, local device layer practical.</p></article>
+          <article><span>03</span><h3>People started asking who listens</h3><p>Convenience no longer excuses sending a home's full history away.</p></article>
+        </div>
+      </section>
+
+      <section class="about-cta" aria-labelledby="about-cta-title">
+        <div class="section-shell">
+          <p class="eyebrow">Five homes. One honest first step.</p>
+          <h2 id="about-cta-title">Help us get HarborNavi right.</h2>
+          <p>We're looking for five families. If our story resonates, we'd love to hear yours.</p>
+          <a class="about-primary" href="/pilot-families#apply">Apply to Join the Pilot <span aria-hidden="true">→</span></a>
+        </div>
+      </section>
+    </main>
+    <footer class="site-footer"><span>HarborNavi</span><a href="/home-v7">Home</a><a href="/pilot-families">Pilot Program</a><a href="/privacy">Privacy</a></footer>
+    <SiteMediaLoader />
+  </body>
+</html>

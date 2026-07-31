@@ -1,5 +1,16 @@
 ---
+import SiteMediaLoader from "../components/SiteMediaLoader.astro";
+import { siteMediaPlacements } from "../data/siteMedia";
 import "../styles/admin666.css";
+
+const mediaPageGroups = Array.from(
+  siteMediaPlacements.reduce((groups, placement) => {
+    const placements = groups.get(placement.page) || [];
+    placements.push(placement);
+    groups.set(placement.page, placements);
+    return groups;
+  }, new Map<string, typeof siteMediaPlacements>())
+);
 ---
 
 <!doctype html>
@@ -9,12 +20,12 @@ import "../styles/admin666.css";
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex,nofollow" />
     <title>Growth Admin | HarborNavi</title>
-    <link rel="icon" href="/favicon.png" type="image/png" sizes="512x512" />
+    <link rel="icon" href="/favicon.png" type="image/png" sizes="512x512" data-media-slot="site-favicon" />
   </head>
   <body class="admin-page">
     <header class="admin-header">
       <a class="admin-brand" href="/home-v7" aria-label="HarborNavi home">
-        <img src="/harbornavi-logo-mark.png" alt="" width="42" height="23" />
+        <img src="/harbornavi-logo-mark.png" alt="" width="42" height="23" data-media-slot="site-header-logo" />
         <span>HarborNavi</span>
       </a>
       <nav aria-label="Admin links">
@@ -123,32 +134,78 @@ import "../styles/admin666.css";
           <div class="leads-head">
             <div>
               <p class="admin-eyebrow">Visual library</p>
-              <h2>Page media</h2>
-              <p>Upload JPG, PNG, or GIF images. Two carousel positions are upload-managed; the Pilot Families campaign stays in the first position.</p>
+              <h2>Website image locations</h2>
+              <p>Choose the exact page section below, then upload a JPG, PNG, or GIF. The new image is used immediately and can be restored to the built-in default at any time.</p>
             </div>
           </div>
-          <form class="media-upload" data-media-upload>
-            <label>
-              Upload image
-              <input type="file" name="file" accept="image/jpeg,image/png,image/gif" required />
-            </label>
-            <label>
-              Use in
-              <select name="slot">
-                <option value="hero-carousel">Hero carousel</option>
-                <option value="page">Other page media</option>
-              </select>
-            </label>
-            <label>
-              Alt text
-              <input type="text" name="alt_text" maxlength="240" placeholder="Describe what the image shows" required />
-            </label>
-            <button type="submit">Upload image</button>
-          </form>
+
+          <nav class="media-page-links" aria-label="Website image groups">
+            {mediaPageGroups.map(([page]) => <a href={`#media-${page.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}>{page}</a>)}
+          </nav>
+
           <p class="admin-message" data-media-message hidden></p>
-          <div class="media-grid" data-media-list>
-            <p class="admin-message">No media loaded yet.</p>
+
+          <div class="media-placement-groups">
+            {mediaPageGroups.map(([page, placements]) => (
+              <section class="media-page-group" id={`media-${page.toLowerCase().replace(/[^a-z0-9]+/g, "-")}`}>
+                <div class="media-page-heading">
+                  <p class="admin-eyebrow">{page}</p>
+                  <h3>{placements.length} image {placements.length === 1 ? "location" : "locations"}</h3>
+                </div>
+                <div class="media-placement-grid">
+                  {placements.map((placement) => (
+                    <article
+                      class="media-placement-card"
+                      data-media-placement={placement.key}
+                      data-placement-label={placement.label}
+                      data-default-url={placement.defaultUrl}
+                      data-default-alt={placement.defaultAlt}
+                    >
+                      <div class="media-placement-preview">
+                        <img src={placement.defaultUrl} alt={placement.defaultAlt} data-media-preview loading="lazy" />
+                        <span data-media-source>Built-in image</span>
+                      </div>
+                      <div class="media-placement-copy">
+                        <p class="media-location">{placement.pagePath}</p>
+                        <h4>{placement.label}</h4>
+                        <p>{placement.description}</p>
+                        <dl>
+                          <div><dt>Recommended</dt><dd>{placement.recommendedSize}</dd></div>
+                          <div><dt>Ratio</dt><dd>{placement.aspectRatio}</dd></div>
+                        </dl>
+                      </div>
+                      <form class="media-placement-upload" data-media-upload>
+                        <input type="hidden" name="slot" value={placement.key} />
+                        <label>
+                          Select replacement image
+                          <input type="file" name="file" accept="image/jpeg,image/png,image/gif" required />
+                        </label>
+                        <label>
+                          Image description (alt text)
+                          <input type="text" name="alt_text" maxlength="240" value={placement.defaultAlt} required />
+                        </label>
+                        <div class="media-placement-actions">
+                          <button type="submit">Upload and use</button>
+                          <button type="button" class="secondary" data-media-restore hidden>Restore default</button>
+                        </div>
+                      </form>
+                    </article>
+                  ))}
+                </div>
+              </section>
+            ))}
           </div>
+
+          <section class="media-history" aria-labelledby="media-history-title">
+            <div class="media-page-heading">
+              <p class="admin-eyebrow">Uploaded files</p>
+              <h3 id="media-history-title">Image history</h3>
+              <p>Previous uploads remain here until deleted. Older “Hero carousel” or “Other page media” files are marked as unassigned and can be connected to a specific location.</p>
+            </div>
+            <div class="media-grid" data-media-list>
+              <p class="admin-message">No uploaded media yet.</p>
+            </div>
+          </section>
         </section>
 
         <section class="tab-panel" data-tab-panel="dashboard">
@@ -476,6 +533,7 @@ import "../styles/admin666.css";
       </tr>
     </template>
 
+    <SiteMediaLoader />
     <script is:inline>
       const tokenKey = "harbornavi_admin_token";
       let leads = [];
@@ -491,7 +549,8 @@ import "../styles/admin666.css";
       const leadsMessage = document.querySelector("[data-leads-message]");
       const analyticsMessage = document.querySelector("[data-analytics-message]");
       const mediaMessage = document.querySelector("[data-media-message]");
-      const mediaUpload = document.querySelector("[data-media-upload]");
+      const mediaUploadForms = Array.from(document.querySelectorAll("[data-media-upload]"));
+      const mediaPlacementCards = Array.from(document.querySelectorAll("[data-media-placement]"));
       const mediaList = document.querySelector("[data-media-list]");
       const pilotApplicationsMessage = document.querySelector("[data-pilot-applications-message]");
       const pilotApplicationsBody = document.querySelector("[data-pilot-applications-body]");
@@ -883,7 +942,44 @@ import "../styles/admin666.css";
         return `${(value / 1024 / 1024).toFixed(1)} MB`;
       }
 
+      function getPlacementLabel(slot) {
+        const card = mediaPlacementCards.find((item) => item.dataset.mediaPlacement === slot);
+        if (card) return card.dataset.placementLabel;
+        if (slot === "hero-carousel") return "Legacy hero carousel upload (unassigned)";
+        if (slot === "page") return "Legacy Other Page Media upload (unassigned)";
+        return slot;
+      }
+
+      function getResolvedActiveMedia() {
+        const resolved = new Map();
+        media.filter((asset) => asset.active && asset.slot !== "hero-carousel" && asset.slot !== "page").forEach((asset) => {
+          resolved.set(asset.slot, asset);
+        });
+        const legacyCarousel = media.filter((asset) => asset.active && asset.slot === "hero-carousel");
+        if (!resolved.has("home-carousel-memory") && legacyCarousel[0]) resolved.set("home-carousel-memory", legacyCarousel[0]);
+        if (!resolved.has("home-carousel-movie") && legacyCarousel[1]) resolved.set("home-carousel-movie", legacyCarousel[1]);
+        return resolved;
+      }
+
+      function renderMediaPlacements() {
+        const activeMedia = getResolvedActiveMedia();
+        mediaPlacementCards.forEach((card) => {
+          const slot = card.dataset.mediaPlacement;
+          const asset = activeMedia.get(slot);
+          const preview = card.querySelector("[data-media-preview]");
+          const source = card.querySelector("[data-media-source]");
+          const restore = card.querySelector("[data-media-restore]");
+          preview.src = asset?.url || card.dataset.defaultUrl;
+          preview.alt = asset?.alt_text || card.dataset.defaultAlt;
+          source.textContent = asset ? `Custom image · ${asset.filename}` : "Built-in image";
+          source.dataset.custom = String(Boolean(asset));
+          restore.hidden = !asset;
+          restore.dataset.assetId = asset?.id || "";
+        });
+      }
+
       function renderMedia() {
+        renderMediaPlacements();
         mediaList.innerHTML = "";
         if (!media.length) {
           mediaList.innerHTML = '<p class="admin-message">No uploaded media yet.</p>';
@@ -901,20 +997,37 @@ import "../styles/admin666.css";
           const title = document.createElement("strong");
           title.textContent = asset.filename;
           const meta = document.createElement("small");
-          meta.textContent = `${asset.slot} · ${formatBytes(asset.size_bytes)}`;
+          meta.textContent = `${getPlacementLabel(asset.slot)} · ${formatBytes(asset.size_bytes)}`;
           const alt = document.createElement("small");
           alt.textContent = asset.alt_text || "No alt text";
           const actions = document.createElement("div");
           actions.className = "media-card-actions";
-          const toggle = document.createElement("button");
-          toggle.type = "button";
-          toggle.textContent = asset.active ? "Enabled" : "Enable";
-          toggle.addEventListener("click", () => setMediaActive(asset, !asset.active));
+          if (asset.slot === "hero-carousel" || asset.slot === "page") {
+            const assignment = document.createElement("select");
+            assignment.setAttribute("aria-label", `Choose a website location for ${asset.filename}`);
+            mediaPlacementCards.forEach((placementCard) => {
+              const option = document.createElement("option");
+              option.value = placementCard.dataset.mediaPlacement;
+              option.textContent = placementCard.dataset.placementLabel;
+              assignment.appendChild(option);
+            });
+            const assign = document.createElement("button");
+            assign.type = "button";
+            assign.textContent = "Assign and use";
+            assign.addEventListener("click", () => assignMedia(asset, assignment.value));
+            actions.append(assignment, assign);
+          } else {
+            const toggle = document.createElement("button");
+            toggle.type = "button";
+            toggle.textContent = asset.active ? "Restore default" : "Use this image";
+            toggle.addEventListener("click", () => setMediaActive(asset, !asset.active));
+            actions.appendChild(toggle);
+          }
           const remove = document.createElement("button");
           remove.type = "button";
           remove.textContent = "Delete";
           remove.addEventListener("click", () => deleteMedia(asset));
-          actions.append(toggle, remove);
+          actions.appendChild(remove);
           details.append(title, meta, alt, actions);
           card.append(image, details);
           mediaList.appendChild(card);
@@ -947,13 +1060,29 @@ import "../styles/admin666.css";
 
       async function setMediaActive(asset, active) {
         try {
-          await apiFetch("/api/assets", {
+          const body = await apiFetch("/api/assets", {
             method: "POST",
             body: JSON.stringify({ action: "set-active", id: asset.id, active })
           });
-          asset.active = active;
+          if (active) media.forEach((item) => { if (item.slot === asset.slot) item.active = false; });
+          Object.assign(asset, body.asset);
           renderMedia();
-          setMessage(mediaMessage, active ? "Image enabled." : "Image disabled.", "success");
+          setMessage(mediaMessage, active ? "Image is now live in this location." : "Built-in image restored.", "success");
+        } catch (error) {
+          setMessage(mediaMessage, error.message, "error");
+        }
+      }
+
+      async function assignMedia(asset, slot) {
+        try {
+          const body = await apiFetch("/api/assets", {
+            method: "POST",
+            body: JSON.stringify({ action: "assign", id: asset.id, slot })
+          });
+          media.forEach((item) => { if (item.slot === slot) item.active = false; });
+          Object.assign(asset, body.asset);
+          renderMedia();
+          setMessage(mediaMessage, `Image assigned to ${getPlacementLabel(slot)}.`, "success");
         } catch (error) {
           setMessage(mediaMessage, error.message, "error");
         }
@@ -1222,22 +1351,31 @@ import "../styles/admin666.css";
       sourceFilter.addEventListener("input", renderLeads);
       pilotStatusFilter.addEventListener("change", renderPilotApplications);
       pilotSearchFilter.addEventListener("input", renderPilotApplications);
-      mediaUpload.addEventListener("submit", async (event) => {
-        event.preventDefault();
-        const button = mediaUpload.querySelector("button[type='submit']");
-        button.disabled = true;
-        setMessage(mediaMessage, "Uploading image...");
-        try {
-          const body = await apiFetch("/api/assets", { method: "POST", body: new FormData(mediaUpload) });
-          media.unshift(body.asset);
-          mediaUpload.reset();
-          renderMedia();
-          setMessage(mediaMessage, "Image uploaded. Enable it when ready.", "success");
-        } catch (error) {
-          setMessage(mediaMessage, error.message, "error");
-        } finally {
-          button.disabled = false;
-        }
+      mediaUploadForms.forEach((mediaUpload) => {
+        mediaUpload.addEventListener("submit", async (event) => {
+          event.preventDefault();
+          const button = mediaUpload.querySelector("button[type='submit']");
+          button.disabled = true;
+          setMessage(mediaMessage, "Uploading and applying image...");
+          try {
+            const body = await apiFetch("/api/assets", { method: "POST", body: new FormData(mediaUpload) });
+            media.forEach((item) => { if (item.slot === body.asset.slot) item.active = false; });
+            media.unshift(body.asset);
+            mediaUpload.reset();
+            renderMedia();
+            setMessage(mediaMessage, `Image is now live in ${getPlacementLabel(body.asset.slot)}.`, "success");
+          } catch (error) {
+            setMessage(mediaMessage, error.message, "error");
+          } finally {
+            button.disabled = false;
+          }
+        });
+      });
+      mediaPlacementCards.forEach((card) => {
+        card.querySelector("[data-media-restore]")?.addEventListener("click", () => {
+          const asset = media.find((item) => item.id === card.querySelector("[data-media-restore]").dataset.assetId);
+          if (asset) setMediaActive(asset, false);
+        });
       });
       logoutButton.addEventListener("click", () => {
         clearToken();

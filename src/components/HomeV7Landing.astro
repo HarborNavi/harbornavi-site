@@ -1,4 +1,5 @@
 ---
+import SiteMediaLoader from "./SiteMediaLoader.astro";
 import "../styles/home-v7.css";
 
 const discordUrl = "https://discord.gg/tC2bktRWWj";
@@ -10,9 +11,10 @@ const heroCarouselSlides = [
     url: "/assets/home-v6-pilot-families-v1.png",
     alt: "A family trying HarborNavi together during an early pilot experience.",
     eyebrow: "HarborNavi Pilot Program",
-    title: "Be One of the First 5 Pilot Families",
-    description: "Help shape HarborNavi - get early access, earn up to $500 in rewards.",
-    cta: "Apply to Join →",
+    title: "Join the First 5 Pilot Families",
+    description: "Two weeks at home. Yours to keep. Earn up to $500.",
+    cta: "Join the pilot →",
+    highlight: true,
     href: "/pilot-families"
   },
   {
@@ -34,38 +36,38 @@ const memoryLayers = [
     index: "01",
     label: "Storage",
     title: "Remember",
-    body: "HarborNavi-managed family photos, selected clips, event records, device changes, and the growing home timeline stay on local storage.",
-    detail: "Private retention that can grow with optional SSDs."
+    body: "Selected photos, clips, events, and device changes stay in a private timeline at home.",
+    detail: "Local storage can grow with optional SSDs."
   },
   {
     index: "02",
     label: "Home Agent",
     title: "Understand",
-    body: "Navi connects what happened across time, prepares a briefing, answers follow-up questions, and asks when a detail is missing.",
-    detail: "The day stays connected instead of becoming separate alerts."
+    body: "Navi connects events across time, prepares a briefing, and answers follow-up questions.",
+    detail: "One calm story instead of scattered alerts."
   },
   {
     index: "03",
     label: "Home devices",
     title: "Respond",
-    body: "Everyday words can become temporary plans across supported devices, while household permissions keep sensitive changes in the right hands.",
-    detail: "Each result becomes part of what the home knows next."
+    body: "Everyday words become temporary plans across supported devices, with permissions for sensitive changes.",
+    detail: "Each result improves what the home knows next."
   }
 ];
 
 const connectionPaths = [
-  ["HA", "Home Assistant", "Use supported entities, scenes, and automations already in the home."],
-  ["RT", "RTSP / ONVIF", "Bring selected local camera streams and events into the home timeline."],
-  ["SI", "Selected integrations", "Add device state and actions where the path is supported and useful."],
-  ["ZB", "Planned Zigbee", "Designed for common sensors, switches, and small devices after validation."],
-  ["IR", "Planned IR", "Designed for televisions and climate devices that still work best by remote."]
+  ["HA", "Home Assistant", "Use supported entities, scenes, and automations you already have."],
+  ["RT", "RTSP / ONVIF", "Bring selected local camera events into the home timeline."],
+  ["SI", "Selected integrations", "Connect useful device state and actions."],
+  ["ZB", "Planned Zigbee", "Support common sensors, switches, and small devices."],
+  ["IR", "Planned IR", "Connect TVs and climate devices that still use a remote."]
 ];
 
 const hardwareValues = [
-  ["Private home memory", "128GB eMMC is the planned base. Two M.2 slots can extend HarborNavi-managed photos, clips, events, and home history."],
-  ["Local intelligence", "A dedicated K3-class compute direction gives memory and home workflows a stable place to run."],
-  ["Device links", "Dual 2.5GbE, HDMI, Home Assistant paths, selected cameras, planned Zigbee, and planned IR."],
-  ["Physical trust", "Planned fingerprint confirmation and an embedded secure element support sensitive setup boundaries."]
+  ["Private home memory", "Planned 128GB eMMC plus two M.2 slots for photos, clips, events, and home history."],
+  ["Local intelligence", "Dedicated K3-class compute gives memory and home workflows a stable place to run."],
+  ["Device links", "Dual 2.5GbE, HDMI, Home Assistant, selected cameras, planned Zigbee, and IR."],
+  ["Physical trust", "Planned fingerprint confirmation and a secure element protect sensitive setup changes."]
 ];
 
 const comparisonProducts = [
@@ -100,12 +102,12 @@ const comparisonSources = [
 ];
 
 const faqItems = [
-  ["Is HarborNavi a NAS?", "HarborNavi uses NAS-like local storage for the memories it manages: selected family photos, clips, event records, and home history. The first product is centered on that private home memory, rather than replacing every general-purpose file server, backup, or media-server workflow."],
-  ["Is it another camera recorder?", "Cameras are one memory source. HarborNavi is designed to connect selected camera moments with sensors, device state, recent history, and household permissions, then make that history useful in conversation and action."],
-  ["Does it replace Home Assistant?", "Home Assistant remains a strong device and automation layer. HarborNavi adds memory, follow-up conversation, and a simpler path from everyday language to a coordinated temporary plan."],
-  ["Will it work with every device?", "No. HarborNavi starts with supported Home Assistant paths, selected RTSP / ONVIF cameras, selected integrations, planned Zigbee, and planned IR. A clear device list will be published before orders open."],
-  ["When is fingerprint confirmation used?", "It is planned for sensitive setup changes such as adding a member, expanding permissions, or pairing a device. Ordinary questions and routines should stay easy."],
-  ["Does it require cloud AI?", "Core home memory, permissions, and device workflows are designed to stay local. External models remain optional and follow a filtered outbound path when enabled."]
+  ["Is HarborNavi a NAS?", "It uses local storage for selected photos, clips, events, and home history, but it is built around home memory rather than general file-server work."],
+  ["Is it another camera recorder?", "Cameras are one source. HarborNavi connects selected moments with sensors, device state, and household permissions."],
+  ["Does it replace Home Assistant?", "No. Home Assistant remains the device layer; HarborNavi adds memory, conversation, and simpler temporary plans."],
+  ["Will it work with every device?", "No. We start with supported Home Assistant paths, selected RTSP / ONVIF cameras, and planned Zigbee and IR."],
+  ["When is fingerprint confirmation used?", "For sensitive setup changes such as adding a member, expanding permissions, or pairing a device."],
+  ["Does it require cloud AI?", "Core memory, permissions, and device workflows stay local. External models are optional."]
 ];
 
 const structuredData = JSON.stringify({
@@ -133,7 +135,7 @@ const structuredData = JSON.stringify({
     <title>HarborNavi - Home is where the heart is.</title>
     <meta name="description" content="HarborNavi keeps the moments that define your home private and forever." />
     <link rel="canonical" href="https://harbornavi.com/home-v7" />
-    <link rel="icon" href="/favicon.png" type="image/png" sizes="512x512" />
+    <link rel="icon" href="/favicon.png" type="image/png" sizes="512x512" data-media-slot="site-favicon" />
     <meta property="og:title" content="Home is where the heart is. And where your memories live." />
     <meta property="og:description" content="HarborNavi keeps the moments that define your home private and forever." />
     <meta property="og:type" content="website" />
@@ -147,32 +149,35 @@ const structuredData = JSON.stringify({
   </head>
   <body class="home-v6-page" data-route="home-v7">
     <div class="site-shell">
-      <header class="site-header">
-        <a class="brand" href="#top" aria-label="HarborNavi home">
-          <span class="brand-mark" aria-hidden="true"><img src="/harbornavi-logo-mark.png" alt="" width="42" height="23" /></span>
-          <span>HarborNavi</span>
-        </a>
-        <nav aria-label="Page sections">
-          <a href="#memory">Memory</a>
-          <a href="#how-it-works">How it works</a>
-          <a href="#compatibility">Compatibility</a>
-          <a href="#hardware">Hardware</a>
-          <a href="#compare">Compare</a>
-        </nav>
-        <a class="header-cta" href="#join">Join the launch list</a>
-      </header>
+      <div class="site-header-bar">
+        <header class="site-header">
+          <a class="brand" href="#top" aria-label="HarborNavi home">
+            <span class="brand-mark" aria-hidden="true"><img src="/harbornavi-logo-mark.png" alt="" width="42" height="23" data-media-slot="site-header-logo" /></span>
+            <span>HarborNavi</span>
+          </a>
+          <nav aria-label="Page sections">
+            <a href="#memory">Memory</a>
+            <a href="#how-it-works">How it works</a>
+            <a href="#compatibility">Compatibility</a>
+            <a href="#hardware">Hardware</a>
+            <a href="#compare">Compare</a>
+            <a href="/about-harbor">About Harbor</a>
+          </nav>
+          <a class="header-cta" href="#join">Join the waitlist</a>
+        </header>
+      </div>
 
       <main id="top">
         <section class="hero-carousel" data-hero-carousel aria-label="HarborNavi highlights">
           <div class="hero-carousel-track" data-carousel-slides>
             {heroCarouselSlides.map((slide, index) => (
               <article class="hero-carousel-slide" data-carousel-slide aria-hidden={index === 0 ? "false" : "true"} hidden={index !== 0}>
-                <img src={slide.url} alt={slide.alt} width="1536" height="1024" loading={index === 0 ? "eager" : "lazy"} decoding="async" />
+                <img src={slide.url} alt={slide.alt} width="1536" height="1024" loading={index === 0 ? "eager" : "lazy"} decoding="async" data-media-slot={index === 0 ? "home-carousel-pilot" : index === 1 ? "home-carousel-memory" : "home-carousel-movie"} />
                 {slide.href ? (
                   <a class="hero-carousel-link" href={slide.href} aria-label={`${slide.title}. ${slide.cta}`}>
                     <div class="hero-carousel-overlay">
                       <p>{slide.eyebrow}</p>
-                      <h2>{slide.title}</h2>
+                      <h2>{slide.highlight ? <>Join the <mark>First 5</mark> Pilot Families</> : slide.title}</h2>
                       {slide.description && <span>{slide.description}</span>}
                       {slide.cta && <strong>{slide.cta}</strong>}
                     </div>
@@ -201,33 +206,32 @@ const structuredData = JSON.stringify({
         <section class="hero" aria-labelledby="hero-title">
           <h1 id="hero-title">Home is where the heart is. And where your memories live.</h1>
           <div class="hero-copy">
-            <p class="category">HarborNavi: Keeping the moments that define your home, private and forever.</p>
+            <p class="category">A local AI home companion that remembers what matters, connects your devices, and keeps your data at home.</p>
             <div class="hero-description">
-              <p>What makes a house a home? It&rsquo;s the laughter echoing in the living room, your child&rsquo;s proud little wins, and even the chaotic, fleeting everyday moments. These aren&rsquo;t just events&mdash;they are the memories that define who you are.</p>
-              <p>HarborNavi gathers these precious pieces of your life into one secure, private home memory. So when you walk through the door, you&rsquo;re not just arriving; you&rsquo;re connecting. Ask Navi about the moments you missed, and keep the heart of your home alive.</p>
+              <p>Family moments and home signals disappear across recordings and apps. HarborNavi turns the pieces you choose into one private memory you can ask and act on.</p>
             </div>
             <form class="email-form" data-early-form data-form-location="hero">
               <label class="sr-only" for="v6-hero-email">Email address</label>
               <input id="v6-hero-email" type="email" name="email" autocomplete="email" placeholder="Email address" aria-describedby="v6-hero-note v6-hero-error" required />
               <input class="sr-only" name="company" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" />
-              <button type="submit">Join the launch list</button>
+              <button type="submit">Join the waitlist</button>
             </form>
             <p id="v6-hero-error" class="form-error" data-form-error aria-live="polite" hidden>We could not save your email. Please try again.</p>
-            <p id="v6-hero-note" class="form-note">Confirm by email to receive HarborNavi Kickstarter pre-launch updates. Unsubscribe anytime. <a href="/privacy">Privacy</a></p>
+            <p id="v6-hero-note" class="form-note">Follow product updates and get early-bird pricing. Email confirmation required. <a href="/privacy">Privacy</a></p>
           </div>
           <figure class="hero-visual">
-            <img src={heroImage} alt="A child sharing a drawing with family as a pet runs beside HarborNavi and selected home memories gather locally" width="1536" height="1024" loading="eager" fetchpriority="high" />
+            <img src={heroImage} alt="A child sharing a drawing with family as a pet runs beside HarborNavi and selected home memories gather locally" width="1536" height="1024" loading="eager" fetchpriority="high" data-media-slot="home-hero-family" />
           </figure>
         </section>
 
         <section id="memory" class="memory-story" aria-labelledby="memory-title" data-scenario-event="scenario_family_memory">
           <figure class="memory-visual">
-            <img src="/assets/home-v6-family-moment-id.webp" alt="A child's small achievement becoming an easy-to-find family memory" width="1536" height="1024" loading="lazy" />
+            <img src="/assets/home-v6-family-moment-id.webp" alt="A child's small achievement becoming an easy-to-find family memory" width="1536" height="1024" loading="lazy" data-media-slot="home-memory-moment" />
           </figure>
           <div class="memory-copy">
             <p class="eyebrow">The life already happening at home</p>
             <h2 id="memory-title">The best parts should not disappear into 24 hours of footage.</h2>
-            <p>The moments you choose to keep stay in one private timeline, together with when and where they happened. Ask for one later instead of scrubbing through recordings or searching across apps.</p>
+            <p>Keep the moments you choose in one private timeline, then ask for them later instead of searching recordings and apps.</p>
             <div class="moment-lines" aria-label="Examples of family memories">
               <div><span>Photos and clips</span><strong>Kept together</strong></div>
               <div><span>Time and place</span><strong>Remembered</strong></div>
@@ -240,7 +244,7 @@ const structuredData = JSON.stringify({
           <div class="briefing-copy">
             <p class="eyebrow">A memory you can ask</p>
             <h2 id="briefing-title">Come home to the short version.</h2>
-            <p>Navi keeps up with the day without turning every event into a notification. Routine moments can wait. Configured urgent changes can reach you. When you walk in, Navi can give you the calm version and answer what happened next.</p>
+            <p>Navi lets routine moments wait, surfaces configured urgent changes, and gives you the calm version when you get home.</p>
             <div class="briefing-list" aria-label="Example home briefing">
               <div><time>2:14 PM</time><span>Package delivered</span><em>Routine</em></div>
               <div><time>4:32 PM</time><span>Pet moment worth keeping</span><em>Saved</em></div>
@@ -248,7 +252,7 @@ const structuredData = JSON.stringify({
             </div>
           </div>
           <figure>
-            <img src="/assets/home-v6-homecoming-briefing-id.webp" alt="A family member coming home to a dog, with HarborNavi ready to share the short version of the day" width="1536" height="1024" loading="lazy" />
+            <img src="/assets/home-v6-homecoming-briefing-id.webp" alt="A family member coming home to a dog, with HarborNavi ready to share the short version of the day" width="1536" height="1024" loading="lazy" data-media-slot="home-briefing" />
           </figure>
         </section>
 
@@ -279,18 +283,18 @@ const structuredData = JSON.stringify({
             <div class="proof-copy">
               <p class="eyebrow">When something needs you now</p>
               <h2>The package is leaving. Navi speaks up.</h2>
-              <p>A delivery at 2:14 PM is routine. Someone carrying it away at 2:31 is not. HarborNavi can connect the door camera and presence signals, notify you, save the key clip, and prepare an allowed response through a supported speaker, siren, or doorbell. Any further escalation still belongs to you.</p>
+              <p>HarborNavi can connect delivery and presence signals, notify you, save the key clip, and prepare an allowed response. Escalation stays with you.</p>
               <blockquote>Package removed after delivery. Owner notified. Supported porch warning ready.</blockquote>
             </div>
-            <figure><img src="/assets/home-v4-package-response.webp" alt="A package-removal event prompting an immediate owner notification and supported porch response" width="1536" height="1024" loading="lazy" /></figure>
+            <figure><img src="/assets/home-v4-package-response.webp" alt="A package-removal event prompting an immediate owner notification and supported porch response" width="1536" height="1024" loading="lazy" data-media-slot="home-package-response" /></figure>
           </article>
 
           <article class="proof-story movie-story" data-scenario-event="scenario_natural_language_action">
-            <figure><img src="/assets/home-v6-movie-night-id.webp" alt="A movie-night request coordinating lighting, television, and climate devices" width="1536" height="1024" loading="lazy" /></figure>
+            <figure><img src="/assets/home-v6-movie-night-id.webp" alt="A movie-night request coordinating lighting, television, and climate devices" width="1536" height="1024" loading="lazy" data-media-slot="home-movie-night" /></figure>
             <div class="proof-copy">
               <p class="eyebrow">Memory makes language useful</p>
               <h2>&quot;Movie night&quot; should be enough.</h2>
-              <p>HarborNavi can use room and device mappings already established in the home, ask about anything unclear, and turn the answer into a temporary plan instead of another permanent rule to maintain.</p>
+              <p>HarborNavi uses your room and device mappings, asks what is unclear, and builds a temporary plan instead of another rule to maintain.</p>
               <div class="conversation" aria-label="Example movie night conversation">
                 <p class="from-user"><span>You</span>Movie night.</p>
                 <p><span>HarborNavi</span>Living-room TV, lights at 20%, AC at 72&deg;F?</p>
@@ -304,16 +308,16 @@ const structuredData = JSON.stringify({
             <div class="trust-copy">
               <p class="eyebrow">Memory still has boundaries</p>
               <h2>Sensitive changes still wait for you.</h2>
-              <p>Adding a member, expanding room permissions, or pairing a Bluetooth or Zigbee device changes who can see or control the home. Planned fingerprint confirmation keeps those setup changes at the box. Everyday questions and ordinary routines stay easy.</p>
+              <p>Planned fingerprint confirmation keeps member, permission, and pairing changes at the box. Everyday questions stay easy.</p>
             </div>
-            <figure><img src="/assets/home-v6-trust-boundary-id.webp" alt="Local fingerprint confirmation on HarborNavi for a sensitive household access change" width="1536" height="1024" loading="lazy" /></figure>
+            <figure><img src="/assets/home-v6-trust-boundary-id.webp" alt="Local fingerprint confirmation on HarborNavi for a sensitive household access change" width="1536" height="1024" loading="lazy" data-media-slot="home-trust-boundary" /></figure>
           </aside>
         </section>
 
         <section id="compatibility" class="compatibility-section" aria-labelledby="compat-title">
           <div class="section-heading split-heading">
             <div><p class="eyebrow">Works with your home</p><h2 id="compat-title">Keep the home you already have.</h2></div>
-            <p>Keep the cameras, sensors, lights, appliances, and Home Assistant setup that already make sense. Supported paths can contribute to the same home memory without asking the household to switch into one brand.</p>
+            <p>Keep the cameras, sensors, lights, and Home Assistant setup that already work. Supported paths contribute to one home memory without locking you to one brand.</p>
           </div>
           <div class="connection-grid">
             {connectionPaths.map(([marker, title, body]) => <article><span>{marker}</span><h3>{title}</h3><p>{body}</p></article>)}
@@ -324,10 +328,10 @@ const structuredData = JSON.stringify({
         <section id="hardware" class="hardware-section" aria-labelledby="hardware-title">
           <div class="hardware-intro">
             <div><p class="eyebrow">Dedicated local hardware</p><h2 id="hardware-title">Memory needs a home of its own.</h2></div>
-            <p>A dedicated box gives family memory, local intelligence, device links, and trust boundaries a stable place to live. Optional cloud models can help without becoming the owner of the home's full history.</p>
+            <p>A dedicated box gives memory, local intelligence, device links, and trust boundaries one stable home.</p>
           </div>
           <div class="hardware-body">
-            <figure class="hardware-visual"><img src="/assets/home-v6-hardware-id.webp" alt="HarborNavi local home hardware with a glossy black top, fingerprint control, and purple status light" width="1536" height="1024" loading="lazy" /></figure>
+            <figure class="hardware-visual"><img src="/assets/home-v6-hardware-id.webp" alt="HarborNavi local home hardware with a glossy black top, fingerprint control, and purple status light" width="1536" height="1024" loading="lazy" data-media-slot="home-hardware" /></figure>
             <div class="hardware-grid">
               {hardwareValues.map(([title, body], index) => <article><span>{String(index + 1).padStart(2, "0")}</span><h3>{title}</h3><p>{body}</p></article>)}
             </div>
@@ -351,7 +355,7 @@ const structuredData = JSON.stringify({
               <p class="eyebrow">Different products keep different pieces</p>
               <h2 id="compare-title">Who keeps the situation together?</h2>
             </div>
-            <p>Camera AI, cloud assistants, local hubs, and installed systems each solve a different part of the home. The practical difference is who keeps the full picture together, and what happens when the routine changes.</p>
+            <p>Each category solves a different part of the home. The difference is who keeps the full picture together when routines change.</p>
           </div>
           <div class="compare-wrap" role="region" aria-label="Comparison of smart-home product approaches" tabindex="0">
             <table>
@@ -381,22 +385,22 @@ const structuredData = JSON.stringify({
         </section>
 
         <section id="join" class="final-section" aria-labelledby="final-title">
-          <p class="eyebrow">HarborNavi launch list</p>
+          <p class="eyebrow">HarborNavi waitlist</p>
           <h2 id="final-title">What should your home remember?</h2>
-          <p>Join for HarborNavi Kickstarter pre-launch updates.</p>
+          <p>Follow updates and be first in line for early-bird pricing.</p>
           <form class="email-form final-form" data-early-form data-form-location="final">
             <label class="sr-only" for="v6-final-email">Email address</label>
             <input id="v6-final-email" type="email" name="email" autocomplete="email" placeholder="Email address" aria-describedby="v6-final-note v6-final-error" required />
             <input class="sr-only" name="company" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" />
-            <button type="submit">Join the launch list</button>
+            <button type="submit">Join the waitlist</button>
           </form>
           <p id="v6-final-error" class="form-error" data-form-error aria-live="polite" hidden>We could not save your email. Please try again.</p>
-          <p id="v6-final-note" class="form-note">Confirm by email to receive HarborNavi Kickstarter pre-launch updates. Unsubscribe anytime. <a href="/privacy">Privacy</a></p>
+          <p id="v6-final-note" class="form-note">Follow product updates and get early-bird pricing. Email confirmation required. <a href="/privacy">Privacy</a></p>
         </section>
       </main>
 
       <footer>
-        <a class="brand" href="#top" aria-label="HarborNavi home"><span class="brand-mark" aria-hidden="true"><img src="/harbornavi-logo-mark.png" alt="" width="42" height="23" /></span><span>HarborNavi</span></a>
+        <a class="brand" href="#top" aria-label="HarborNavi home"><span class="brand-mark" aria-hidden="true"><img src="/harbornavi-logo-mark.png" alt="" width="42" height="23" data-media-slot="site-header-logo" /></span><span>HarborNavi</span></a>
         <p>The spark that brings your home to life.</p>
       </footer>
 
@@ -405,7 +409,7 @@ const structuredData = JSON.stringify({
         <div class="modal-panel">
           <button class="modal-close" type="button" aria-label="Close thank you dialog" data-modal-close>&times;</button>
           <p class="eyebrow" data-success-eyebrow>Check your inbox</p>
-          <h2 id="v6-success-title" data-success-title>Confirm your email to join the launch list.</h2>
+          <h2 id="v6-success-title" data-success-title>Confirm your email to join the waitlist.</h2>
           <p id="v6-success-description" data-success-description>We sent a confirmation link. Your address will not receive Kickstarter updates until you confirm it.</p>
           <div class="survey-invite" data-confirmation-extras>
             <p class="survey-label">Optional &middot; About 3&ndash;5 minutes</p>
@@ -420,6 +424,7 @@ const structuredData = JSON.stringify({
       </div>
     </div>
 
+    <SiteMediaLoader />
     <script is:inline>
       const route = document.body.dataset.route || "home-v7";
       const utmKeys = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"];
@@ -525,20 +530,20 @@ const structuredData = JSON.stringify({
         const content = {
           pending: {
             eyebrow: "Check your inbox",
-            title: "Confirm your email to join the launch list.",
+            title: "Confirm your email to join the waitlist.",
             description: "We sent a confirmation link. Your address will not receive Kickstarter updates until you confirm it.",
             extras: true
           },
           confirmed: {
             eyebrow: "Confirmed",
-            title: "You are on the HarborNavi launch list.",
+            title: "You are on the HarborNavi waitlist.",
             description: "Your email is confirmed for HarborNavi Kickstarter pre-launch updates.",
             extras: true
           },
           "sync-failed": {
             eyebrow: "Email confirmed",
             title: "Your confirmation is saved.",
-            description: "We are finishing the connection to the launch list automatically. You do not need to submit again.",
+            description: "We are finishing the waitlist connection automatically. You do not need to submit again.",
             extras: true
           },
           invalid: {
@@ -589,22 +594,6 @@ const structuredData = JSON.stringify({
         }
       }
 
-      function applyUploadedCarouselAssets(assets) {
-        if (!Array.isArray(assets) || !assets.length) return;
-        const activeAssets = assets.slice(0, 2);
-        carouselSlides.slice(1).forEach((slide, index) => {
-          const asset = activeAssets[index];
-          if (!asset) return;
-          const image = slide.querySelector("img");
-          if (image) {
-            image.src = asset.url;
-            image.alt = asset.alt_text || "HarborNavi highlight";
-          }
-        });
-        showCarouselSlide(0);
-        restartCarousel();
-      }
-
       if (heroCarousel) {
         heroCarousel.querySelector("[data-carousel-prev]")?.addEventListener("click", () => {
           showCarouselSlide(carouselIndex - 1);
@@ -625,10 +614,6 @@ const structuredData = JSON.stringify({
         heroCarousel.addEventListener("focusin", () => carouselTimer && window.clearInterval(carouselTimer));
         heroCarousel.addEventListener("focusout", restartCarousel);
         restartCarousel();
-        fetch("/api/assets")
-          .then((response) => response.ok ? response.json() : null)
-          .then((body) => applyUploadedCarouselAssets(body?.assets))
-          .catch(() => {});
       }
 
       const confirmationUrl = new URL(window.location.href);

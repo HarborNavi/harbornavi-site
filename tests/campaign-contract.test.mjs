@@ -124,6 +124,7 @@ test("public roots redirect to home-v6 and archived pages stay out of the sitema
   }
   assert.match(sitemap, /<loc>https:\/\/harbornavi\.com\/home-v6<\/loc>/);
   assert.match(sitemap, /<loc>https:\/\/harbornavi\.com\/home-v7<\/loc>/);
+  assert.match(sitemap, /<loc>https:\/\/harbornavi\.com\/about-harbor<\/loc>/);
   assert.doesNotMatch(sitemap, /<loc>https:\/\/harbornavi\.com\/home-v[45]<\/loc>/);
 });
 
@@ -137,8 +138,8 @@ test("home-v7 and admin666 are isolated from the retained production routes", as
   assert.match(homeV7Page, /HomeV7Landing/);
   assert.match(homeV7, /https:\/\/harbornavi\.com\/home-v7/);
   assert.match(homeV7, /data-route="home-v7"/);
-  assert.match(homeV7, /Be One of the First 5 Pilot Families/);
-  assert.doesNotMatch(homeV6, /Be One of the First 5 Pilot Families/);
+  assert.match(homeV7, /Join the First 5 Pilot Families/);
+  assert.doesNotMatch(homeV6, /Join the First 5 Pilot Families/);
   assert.match(admin666, /data-tab-button="pilot-applications"/);
   assert.match(admin666, /data-tab-button="media"/);
   assert.doesNotMatch(admin, /data-tab-button="pilot-applications"/);

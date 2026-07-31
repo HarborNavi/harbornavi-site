@@ -2,20 +2,27 @@
 import type { RouteKey } from "../data/landingPages";
 
 interface Props {
-  activeRoute?: RouteKey | "privacy";
+  activeRoute?: RouteKey | "privacy" | "about" | "pilot-families";
+  ctaHref?: string;
+  ctaLabel?: string;
+  note?: string;
 }
 
-const { activeRoute } = Astro.props;
-const ctaHref = activeRoute === "privacy" ? "/home-v7#join" : "#waitlist";
+const { activeRoute, ctaHref: requestedCtaHref, ctaLabel: requestedCtaLabel, note: requestedNote } = Astro.props;
+const ctaHref = requestedCtaHref || (activeRoute === "privacy" ? "/home-v7#join" : "#waitlist");
+const ctaLabel = requestedCtaLabel || "Join the waitlist";
+const note = requestedNote || "Private beta list";
 ---
 
-<header class="site-header">
-  <a class="brand" href="/home-v7" aria-label="HarborNavi home">
-    <span class="brand-mark" aria-hidden="true">
-      <img src="/harbornavi-logo-mark.png" alt="" width="62" height="34" />
-    </span>
-    <span>HarborNavi</span>
-  </a>
-  <p class="header-note">Private beta list</p>
-  <a class="header-cta" href={ctaHref} data-track="waitlist_start">Join waitlist</a>
-</header>
+<div class="site-header-bar">
+  <header class="site-header">
+    <a class="brand" href="/home-v7" aria-label="HarborNavi home">
+      <span class="brand-mark" aria-hidden="true">
+        <img src="/harbornavi-logo-mark.png" alt="" width="62" height="34" data-media-slot="site-header-logo" />
+      </span>
+      <span>HarborNavi</span>
+    </a>
+    <p class="header-note">{note}</p>
+    <a class="header-cta" href={ctaHref} data-track="waitlist_start">{ctaLabel}</a>
+  </header>
+</div>

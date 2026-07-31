@@ -35,10 +35,13 @@ test("pilot campaign banner and form stay on the approved contract", async () =>
   const adminHealth = await source("api/admin/health.ts");
   const pilotApplications = await source("src/server/pilot-applications.ts");
   const vercel = JSON.parse(await source("vercel.json"));
-  assert.match(home, /Be One of the First 5 Pilot Families/);
-  assert.match(home, /earn up to \$500 in rewards/);
+  assert.match(home, /Join the First 5 Pilot Families/);
+  assert.match(home, /Earn up to \$500/);
   assert.match(home, /href: "\/pilot-families"/);
   assert.match(home, /data-route="home-v7"/);
+  assert.match(home, /Join the waitlist/);
+  assert.match(home, /early-bird pricing/);
+  assert.match(home, /href="\/about-harbor"/);
   for (const field of ["name", "email", "zip_code", "smart_devices", "interest_reason", "referral_source"]) {
     assert.match(page, new RegExp(`name="${field}"`));
   }
@@ -48,7 +51,10 @@ test("pilot campaign banner and form stay on the approved contract", async () =>
   assert.match(page, /\$500 completion bonus/);
   assert.match(page, /two weeks/);
   assert.match(page, /one or two short vlogs/);
-  assert.match(page, /What's expected of pilot testers\?/);
+  assert.match(page, /What will my family need to do\?/);
+  assert.match(page, /How difficult is installation\?/);
+  assert.match(page, /about 30 minutes/);
+  assert.match(page, /Join the pilot program/);
   assert.match(page, /What equipment do I need\?/);
   assert.match(page, /How long is the pilot program\?/);
   assert.match(page, /Do I get to keep the device\?/);
@@ -71,4 +77,17 @@ test("pilot campaign banner and form stay on the approved contract", async () =>
   assert.match(pilotApplications, /create table if not exists pilot_family_applications/);
   const listFunction = pilotApplications.slice(pilotApplications.indexOf("export async function listPilotApplications"));
   assert.doesNotMatch(listFunction, /\bmetadata\b/);
+});
+
+test("about harbor presents the approved company story without fabricated names", async () => {
+  const about = await source("src/pages/about-harbor.astro");
+  assert.match(about, /https:\/\/harbornavi\.com\/about-harbor/);
+  assert.match(about, /Harbor Innovations/);
+  assert.match(about, /Our homes kept recording\. They still forgot us\./);
+  assert.match(about, /A home memory should last a lifetime/);
+  assert.match(about, /Privacy is not a premium feature/);
+  assert.match(about, /Nexus AI Workstation/);
+  assert.match(about, /Harbor OS/);
+  assert.match(about, /Names and formal endorsements will be published only with permission/);
+  assert.match(about, /\/pilot-families#apply/);
 });

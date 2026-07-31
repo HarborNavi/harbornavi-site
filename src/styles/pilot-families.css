@@ -1,17 +1,18 @@
 .pilot-page { min-width: 320px; overflow-x: hidden; background: #fbfafc; color: #17141d; }
 .pilot-page .site-header { max-width: 1280px; }
+.pilot-page main [id] { scroll-margin-top: 96px; }
 .pilot-page h1, .pilot-page h2, .pilot-page h3, .pilot-page p { margin-top: 0; letter-spacing: 0; }
 .pilot-hero { position: relative; width: min(calc(100% - 48px), 1280px); min-height: 480px; margin: 18px auto 0; overflow: hidden; background: #18151d; }
 .pilot-hero > img { position: absolute; inset: 0; width: 100%; height: 100%; object-fit: cover; object-position: center; }
 .pilot-hero-overlay { position: absolute; inset: 0; background: linear-gradient(90deg, rgba(17, 14, 22, 0.94) 0%, rgba(17, 14, 22, 0.72) 42%, rgba(17, 14, 22, 0.12) 72%); }
 .pilot-hero-copy { position: relative; z-index: 1; width: min(54%, 660px); min-height: 480px; display: flex; flex-direction: column; justify-content: center; align-items: flex-start; padding: 54px; color: #fff; }
 .pilot-hero-copy .eyebrow { color: #d8c8ff; }
-.pilot-hero-copy h1 { max-width: 620px; margin-bottom: 20px; font-size: clamp(48px, 5vw, 76px); line-height: 0.98; }
+.pilot-hero-copy h1 { max-width: 620px; margin-bottom: 20px; font-size: clamp(48px, 5vw, 76px); line-height: 1.05; }
 .pilot-hero-copy > p:not(.eyebrow) { max-width: 560px; margin-bottom: 28px; color: #f2eef6; font-size: 19px; line-height: 1.55; }
 .pilot-primary { min-height: 50px; display: inline-flex; align-items: center; justify-content: center; gap: 8px; border: 1px solid #8b5cf6; border-radius: 4px; background: #6d35d5; color: #fff; padding: 0 20px; font-weight: 760; text-decoration: none; cursor: pointer; }
 .pilot-primary:hover, .pilot-primary:focus-visible { background: #5424a8; }
-.pilot-intro { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(360px, 0.7fr); gap: 80px; align-items: end; padding: 104px 0 62px; }
-.pilot-intro h2, .pilot-commitment h2, .pilot-privacy h2, .pilot-process h2, .pilot-faq h2, .pilot-application h2 { margin-bottom: 0; font-size: clamp(38px, 4.6vw, 60px); line-height: 1.03; }
+.pilot-intro { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(360px, 0.7fr); gap: 64px; align-items: end; padding: 84px 0 54px; }
+.pilot-intro h2, .pilot-commitment h2, .pilot-privacy h2, .pilot-process h2, .pilot-faq h2, .pilot-application h2 { margin-bottom: 0; font-size: clamp(38px, 4.6vw, 60px); line-height: 1.1; }
 .pilot-intro > p, .pilot-commitment-copy > p:not(.eyebrow), .pilot-process-copy > p, .pilot-application-intro > p { margin-bottom: 0; color: #56505d; font-size: 18px; line-height: 1.7; }
 .pilot-details { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid #ddd7e7; border-bottom: 1px solid #ddd7e7; }
 .pilot-details article { min-height: 270px; padding: 38px 34px 42px; border-right: 1px solid #ddd7e7; }
@@ -19,7 +20,7 @@
 .pilot-details span { color: #6d35d5; font-size: 13px; font-weight: 800; }
 .pilot-details h3 { margin: 40px 0 12px; font-size: 24px; }
 .pilot-details p { margin-bottom: 0; color: #625c68; line-height: 1.65; }
-.pilot-commitment { display: grid; grid-template-columns: minmax(300px, 0.8fr) minmax(0, 1.2fr); gap: 80px; padding: 108px 0; }
+.pilot-commitment { display: grid; grid-template-columns: minmax(300px, 0.8fr) minmax(0, 1.2fr); gap: 64px; padding: 82px 0; }
 .pilot-commitment-copy > p:not(.eyebrow) { margin-top: 24px; }
 .pilot-commitment-grid { border-top: 1px solid #ddd7e7; }
 .pilot-commitment-grid article { padding: 30px 0 34px; border-bottom: 1px solid #ddd7e7; }
@@ -34,7 +35,7 @@
 .pilot-privacy li { display: grid; grid-template-columns: 150px 1fr; gap: 24px; padding: 22px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.18); }
 .pilot-privacy li strong { color: #cdbdff; }
 .pilot-privacy li span { color: #d7d2dc; line-height: 1.6; }
-.pilot-process { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(310px, 0.65fr); gap: 90px; padding: 108px 0; }
+.pilot-process { display: grid; grid-template-columns: minmax(0, 1.35fr) minmax(310px, 0.65fr); gap: 72px; padding: 76px 0; }
 .pilot-process-copy > p { max-width: 760px; margin: 24px 0 38px; }
 .pilot-process ol { display: grid; gap: 0; margin: 0; padding: 0; list-style: none; border-top: 1px solid #ddd7e7; }
 .pilot-process li { display: grid; grid-template-columns: 110px 1fr; gap: 22px; padding: 22px 0; border-bottom: 1px solid #ddd7e7; }
@@ -44,7 +45,7 @@
 .pilot-process aside h3 { margin: 0 0 14px; font-size: 26px; }
 .pilot-process aside p:not(.eyebrow) { color: #405b55; line-height: 1.65; }
 .pilot-process aside a { color: #0a665d; font-weight: 760; }
-.pilot-faq { display: grid; grid-template-columns: minmax(300px, 0.72fr) minmax(0, 1.28fr); gap: 80px; padding: 96px 0; border-top: 1px solid #ddd7e7; }
+.pilot-faq { display: grid; grid-template-columns: minmax(300px, 0.72fr) minmax(0, 1.28fr); gap: 64px; padding: 80px 0; border-top: 1px solid #ddd7e7; }
 .pilot-faq-heading { align-self: start; }
 .pilot-faq-list { border-top: 1px solid #d9d3df; }
 .pilot-faq details { border-bottom: 1px solid #d9d3df; }
@@ -53,7 +54,7 @@
 .pilot-faq summary::after { content: "+"; position: absolute; right: 4px; top: 19px; color: #6d35d5; font-size: 28px; font-weight: 400; }
 .pilot-faq details[open] summary::after { content: "−"; }
 .pilot-faq details p { max-width: 720px; margin: -4px 48px 24px 0; color: #5f5965; line-height: 1.7; }
-.pilot-application { display: grid; grid-template-columns: minmax(300px, 0.72fr) minmax(0, 1.28fr); gap: 80px; padding: 92px 0 110px; border-top: 1px solid #ddd7e7; }
+.pilot-application { display: grid; grid-template-columns: minmax(300px, 0.72fr) minmax(0, 1.28fr); gap: 64px; padding: 82px 0 96px; border-top: 1px solid #ddd7e7; }
 .pilot-application-intro > p { margin-top: 22px; }
 .pilot-application form { display: grid; grid-template-columns: 1fr 1fr; gap: 20px; padding: 32px; border: 1px solid #d9d3df; background: #fff; }
 .pilot-application label { display: grid; gap: 9px; color: #423d48; font-size: 14px; font-weight: 720; }
@@ -80,8 +81,9 @@
   .pilot-privacy { padding: 48px; }
 }
 @media (max-width: 640px) {
-  .pilot-page .header-note, .pilot-page .header-cta { display: none; }
-  .pilot-page .site-header { grid-template-columns: 1fr; padding: 17px 20px; }
+  .pilot-page .header-note { display: none; }
+  .pilot-page .site-header { grid-template-columns: 1fr auto; padding: 14px; }
+  .pilot-page .header-cta { padding: 0 10px; font-size: 12px; white-space: nowrap; }
   .pilot-hero { width: calc(100% - 24px); min-height: 560px; margin-top: 8px; }
   .pilot-hero > img { object-position: 66% center; }
   .pilot-hero-overlay { background: linear-gradient(180deg, rgba(17, 14, 22, 0.38), rgba(17, 14, 22, 0.9) 58%, rgba(17, 14, 22, 0.98)); }
