@@ -69,6 +69,21 @@ export async function recordAnalyticsEvent(payload: AnalyticsPayload) {
   return { ignored: false };
 }
 
+export async function getPublicWaitlistActivity() {
+  const rows = (await sql()`
+    select count(distinct lower(email))::int as waitlist_people
+    from waitlist_leads
+    where
+      coalesce(route, '') not in ('home-v6', 'home-v7')
+      or metadata->>'consent_confirmed_at' is not null
+  `) as unknown as Array<{ waitlist_people: number }>;
+
+  return {
+    waitlist_people: Number(rows[0]?.waitlist_people || 0),
+    updated_at: new Date().toISOString()
+  };
+}
+
 function resolveRangeDays(value: unknown) {
   if (value === "all") {
     return 0;

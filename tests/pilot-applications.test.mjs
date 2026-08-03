@@ -3,6 +3,7 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 import { validatePilotApplication } from "../src/server/pilot-validation.ts";
+import { arePilotApplicationsOpen, pilotApplicationDeadline } from "../src/data/pilotProgram.ts";
 
 const root = new URL("../", import.meta.url);
 const source = async (path) => readFile(new URL(path, root), "utf8");
@@ -26,6 +27,17 @@ test("pilot application validates the six required answers", () => {
     interest_reason: "",
     referral_source: ""
   }), { error: "A valid email is required." });
+});
+
+test("pilot application deadline is shared by the page and API", async () => {
+  const page = await source("src/pages/pilot-families.astro");
+  const api = await source("api/waitlist.ts");
+  assert.equal(pilotApplicationDeadline, "2026-09-15T23:59:59-07:00");
+  assert.equal(arePilotApplicationsOpen(Date.parse("2026-09-15T23:59:58-07:00")), true);
+  assert.equal(arePilotApplicationsOpen(Date.parse("2026-09-16T00:00:00-07:00")), false);
+  assert.match(page, /pilotApplicationDeadline/);
+  assert.match(api, /arePilotApplicationsOpen/);
+  assert.match(api, /status: 410/);
 });
 
 test("pilot campaign banner and form stay on the approved contract", async () => {
@@ -55,6 +67,10 @@ test("pilot campaign banner and form stay on the approved contract", async () =>
   assert.match(page, /How difficult is installation\?/);
   assert.match(page, /about 30 minutes/);
   assert.match(page, /Join the pilot program/);
+  assert.match(page, /Only \{pilotSpotCount\} pilot spots/);
+  assert.match(page, /data-pilot-countdown/);
+  assert.match(page, /Applications close \{pilotApplicationDeadlineShortLabel\}/);
+  assert.match(page, /data-countdown-days/);
   assert.match(page, /What equipment do I need\?/);
   assert.match(page, /How long is the pilot program\?/);
   assert.match(page, /Do I get to keep the device\?/);

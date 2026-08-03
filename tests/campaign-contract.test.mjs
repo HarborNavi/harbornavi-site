@@ -184,9 +184,50 @@ test("campaign analytics events are allowlisted and unknown events stay ignored"
     "kickstarter_prelaunch_click",
     "youtube_live_click",
     "youtube_replay_click",
-    "email_confirmation_complete"
+    "email_confirmation_complete",
+    "waitlist_cta_click"
   ];
   campaignEvents.forEach((eventName) => assert.equal(isAllowedAnalyticsEventName(eventName), true));
   assert.equal(isAllowedAnalyticsEventName("road_home_application_payload"), false);
   assert.equal(isAllowedAnalyticsEventName("unknown_event"), false);
+});
+
+test("home-v7 shows anonymous live waitlist activity and qualified privacy claims", async () => {
+  const homeV7 = await source("src/components/HomeV7Landing.astro");
+  const analytics = await source("src/server/analytics.ts");
+  const eventsApi = await source("api/events.ts");
+  assert.equal((homeV7.match(/<aside class="waitlist-countboard[^>]*data-waitlist-activity/g) || []).length, 2);
+  assert.match(homeV7, /people have joined/);
+  assert.match(homeV7, /CircleUserRound/);
+  assert.match(homeV7, /privacy-context-ask-icon/);
+  assert.match(homeV7, /Inbox/);
+  assert.match(homeV7, /Target/);
+  assert.match(homeV7, /Fingerprint/);
+  assert.match(homeV7, /ShieldCheck/);
+  assert.match(homeV7, /LockKeyhole/);
+  assert.match(homeV7, /Microscope/);
+  assert.match(homeV7, /waitlist_cta_click/);
+  assert.match(homeV7, /fetch\("\/api\/events"/);
+  assert.match(analytics, /count\(distinct lower\(email\)\)/);
+  assert.match(analytics, /consent_confirmed_at/);
+  assert.match(analytics, /getPublicWaitlistActivity/);
+  assert.match(eventsApi, /export async function GET/);
+  assert.match(eventsApi, /public, max-age=15/);
+  assert.match(homeV7, /Mode IO\.AI's dynamic privacy and AI safety technology/);
+  assert.match(homeV7, /Hong Kong University of Science and Technology/);
+  assert.match(homeV7, /95%\+/);
+  assert.match(homeV7, /internal benchmark results/);
+  assert.doesNotMatch(homeV7, /world(?:'s|’s) first/i);
+});
+
+test("home-v7 replaces the wide comparison table with mobile category tabs", async () => {
+  const homeV7 = await source("src/components/HomeV7Landing.astro");
+  const styles = await source("src/styles/home-v7.css");
+  assert.match(homeV7, /data-mobile-compare/);
+  assert.equal((homeV7.match(/data-mobile-compare-tab=/g) || []).length, 4);
+  assert.match(homeV7, /role="tabpanel"/);
+  assert.match(homeV7, /selectMobileComparison/);
+  assert.match(styles, /\.mobile-compare \{ display: none; \}/);
+  assert.match(styles, /\.compare-wrap \{ display: none; \}/);
+  assert.match(styles, /\.mobile-compare \{ display: block; \}/);
 });

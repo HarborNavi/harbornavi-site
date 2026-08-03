@@ -5,6 +5,7 @@ export const exactAnalyticsEventNames = new Set([
   "early_bird_submit",
   "early_bird_saved",
   "early_bird_error",
+  "waitlist_cta_click",
   "email_confirmation_complete",
   "profile_submit",
   "profile_saved",

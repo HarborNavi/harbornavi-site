@@ -19,6 +19,10 @@ import {
 } from "../src/server/waitlist.js";
 import { waitlistConfirmationBaseUrl } from "../src/server/waitlist-email.js";
 import { savePilotApplication } from "../src/server/pilot-applications.js";
+import {
+  arePilotApplicationsOpen,
+  pilotApplicationDeadlineLabel
+} from "../src/data/pilotProgram.js";
 
 export function OPTIONS() {
   return jsonResponse({ ok: true });
@@ -85,6 +89,12 @@ async function postWaitlistProfile(request: Request) {
 }
 
 async function postPilotApplication(request: Request) {
+  if (!arePilotApplicationsOpen()) {
+    return jsonResponse(
+      { error: `Pilot applications closed on ${pilotApplicationDeadlineLabel}.` },
+      { status: 410 }
+    );
+  }
   let payload: Record<string, unknown>;
   try {
     payload = await request.json();

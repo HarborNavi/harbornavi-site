@@ -33,6 +33,7 @@ This project is intentionally separate from the HarborNavi product coordination 
 - `/api/admin/*`: admin login, health check, analytics, and lead management endpoints.
 - `/api/admin/pilot-applications`: authenticated Pilot Families application list, routed through the existing admin health function.
 - `/api/assets`: public delivery of active website-image overrides plus authenticated admin upload, assignment, activation, and deletion.
+- `GET /api/events`: public, cached aggregate of anonymous waitlist CTA interest; `POST /api/events` records allowlisted campaign events.
 - `/api/pilot-application`: Pilot Families application endpoint, routed through the existing waitlist function without marketing consent.
 
 ## Commands

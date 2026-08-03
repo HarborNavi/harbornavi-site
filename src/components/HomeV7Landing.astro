@@ -1,4 +1,18 @@
 ---
+import {
+  ArrowRight,
+  Camera,
+  CircleUserRound,
+  Cloud,
+  Fingerprint,
+  HousePlug,
+  Inbox,
+  LockKeyhole,
+  Microscope,
+  ShieldCheck,
+  Target,
+  Workflow
+} from "@lucide/astro";
 import SiteMediaLoader from "./SiteMediaLoader.astro";
 import "../styles/home-v7.css";
 
@@ -216,6 +230,10 @@ const structuredData = JSON.stringify({
               <input class="sr-only" name="company" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" />
               <button type="submit">Join the waitlist</button>
             </form>
+            <aside class="waitlist-countboard" data-waitlist-activity aria-label="Live HarborNavi waitlist count" aria-live="polite">
+              <span class="waitlist-countboard-label"><span aria-hidden="true"></span>Live waitlist</span>
+              <span class="waitlist-countboard-total"><strong data-waitlist-interest-count>0</strong><span>people have joined</span></span>
+            </aside>
             <p id="v6-hero-error" class="form-error" data-form-error aria-live="polite" hidden>We could not save your email. Please try again.</p>
             <p id="v6-hero-note" class="form-note">Follow product updates and get early-bird pricing. Email confirmation required. <a href="/privacy">Privacy</a></p>
           </div>
@@ -314,6 +332,38 @@ const structuredData = JSON.stringify({
           </aside>
         </section>
 
+        <section id="privacy-tech" class="privacy-tech-section" aria-labelledby="privacy-tech-title" data-scenario-event="scenario_dynamic_privacy">
+          <div class="privacy-tech-intro">
+            <p class="eyebrow">Enterprise privacy, adapted for home</p>
+            <h2 id="privacy-tech-title">Privacy should understand context before anything leaves home.</h2>
+            <p>HarborNavi is integrating Mode IO.AI's dynamic privacy and AI safety technology into its local-first architecture. Sensitive context can be reviewed before an optional external model receives a request, while the private home timeline remains on HarborNavi.</p>
+            <a href="https://modeio.ai/ai-governance" target="_blank" rel="noreferrer">Explore Mode IO.AI privacy technology <span aria-hidden="true">&nearr;</span></a>
+          </div>
+          <div class="privacy-context-model" aria-label="Dynamic privacy context model">
+            <p class="privacy-model-title"><ShieldCheck size={18} strokeWidth={1.8} aria-hidden="true" />Dynamic privacy decision</p>
+            <div class="privacy-context-rail">
+              <div class="privacy-context-node"><span class="privacy-context-ask-icon"><CircleUserRound size={23} strokeWidth={1.8} aria-hidden="true" /><b aria-hidden="true">?</b></span><strong>Who is asking</strong><small>Identity and permission</small></div>
+              <ArrowRight class="privacy-context-arrow" size={16} strokeWidth={1.8} aria-hidden="true" />
+              <div class="privacy-context-node"><span><Inbox size={23} strokeWidth={1.8} aria-hidden="true" /></span><strong>Who can receive it</strong><small>Trusted destination</small></div>
+              <ArrowRight class="privacy-context-arrow" size={16} strokeWidth={1.8} aria-hidden="true" />
+              <div class="privacy-context-node"><span><Target size={23} strokeWidth={1.8} aria-hidden="true" /></span><strong>Why it is needed</strong><small>Purpose and scope</small></div>
+              <ArrowRight class="privacy-context-arrow" size={16} strokeWidth={1.8} aria-hidden="true" />
+              <div class="privacy-context-node"><span><Fingerprint size={23} strokeWidth={1.8} aria-hidden="true" /></span><strong>What is sensitive</strong><small>Private home context</small></div>
+            </div>
+            <ol>
+              <li><span class="privacy-step-mark"><ShieldCheck size={20} strokeWidth={1.8} aria-hidden="true" /><small>01</small></span><div><strong>Review before transmission</strong><p>Identify private details, judge their purpose, and redact, rewrite, block, or keep them local before an optional cloud request.</p></div></li>
+              <li><span class="privacy-step-mark"><LockKeyhole size={20} strokeWidth={1.8} aria-hidden="true" /><small>02</small></span><div><strong>Keep the task useful</strong><p>Protect names, locations, routines, and household context without stripping away the intent needed to complete the task.</p></div></li>
+              <li><span class="privacy-step-mark"><Microscope size={20} strokeWidth={1.8} aria-hidden="true" /><small>03</small></span><div><strong>Apply research to family privacy</strong><p>HarborNavi's privacy work draws on an R&amp;D team background from the Hong Kong University of Science and Technology and enterprise AI governance.</p></div></li>
+            </ol>
+          </div>
+          <div class="privacy-proof-grid" aria-label="Mode IO.AI privacy capability highlights">
+            <article><strong>95%+</strong><span>Detection accuracy reported in Mode IO.AI internal benchmarks</span></article>
+            <article><strong>&le;5%</strong><span>False-positive rate reported in the same internal benchmarks</span></article>
+            <article><strong>Local first</strong><span>Privacy review can run close to the data, before external AI transmission</span></article>
+          </div>
+          <p class="privacy-benchmark-note">Performance figures are Mode IO.AI internal benchmark results and should be validated for each deployment environment.</p>
+        </section>
+
         <section id="compatibility" class="compatibility-section" aria-labelledby="compat-title">
           <div class="section-heading split-heading">
             <div><p class="eyebrow">Works with your home</p><h2 id="compat-title">Keep the home you already have.</h2></div>
@@ -371,6 +421,38 @@ const structuredData = JSON.stringify({
               </tbody>
             </table>
           </div>
+          <div class="mobile-compare" data-mobile-compare>
+            <div class="mobile-compare-tabs" role="tablist" aria-label="Choose a product category to compare with HarborNavi">
+              <button id="compare-tab-camera" type="button" role="tab" aria-selected="true" aria-controls="compare-panel-camera" tabindex="0" data-mobile-compare-tab="0"><Camera size={18} strokeWidth={1.8} aria-hidden="true" /><span>Camera AI</span></button>
+              <button id="compare-tab-cloud" type="button" role="tab" aria-selected="false" aria-controls="compare-panel-cloud" tabindex="-1" data-mobile-compare-tab="1"><Cloud size={18} strokeWidth={1.8} aria-hidden="true" /><span>Cloud AI</span></button>
+              <button id="compare-tab-local" type="button" role="tab" aria-selected="false" aria-controls="compare-panel-local" tabindex="-1" data-mobile-compare-tab="2"><Workflow size={18} strokeWidth={1.8} aria-hidden="true" /><span>Local stacks</span></button>
+              <button id="compare-tab-pro" type="button" role="tab" aria-selected="false" aria-controls="compare-panel-pro" tabindex="-1" data-mobile-compare-tab="3"><HousePlug size={18} strokeWidth={1.8} aria-hidden="true" /><span>Pro home</span></button>
+            </div>
+            {comparisonProducts.slice(1).map((product, productIndex) => {
+              const panelIds = ["camera", "cloud", "local", "pro"];
+              const panelId = panelIds[productIndex];
+              return (
+                <section id={`compare-panel-${panelId}`} class="mobile-compare-panel" role="tabpanel" aria-labelledby={`compare-tab-${panelId}`} data-mobile-compare-panel={productIndex} hidden={productIndex !== 0}>
+                  <div class="mobile-compare-heading">
+                    <div><small>HarborNavi</small><strong>Private home memory</strong></div>
+                    <span aria-hidden="true">VS</span>
+                    <div><small>{product.name}</small><strong>{product.note}</strong></div>
+                  </div>
+                  <div class="mobile-compare-rows">
+                    {comparisonRows.map(([label, harborValue, ...competitorValues]) => (
+                      <article>
+                        <h3>{label}</h3>
+                        <div class="mobile-compare-values">
+                          <div class="featured"><span>HarborNavi</span><p>{harborValue}</p></div>
+                          <div><span>{product.name}</span><p>{competitorValues[productIndex]}</p></div>
+                        </div>
+                      </article>
+                    ))}
+                  </div>
+                </section>
+              );
+            })}
+          </div>
           <div class="comparison-notes">
             <p>Examples vary by model and plan. This comparison focuses on the job each category is usually built to do.</p>
             <p class="source-links">Official sources, checked July 2026: {comparisonSources.map((source, index) => <>{index > 0 && <span aria-hidden="true"> &middot; </span>}<a href={source.href} target="_blank" rel="noreferrer">{source.label}</a></>)}</p>
@@ -394,6 +476,10 @@ const structuredData = JSON.stringify({
             <input class="sr-only" name="company" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" />
             <button type="submit">Join the waitlist</button>
           </form>
+          <aside class="waitlist-countboard final-activity" data-waitlist-activity aria-label="Live HarborNavi waitlist count" aria-live="polite">
+            <span class="waitlist-countboard-label"><span aria-hidden="true"></span>Live waitlist</span>
+            <span class="waitlist-countboard-total"><strong data-waitlist-interest-count>0</strong><span>people have joined</span></span>
+          </aside>
           <p id="v6-final-error" class="form-error" data-form-error aria-live="polite" hidden>We could not save your email. Please try again.</p>
           <p id="v6-final-note" class="form-note">Follow product updates and get early-bird pricing. Email confirmation required. <a href="/privacy">Privacy</a></p>
         </section>
@@ -497,6 +583,54 @@ const structuredData = JSON.stringify({
           keepalive: true
         }).catch(() => {});
       };
+
+      const waitlistActivityElements = Array.from(document.querySelectorAll("[data-waitlist-activity]"));
+
+      async function loadWaitlistActivity() {
+        if (!waitlistActivityElements.length) return;
+        try {
+          const response = await fetch("/api/events", { headers: { accept: "application/json" } });
+          const body = await response.json().catch(() => ({}));
+          if (!response.ok || !Number.isFinite(Number(body.waitlist_people))) return;
+          const count = Math.max(0, Number(body.waitlist_people));
+          waitlistActivityElements.forEach((element) => {
+            const countElement = element.querySelector("[data-waitlist-interest-count]");
+            if (countElement) countElement.textContent = new Intl.NumberFormat().format(count);
+            element.dataset.status = "ready";
+          });
+        } catch {}
+      }
+
+      loadWaitlistActivity();
+
+      const mobileCompareTabs = Array.from(document.querySelectorAll("[data-mobile-compare-tab]"));
+      const mobileComparePanels = Array.from(document.querySelectorAll("[data-mobile-compare-panel]"));
+
+      function selectMobileComparison(index, moveFocus = false) {
+        mobileCompareTabs.forEach((tab, tabIndex) => {
+          const selected = tabIndex === index;
+          tab.setAttribute("aria-selected", selected ? "true" : "false");
+          tab.setAttribute("tabindex", selected ? "0" : "-1");
+          if (selected && moveFocus) tab.focus();
+        });
+        mobileComparePanels.forEach((panel, panelIndex) => {
+          panel.hidden = panelIndex !== index;
+        });
+      }
+
+      mobileCompareTabs.forEach((tab, index) => {
+        tab.addEventListener("click", () => selectMobileComparison(index));
+        tab.addEventListener("keydown", (event) => {
+          let nextIndex = index;
+          if (event.key === "ArrowRight") nextIndex = (index + 1) % mobileCompareTabs.length;
+          else if (event.key === "ArrowLeft") nextIndex = (index - 1 + mobileCompareTabs.length) % mobileCompareTabs.length;
+          else if (event.key === "Home") nextIndex = 0;
+          else if (event.key === "End") nextIndex = mobileCompareTabs.length - 1;
+          else return;
+          event.preventDefault();
+          selectMobileComparison(nextIndex, true);
+        });
+      });
 
       const successModal = document.querySelector("[data-success-modal]");
       let previousFocus = null;
@@ -630,8 +764,16 @@ const structuredData = JSON.stringify({
 
       document.querySelectorAll("[data-early-form]").forEach((form) => {
         const input = form.querySelector("input[type='email']");
+        const submitButton = form.querySelector("button[type='submit']");
         const error = form.parentElement?.querySelector("[data-form-error]");
         let started = false;
+
+        submitButton?.addEventListener("click", () => {
+          window.harborTrack("waitlist_cta_click", {
+            route,
+            form_location: form.dataset.formLocation || "unknown"
+          });
+        });
 
         input?.addEventListener("focus", () => {
           if (started) return;
@@ -689,6 +831,7 @@ const structuredData = JSON.stringify({
             form.reset();
             setSuccessModalState(responseBody.subscription_status === "confirmed" ? "confirmed" : "pending");
             openSuccessModal();
+            window.setTimeout(loadWaitlistActivity, 16000);
           } catch (requestError) {
             window.harborTrack("early_bird_error", {
               route,
