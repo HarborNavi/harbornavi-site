@@ -14,10 +14,32 @@
 .about-section-label span { width: 38px; padding-bottom: 7px; border-bottom: 2px solid currentColor; }
 .about-section-label p { margin-bottom: 0; }
 .about-story { display: grid; grid-template-columns: 260px minmax(0, 1fr); gap: 80px; padding-top: 108px; padding-bottom: 108px; }
-.about-story-copy { max-width: 880px; }
+.about-story-copy { max-width: 960px; }
 .about-story h2, .about-beliefs h2, .about-projects h2, .about-voices h2, .about-now h2, .about-cta h2 { margin-bottom: 30px; font-size: clamp(42px, 5vw, 72px); line-height: 1.08; }
 .about-story-copy > p { max-width: 760px; color: #55505d; font-size: 19px; line-height: 1.7; }
 .about-story-copy > p + p { margin-top: 18px; }
+.about-story-scenarios { display: grid; grid-template-columns: repeat(2, minmax(0, 1fr)); gap: 18px; margin: 42px 0; }
+.about-story-scenario { min-width: 0; margin: 0; overflow: hidden; border: 1px solid #302b39; border-radius: 6px; background: #17141d; color: #fff; box-shadow: 0 24px 54px rgba(34, 25, 49, 0.12); }
+.about-story-visual { position: relative; aspect-ratio: 3 / 2; overflow: hidden; background: #17141d; }
+.about-story-visual > img { width: 100%; height: 100%; object-fit: cover; }
+.story-dialogue { position: absolute; right: 14px; width: min(54%, 230px); padding: 10px 12px; border: 1px solid rgba(255, 255, 255, 0.25); border-radius: 6px; background: rgba(23, 20, 29, 0.9); color: #fff; box-shadow: 0 12px 28px rgba(0, 0, 0, 0.22); backdrop-filter: blur(10px); }
+.story-dialogue::after { content: ""; position: absolute; right: 24px; bottom: -6px; width: 10px; height: 10px; border-right: 1px solid rgba(255, 255, 255, 0.25); border-bottom: 1px solid rgba(255, 255, 255, 0.25); background: rgba(23, 20, 29, 0.9); transform: rotate(45deg); }
+.story-dialogue span { display: block; margin-bottom: 4px; color: #cbb7ff; font-size: 9px; font-weight: 800; text-transform: uppercase; }
+.story-dialogue p { margin: 0; font-size: 11px; font-weight: 690; line-height: 1.38; }
+.story-dialogue-question { top: 16px; }
+.story-dialogue-answer { top: 94px; border-color: rgba(155, 232, 221, 0.4); }
+.story-dialogue-answer span { color: #9be8dd; }
+.story-risk-status { position: absolute; right: 14px; bottom: 14px; display: inline-flex; align-items: center; gap: 7px; padding: 8px 10px; border: 1px solid rgba(255, 186, 128, 0.55); border-radius: 5px; background: rgba(48, 28, 25, 0.9); color: #ffd0a8; font-size: 10px; font-weight: 760; }
+.story-camera-status { position: absolute; top: 14px; left: 14px; display: inline-flex; align-items: center; gap: 7px; padding: 8px 10px; border-radius: 5px; background: rgba(23, 20, 29, 0.88); color: #fff; font-size: 9px; font-weight: 760; text-transform: uppercase; backdrop-filter: blur(10px); }
+.story-camera-status b { display: inline-flex; align-items: center; gap: 5px; color: #ffb7aa; font-size: 9px; }
+.story-camera-status b::before { content: ""; width: 6px; height: 6px; border-radius: 50%; background: #f35f4b; box-shadow: 0 0 0 3px rgba(243, 95, 75, 0.16); }
+.story-missed-alert { position: absolute; left: 14px; bottom: 14px; width: min(70%, 270px); display: flex; align-items: center; gap: 10px; padding: 11px 12px; border: 1px solid rgba(255, 186, 128, 0.58); border-radius: 5px; background: rgba(31, 23, 29, 0.92); color: #ffd0a8; box-shadow: 0 12px 28px rgba(0, 0, 0, 0.22); backdrop-filter: blur(10px); }
+.story-missed-alert svg { flex: 0 0 auto; }
+.story-missed-alert span { font-size: 11px; font-weight: 780; line-height: 1.32; }
+.story-missed-alert small { display: block; margin-bottom: 3px; color: #fff; font-size: 8px; font-weight: 700; text-transform: uppercase; }
+.about-story-scenario figcaption { min-height: 116px; display: grid; align-content: start; gap: 7px; padding: 18px 20px 20px; }
+.about-story-scenario figcaption strong { font-size: 15px; line-height: 1.35; }
+.about-story-scenario figcaption span { color: #c8c1d0; font-size: 12px; line-height: 1.5; }
 .about-story blockquote { max-width: 860px; margin: 56px 0 0; padding: 34px 0 0; border-top: 1px solid #d9d3df; font-size: clamp(28px, 3.2vw, 46px); font-weight: 730; line-height: 1.22; }
 .about-beliefs { padding: 96px 0 104px; background: #17141d; color: #fff; }
 .about-beliefs .about-section-label { color: #bda6ff; }
@@ -56,6 +78,7 @@
 .about-primary:hover, .about-primary:focus-visible { background: #5424a8; }
 @media (max-width: 900px) {
   .about-story, .about-projects-heading, .about-voices-grid, .about-now-heading { grid-template-columns: 1fr; gap: 38px; }
+  .about-story-copy { max-width: none; }
   .project-row { grid-template-columns: 1fr; gap: 34px; }
   .project-row-reverse figure { order: 0; }
   .now-grid { grid-template-columns: 1fr; }
@@ -76,6 +99,15 @@
   .about-story, .about-projects, .about-now { padding-top: 72px; padding-bottom: 72px; }
   .about-story h2, .about-beliefs h2, .about-projects h2, .about-voices h2, .about-now h2, .about-cta h2 { font-size: 38px; }
   .about-story-copy > p, .about-projects-heading p, .about-voices-grid > div > p, .about-now-heading p { font-size: 16px; }
+  .about-story-scenarios { grid-template-columns: 1fr; gap: 16px; margin: 32px 0; }
+  .about-story-visual { aspect-ratio: 4 / 3; }
+  .story-dialogue { width: min(58%, 205px); padding: 9px 10px; }
+  .story-dialogue-question { top: 13px; }
+  .story-dialogue-answer { top: 91px; }
+  .story-risk-status { right: 11px; bottom: 11px; }
+  .story-camera-status { top: 11px; left: 11px; }
+  .story-missed-alert { left: 11px; bottom: 11px; width: min(76%, 270px); }
+  .about-story-scenario figcaption { min-height: 0; }
   .about-story blockquote { margin-top: 38px; padding-top: 26px; font-size: 28px; }
   .about-beliefs, .about-voices, .about-cta { padding-top: 72px; padding-bottom: 72px; }
   .belief-lines { margin-top: 40px; }

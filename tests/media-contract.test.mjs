@@ -24,7 +24,7 @@ test("all V7 website images have clear upload placements", async () => {
   assert.doesNotMatch(media, /BLOB_READ_WRITE_TOKEN is not configured/);
   assert.doesNotMatch(media, /token:\s*blobToken/);
   assert.match(media, /await del\(String\(rows\[0\]\.url\)\)/);
-  assert.match(schema, /site_media_slot_v2_check/);
+  assert.match(schema, /site_media_slot_v3_check/);
   assert.match(schema, /home-carousel-pilot/);
   assert.match(schema, /about-harbor-os/);
   assert.match(admin, /accept="image\/jpeg,image\/png,image\/gif"/);
@@ -33,13 +33,17 @@ test("all V7 website images have clear upload placements", async () => {
   assert.match(admin, /Upload and use/);
   assert.match(admin, /Restore default/);
   assert.doesNotMatch(admin, /<option value="page">Other page media<\/option>/);
-  assert.equal((placements.match(/key: "/g) || []).length, 16);
+  assert.equal((placements.match(/key: "/g) || []).length, 18);
   assert.match(placements, /pagePath: "\/home-v7 - Top carousel, slide 1"/);
   assert.match(placements, /pagePath: "\/pilot-families - Hero"/);
+  assert.match(placements, /pagePath: "\/about-harbor#founding-story - Smart speaker privacy scenario"/);
+  assert.match(placements, /pagePath: "\/about-harbor#founding-story - Package camera scenario"/);
   assert.match(placements, /pagePath: "\/about-harbor - Project 02"/);
   assert.match(loader, /querySelectorAll\("\[data-media-slot\]"\)/);
   assert.match(loader, /home-carousel-memory/);
   assert.match(home, /data-media-slot="home-hardware"/);
   assert.match(pilot, /data-media-slot="pilot-hero"/);
+  assert.match(about, /data-media-slot="about-story-speaker-privacy"/);
+  assert.match(about, /data-media-slot="about-story-package-recorded"/);
   assert.match(about, /data-media-slot="about-harbor-os"/);
 });

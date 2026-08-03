@@ -1,0 +1,48 @@
+<script is:inline>
+  (() => {
+    function englishValidationMessage(field) {
+      const validity = field.validity;
+
+      if (validity.valueMissing) {
+        if (field instanceof HTMLSelectElement) return "Please select an option.";
+        if (field instanceof HTMLInputElement) {
+          if (field.type === "email") return "Please enter your email address.";
+          if (field.type === "password") return "Please enter your password.";
+          if (field.type === "file") return "Please choose a file.";
+          if (field.type === "checkbox" || field.type === "radio") return "Please select this option.";
+        }
+        return "Please fill out this field.";
+      }
+
+      if (validity.typeMismatch) {
+        if (field instanceof HTMLInputElement && field.type === "email") return "Please enter a valid email address.";
+        if (field instanceof HTMLInputElement && field.type === "url") return "Please enter a valid web address.";
+      }
+
+      if (validity.patternMismatch) return field.dataset.patternMessage || "Please match the requested format.";
+      if (validity.tooShort) return `Please use at least ${field.minLength} characters.`;
+      if (validity.tooLong) return `Please use no more than ${field.maxLength} characters.`;
+      if (validity.rangeUnderflow) return `Please enter a value greater than or equal to ${field.min}.`;
+      if (validity.rangeOverflow) return `Please enter a value less than or equal to ${field.max}.`;
+      if (validity.stepMismatch || validity.badInput) return "Please enter a valid value.";
+      return "Please check this field.";
+    }
+
+    document.addEventListener("invalid", (event) => {
+      const field = event.target;
+      if (!(field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement || field instanceof HTMLSelectElement)) return;
+      field.setCustomValidity("");
+      field.setCustomValidity(englishValidationMessage(field));
+    }, true);
+
+    function clearCustomValidity(event) {
+      const field = event.target;
+      if (field instanceof HTMLInputElement || field instanceof HTMLTextAreaElement || field instanceof HTMLSelectElement) {
+        field.setCustomValidity("");
+      }
+    }
+
+    document.addEventListener("input", clearCustomValidity, true);
+    document.addEventListener("change", clearCustomValidity, true);
+  })();
+</script>

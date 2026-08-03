@@ -249,36 +249,38 @@ p { margin: 0; }
 .trust-copy > p:not(.eyebrow) { margin-top: 22px; color: #c9c3cf; font-size: 17px; line-height: 1.7; }
 .trust-story figure { border-color: rgba(255,255,255,0.16); box-shadow: 0 26px 72px rgba(0,0,0,0.24); }
 
-.privacy-tech-section { display: grid; grid-template-columns: minmax(320px, 0.78fr) minmax(0, 1.22fr); gap: 70px; padding: 94px max(32px, calc((100% - var(--max)) / 2)); border-top: 1px solid #cce2dc; border-bottom: 1px solid #cce2dc; background: #edf9f6; color: #12221e; }
+.privacy-tech-section { display: grid; grid-template-columns: minmax(320px, 0.78fr) minmax(0, 1.22fr); gap: 70px; padding: 94px max(32px, calc((100% - var(--max)) / 2)); border-top: 1px solid var(--line); border-bottom: 1px solid var(--line); background: #f8f6fc; color: var(--ink); }
 .privacy-tech-intro { align-self: start; }
-.privacy-tech-intro .eyebrow { color: #0a6f65; }
-.privacy-tech-intro h2 { max-width: 620px; margin-top: 10px; color: #101b18; }
-.privacy-tech-intro > p:not(.eyebrow) { max-width: 650px; margin-top: 22px; color: #3f5b54; font-size: 17px; line-height: 1.7; }
-.privacy-tech-intro > a { display: inline-flex; align-items: center; gap: 8px; margin-top: 24px; padding-bottom: 3px; border-bottom: 1px solid #0a6f65; color: #075f57; font-size: 13px; font-weight: 760; text-decoration: none; }
-.privacy-context-model { padding: 32px; border: 1px solid #24453d; border-radius: 6px; background: #091a16; color: #fff; }
-.privacy-model-title { display: flex; align-items: center; gap: 9px; color: #7ed8c5; font-size: 11px; font-weight: 780; text-transform: uppercase; }
+.privacy-tech-intro .eyebrow { color: var(--lavender-deep); }
+.privacy-tech-intro h2 { max-width: 620px; margin-top: 10px; color: var(--ink); }
+.privacy-tech-intro > p:not(.eyebrow) { max-width: 650px; margin-top: 22px; color: var(--copy); font-size: 17px; line-height: 1.7; }
+.privacy-tech-intro > a { display: inline-flex; align-items: center; gap: 8px; margin-top: 24px; padding-bottom: 3px; border-bottom: 1px solid var(--lavender); color: var(--lavender-deep); font-size: 13px; font-weight: 760; text-decoration: none; }
+.privacy-context-model { padding: 32px; border: 1px solid #342e41; border-radius: 6px; background: var(--dark); color: #fff; box-shadow: 0 24px 58px rgba(38, 28, 58, 0.14); }
+.privacy-model-title { display: flex; align-items: center; gap: 9px; color: #cbb7ff; font-size: 11px; font-weight: 780; text-transform: uppercase; }
 .privacy-model-title svg { flex: 0 0 auto; }
-.privacy-context-rail { display: grid; grid-template-columns: minmax(90px, 1fr) auto minmax(110px, 1fr) auto minmax(100px, 1fr) auto minmax(110px, 1fr); gap: 8px; align-items: center; margin-top: 15px; padding: 14px 0; border-top: 1px solid rgba(126, 216, 197, 0.22); border-bottom: 1px solid rgba(126, 216, 197, 0.22); }
-.privacy-context-node { min-width: 0; min-height: 112px; display: grid; grid-template-rows: 43px auto auto; align-content: center; justify-items: center; gap: 7px; padding: 12px 8px; border: 1px solid rgba(126, 216, 197, 0.2); border-radius: 6px; background: rgba(126, 216, 197, 0.055); text-align: center; }
-.privacy-context-node > span { display: grid; place-items: center; width: 40px; height: 40px; border: 1px solid rgba(126, 216, 197, 0.42); border-radius: 50%; background: rgba(126, 216, 197, 0.1); color: #8ee4d1; }
+.privacy-context-rail { display: grid; grid-template-columns: minmax(90px, 1fr) auto minmax(110px, 1fr) auto minmax(100px, 1fr) auto minmax(110px, 1fr); gap: 8px; align-items: center; margin-top: 15px; padding: 14px 0; border-top: 1px solid rgba(203, 183, 255, 0.2); border-bottom: 1px solid rgba(203, 183, 255, 0.2); }
+.privacy-context-node { min-width: 0; min-height: 112px; display: grid; grid-template-rows: 43px auto auto; align-content: center; justify-items: center; gap: 7px; padding: 12px 8px; border: 1px solid rgba(203, 183, 255, 0.2); border-radius: 6px; background: rgba(203, 183, 255, 0.055); text-align: center; }
+.privacy-context-node > span { display: grid; place-items: center; width: 40px; height: 40px; border: 1px solid rgba(203, 183, 255, 0.42); border-radius: 50%; background: rgba(203, 183, 255, 0.1); color: #cbb7ff; }
 .privacy-context-node .privacy-context-ask-icon { position: relative; }
-.privacy-context-ask-icon b { position: absolute; right: -3px; bottom: -2px; width: 15px; height: 15px; display: grid; place-items: center; border: 1px solid #8ee4d1; border-radius: 50%; background: #102b24; color: #a7f1e1; font-size: 9px; line-height: 1; }
+.privacy-context-ask-icon b { position: absolute; right: -3px; bottom: -2px; width: 15px; height: 15px; display: grid; place-items: center; border: 1px solid #79d6c9; border-radius: 50%; background: #272232; color: #9be8dd; font-size: 9px; line-height: 1; }
 .privacy-context-node strong { color: #effbf8; font-size: 12px; line-height: 1.35; }
-.privacy-context-node small { color: #8fa9a2; font-size: 9px; line-height: 1.3; }
-.privacy-context-arrow { color: #7ed8c5; }
+.privacy-context-node small { color: #aaa3b3; font-size: 9px; line-height: 1.3; }
+.privacy-context-arrow { color: #9be8dd; }
 .privacy-context-model ol { display: grid; gap: 0; margin: 20px 0 0; padding: 0; list-style: none; }
 .privacy-context-model li { display: grid; grid-template-columns: 46px 1fr; gap: 14px; padding: 15px 0; border-bottom: 1px solid rgba(255, 255, 255, 0.13); }
 .privacy-context-model li:last-child { border-bottom: 0; padding-bottom: 0; }
-.privacy-step-mark { display: grid; justify-items: center; align-content: start; gap: 6px; color: #7ed8c5; }
-.privacy-step-mark svg { width: 34px; height: 34px; padding: 7px; border: 1px solid rgba(126, 216, 197, 0.34); border-radius: 50%; background: rgba(126, 216, 197, 0.08); }
+.privacy-step-mark { display: grid; justify-items: center; align-content: start; gap: 6px; color: #cbb7ff; }
+.privacy-step-mark svg { width: 34px; height: 34px; padding: 7px; border: 1px solid rgba(203, 183, 255, 0.34); border-radius: 50%; background: rgba(203, 183, 255, 0.08); }
 .privacy-step-mark small { font-size: 9px; font-weight: 780; }
 .privacy-context-model li strong { display: block; color: #fff; font-size: 15px; }
-.privacy-context-model li p { margin-top: 5px; color: #b9cec8; font-size: 12px; line-height: 1.55; }
-.privacy-proof-grid { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 2px; border-top: 1px solid #b9d8d0; border-left: 1px solid #b9d8d0; }
-.privacy-proof-grid article { min-height: 134px; display: grid; align-content: center; gap: 9px; padding: 24px; border-right: 1px solid #b9d8d0; border-bottom: 1px solid #b9d8d0; }
-.privacy-proof-grid strong { color: #075f57; font-size: 28px; line-height: 1; }
-.privacy-proof-grid span { max-width: 34ch; color: #405b54; font-size: 12px; line-height: 1.55; }
-.privacy-benchmark-note { grid-column: 1 / -1; margin-top: -50px; color: #61736e; font-size: 10px; line-height: 1.5; }
+.privacy-context-model li p { margin-top: 5px; color: #c6c0ce; font-size: 12px; line-height: 1.55; }
+.privacy-proof-grid { grid-column: 1 / -1; display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); margin-top: 2px; border-top: 1px solid #d9d2e5; border-left: 1px solid #d9d2e5; background: rgba(255, 255, 255, 0.38); }
+.privacy-proof-grid article { min-height: 134px; display: grid; align-content: center; gap: 9px; padding: 24px; border-right: 1px solid #d9d2e5; border-bottom: 1px solid #d9d2e5; }
+.privacy-proof-grid strong { display: flex; flex-wrap: wrap; align-items: baseline; gap: 8px; color: var(--lavender-deep); font-size: 28px; line-height: 1.05; }
+.privacy-proof-grid strong b { font: inherit; }
+.privacy-proof-grid strong em { color: inherit; font: inherit; }
+.privacy-proof-grid span { max-width: 34ch; color: var(--copy); font-size: 12px; line-height: 1.55; }
+.privacy-benchmark-note { grid-column: 1 / -1; margin-top: -50px; color: var(--muted); font-size: 10px; line-height: 1.5; }
 
 .compatibility-section { padding: 96px max(32px, calc((100% - var(--max)) / 2)); background: linear-gradient(180deg, var(--surface) 0%, #f2edfb 100%); }
 .connection-grid { display: grid; grid-template-columns: repeat(5, minmax(0, 1fr)); gap: 14px; }

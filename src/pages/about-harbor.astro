@@ -1,4 +1,5 @@
 ---
+import { BellOff, Camera, ShieldAlert } from "@lucide/astro";
 import SiteHeader from "../components/SiteHeaderV7.astro";
 import SiteMediaLoader from "../components/SiteMediaLoader.astro";
 import "../styles/global-v7.css";
@@ -35,6 +36,25 @@ import "../styles/about-harbor.css";
         <div class="about-story-copy">
           <h2 id="story-title">Our homes kept recording. They still forgot us.</h2>
           <p>An important family moment could be captured, then buried in a full day of footage. A smart speaker could know tomorrow's schedule, yet anyone nearby could ask. A package could disappear before an alert became useful.</p>
+          <div class="about-story-scenarios" aria-label="Examples of home technology missing privacy and context">
+            <figure class="about-story-scenario">
+              <div class="about-story-visual">
+                <img src="/assets/about-story-speaker-privacy-v1.jpg" alt="An unfamiliar visitor asking a smart speaker about the homeowner's schedule while the home is empty" width="1536" height="1024" loading="lazy" data-media-slot="about-story-speaker-privacy" />
+                <div class="story-dialogue story-dialogue-question"><span>Visitor</span><p>What time will Alex be out tomorrow?</p></div>
+                <div class="story-dialogue story-dialogue-answer"><span>Smart speaker</span><p>Alex leaves at 8:15 AM.</p></div>
+                <div class="story-risk-status"><ShieldAlert size={16} strokeWidth={1.9} aria-hidden="true" /><span>No identity check</span></div>
+              </div>
+              <figcaption><strong>It knew the schedule, not who was asking.</strong><span>Anyone nearby could ask for private household context.</span></figcaption>
+            </figure>
+            <figure class="about-story-scenario">
+              <div class="about-story-visual">
+                <img src="/assets/about-story-package-recorded-v1.jpg" alt="A porch camera recording a stranger opening a delivered package without sending a useful alert" width="1536" height="1024" loading="lazy" data-media-slot="about-story-package-recorded" />
+                <div class="story-camera-status"><Camera size={15} strokeWidth={1.9} aria-hidden="true" /><span>Porch camera</span><b>Recording</b></div>
+                <div class="story-missed-alert"><BellOff size={18} strokeWidth={1.9} aria-hidden="true" /><span><small>Package activity detected</small>Recorded. No alert sent.</span></div>
+              </div>
+              <figcaption><strong>It captured the theft, but did not help in time.</strong><span>A useful home should recognize the situation and notify the owner while action is still possible.</span></figcaption>
+            </figure>
+          </div>
           <p>Something was broken about how homes remember. The signals existed, but context, privacy, and action lived in separate systems. We decided to build the missing layer ourselves.</p>
           <blockquote>Home technology should remember for the family, not learn from the family for someone else.</blockquote>
         </div>

@@ -9,7 +9,7 @@ Status: V6 production baseline plus isolated V7 pilot campaign
 - Archived pages: `/home-v4` and `/home-v5` are `noindex` references with inactive forms
 - Submit API: `/api/waitlist`
 - Pilot application API: `/api/pilot-application`
-- Confirmation API: `/api/waitlist/confirm`
+- Legacy confirmation API: `/api/waitlist/confirm`
 - Optional profile API: `/api/waitlist/profile`
 - Event API: `/api/events`
 - Admin pages: retained `/admin` baseline and campaign dashboard `/admin666`
@@ -20,8 +20,8 @@ Status: V6 production baseline plus isolated V7 pilot campaign
 - Waitlist retry worker: `/api/cron/retry-waitlist`, called hourly by GitHub Actions with a daily Vercel Cron fallback
 - Database: Neon Postgres tables `waitlist_leads`, `analytics_events`, `founder_reservations`, `site_media`, and `pilot_family_applications`
 - Media storage: public Vercel Blob store with Neon `site_media` metadata
-- Subscriber confirmation and operator notification: Resend Email API
-- Confirmed marketing-contact sync: Resend Contacts with one Kickstarter Topic
+- Operator notification: Resend Email API
+- Marketing-contact sync: Resend Contacts with one Kickstarter Topic
 
 The public site remains static. Vercel serves API functions from the same project, so no extra backend server is required.
 The campaign functions also initialize `site_media` and `pilot_family_applications` idempotently on first use; the SQL files remain available for pre-deploy migration and audit.
@@ -47,23 +47,21 @@ ADMIN_SESSION_SECRET
 
 Connect a public Vercel Blob store to the project for `/admin666` media uploads. Vercel injects `BLOB_STORE_ID` and a short-lived OIDC token at runtime, so no manually managed Blob token is required in Production or Preview. `BLOB_READ_WRITE_TOKEN` remains an optional fallback for local or non-Vercel development.
 
-Required for the complete V6 confirmation and retry path:
+Required for contact sync and retry processing:
 
 ```text
 RESEND_API_KEY
-WAITLIST_CONFIRMATION_SECRET
 CRON_SECRET
 ```
 
-`WAITLIST_CONFIRMATION_SECRET` must contain at least 32 characters. A sender is also required:
-`WAITLIST_CONFIRMATION_FROM_EMAIL` is preferred and falls back to `NOTIFY_FROM_EMAIL`. The sender must be accepted by
-the configured Resend account.
+`WAITLIST_CONFIRMATION_SECRET` and `WAITLIST_CONFIRMATION_FROM_EMAIL` are retained only for confirmation links issued
+before immediate enrollment was enabled. New submissions do not use them. The sender in `NOTIFY_FROM_EMAIL` must be
+accepted by the configured Resend account.
 
 The `CRON_SECRET` value must match in Vercel Production/Preview and the GitHub repository Actions secret. Rotate all
 copies together; never put the value in source, workflow logs, or handoff notes.
 
-The post-confirmation operator alert also needs both values below. `NOTIFY_TO_EMAIL` is also used as the confirmation
-message reply-to address for deletion requests when configured.
+The operator alert also needs both values below. Publish `waitlist@harbornavi.com` for deletion requests.
 
 ```text
 NOTIFY_TO_EMAIL
@@ -81,7 +79,7 @@ RESEND_KICKSTARTER_TOPIC_NAME
 `WAITLIST_PUBLIC_ORIGIN` defaults to `https://harbornavi.com` for the retry worker. If
 `RESEND_KICKSTARTER_TOPIC_ID` is empty, the retry worker finds or creates a Topic named
 `HarborNavi Kickstarter Updates` in Production and `HarborNavi Preview Kickstarter Updates` outside Production.
-The Topic must use `default_subscription=opt_out`; confirmed contacts are explicitly synced as `opt_in`. The optional
+The Topic must use `default_subscription=opt_out`; submitted contacts are explicitly synced as `opt_in`. The optional
 name override is useful for isolated test resources. There is no V6 Road Topic dependency.
 
 Public, build-time campaign configuration:
@@ -155,36 +153,30 @@ The v4 migration adds:
 `submission_count`. Only normalized `route=home-v6` or `route=home-v7` starts marketing consent. V4, V5, and unknown routes have scope
 `none` and cannot enter the marketing Topic.
 
-For V6 and V7, the server writes its own route-specific pending consent metadata after the primary save; it never accepts these values from
+For V6 and V7, the server writes its own route-specific consent metadata after the primary save; it never accepts these values from
 the browser:
 
 - `consent_scope=kickstarter_updates`
 - `consent_version=home_v6_2026_07` or `home_v7_2026_07`
 - `consent_requested_at=<server ISO timestamp>`
-- `consent_status=pending_confirmation`
+- `consent_confirmed_at=<same server ISO timestamp>`
+- `consent_status=confirmed`
+- `confirmation_email_status=not_required`
 
-The API then claims and sends a transactional Resend confirmation message. The signed HMAC token contains the
-normalized email, consent version, request time, and a seven-day expiry. It does not contain a provider credential.
-A delivery failure leaves the Neon lead saved, records a failed status, and returns a retryable 503 response with
-`lead_saved=true`; it does not subscribe the address.
-
-`GET /api/waitlist/confirm` verifies the signature, expiry, normalized email, and current consent version. A valid click
-sets `consent_status=confirmed`, records `consent_confirmed_at`, and independently starts Resend Contact sync and the
-operator alert. The Contact adapter resolves one Kickstarter Topic, creates or updates the contact, and explicitly sets
-the Topic subscription to `opt_in`. A contact-sync failure redirects back with a recoverable status and remains eligible
-for the retry job.
+The database save immediately enrolls the address. The API then starts Resend Contact sync and the operator alert, but
+provider failures do not change the successful response or require another submission. The Contact adapter resolves one
+Kickstarter Topic, creates or updates the contact, and explicitly sets the Topic subscription to `opt_in`. The legacy
+`GET /api/waitlist/confirm` route remains available only for links issued before this change.
 
 Operational state lives in `waitlist_leads.metadata`, including:
 
-- `confirmation_email_status`, attempt count, timestamps, provider ID, and last error
+- `confirmation_email_status=not_required` for new submissions
 - `contact_sync_status`, attempt count, timestamps, Topic ID, and last error
 - `operator_notification_status`, attempt count, timestamps, and last error
 
-The authenticated `/api/cron/retry-waitlist` worker resolves or creates the Kickstarter Topic, processes eligible
-confirmation/contact/operator failures in bounded batches, and purges unconfirmed V6 leads older than 30 days. GitHub
-Actions calls it hourly; Vercel Cron calls it daily as a Hobby-plan-compatible fallback. A
-confirmed lead remains in Neon until a deletion request is handled. Reply-to can be routed to `NOTIFY_TO_EMAIL` so a
-recipient can request deletion by replying to the confirmation message.
+The authenticated `/api/cron/retry-waitlist` worker resolves or creates the Kickstarter Topic and processes eligible
+contact/operator failures in bounded batches. GitHub Actions calls it hourly; Vercel Cron calls it daily as a
+Hobby-plan-compatible fallback. A lead remains in Neon until a deletion request is handled.
 
 ### Resend Broadcast operating rule
 
@@ -209,8 +201,8 @@ its Broadcast editor/API handles reviewed drafts, tests and sends. See
 `/api/waitlist/profile` is a retained legacy endpoint for optional lightweight profile fields. It is not called by V6,
 does not send Resend email, and does not increment `submission_count`.
 
-The current `/home-v6` forms collect email only. A successful submission tells the visitor to check email; confirmation
-is complete only after the signed link is opened. V6 does not call the profile, price, or reservation APIs. V4 and V5
+The current `/home-v6` and `/home-v7` forms collect email only. A successful submission joins the waitlist immediately
+and does not require an email confirmation. They do not call the profile, price, or reservation APIs. V4 and V5
 are archived, no-index pages with inactive forms that direct visitors to V6.
 
 The `/15-homes` application opens on the configured external provider. Its answers are not written to
@@ -275,12 +267,10 @@ The funnel table groups events by `route`, `utm_source`, `utm_campaign`, and `fo
 
 ## Smoke Test
 
-The production V6 flow was accepted on 2026-07-29 with a controlled `@resend.dev` address. Submission returned
-`pending_confirmation`; the confirmation email and signed link succeeded; Neon recorded confirmed consent, a synced
-Resend Contact in the single Kickstarter Topic, and a sent operator alert; an injected confirmation-email failure was
-recovered by the authenticated retry worker. Production retry candidates returned to zero and the Neon smoke records
-were removed. One clearly synthetic Resend Contact is retained as a provider-side monitoring record and must not be
-treated as a real subscriber when reviewing audience counts.
+The prior double-opt-in V6 flow was accepted on 2026-07-29 and replaced on 2026-08-03 by immediate enrollment. New smoke
+tests must verify an immediate confirmed response, no confirmation delivery, a synced Resend Contact, an operator alert,
+and successful retry after an injected provider failure. The public V7 counter starts at 509 and adds distinct leads
+created after `2026-08-03T09:08:53Z`.
 
 After Vercel env vars and both database tables are ready, use a controlled Preview environment and an inbox that the
 tester owns. Do not use a third party's address:
@@ -298,10 +288,10 @@ curl -X POST "$SITE_ORIGIN/api/waitlist" \
   -d "{\"email\":\"$SMOKE_EMAIL\",\"route\":\"home-v6\",\"form_location\":\"smoke\",\"utm_source\":\"smoke\",\"utm_campaign\":\"analytics_smoke\"}"
 ```
 
-Confirm that the POST returns `pending_confirmation`, the message arrives, the seven-day link redirects to V6 with a
-confirmed status, the Resend contact is `opt_in` for exactly one Kickstarter Topic, and the operator alert is sent only
-after confirmation. Also test invalid and expired tokens, duplicate submissions, an induced provider failure followed
-by cron recovery, and deletion of an unconfirmed record older than 30 days. Remove all Preview smoke data afterward.
+Confirm that the POST returns `subscription_status=confirmed`, `confirmation_email_required=false`, and the updated
+`waitlist_people` total. Verify the Resend contact is `opt_in` for exactly one Kickstarter Topic and the operator alert
+is sent. Also test duplicate submissions, an induced provider failure followed by cron recovery, and removal of Preview
+smoke data. Duplicate email submissions must not increase the public total.
 
 Before enabling real reservations, repeat checkout, cancel, duplicate-click, webhook retry, and refund tests with Stripe test-mode keys and Stripe CLI forwarding to `/api/stripe/webhook`.
 

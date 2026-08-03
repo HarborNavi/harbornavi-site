@@ -3,12 +3,10 @@ import { getKickstarterTopic } from "../../src/server/resend-contacts.js";
 import { contactConsentScopeForRoute } from "../../src/server/waitlist-consent.js";
 import {
   deliverOperatorNotification,
-  deliverWaitlistConfirmation,
   syncConfirmedWaitlistLead
 } from "../../src/server/waitlist-integrations.js";
 import {
   listRetryableWaitlistIntegrations,
-  purgeExpiredUnconfirmedWaitlistLeads,
   waitlistIntegrationState
 } from "../../src/server/waitlist.js";
 
@@ -18,7 +16,6 @@ export async function GET(request: Request) {
     return jsonResponse({ error: "Unauthorized" }, { status: 401 });
   }
 
-  const baseUrl = getOptionalEnv("WAITLIST_PUBLIC_ORIGIN") || "https://harbornavi.com";
   const results: Array<{ id: string; service: string; status: string }> = [];
 
   try {
@@ -28,19 +25,6 @@ export async function GET(request: Request) {
     const leads = await listRetryableWaitlistIntegrations(50);
     for (const lead of leads) {
       const state = waitlistIntegrationState(lead);
-
-      if (
-        !state.consent_confirmed_at &&
-        ["pending", "failed", "sending"].includes(state.confirmation_email_status)
-      ) {
-        try {
-          const result = await deliverWaitlistConfirmation(lead.id, baseUrl);
-          results.push({ id: lead.id, service: "confirmation", status: result.skipped ? "skipped" : "sent" });
-        } catch (error) {
-          console.error("Waitlist confirmation retry failed", lead.id, error);
-          results.push({ id: lead.id, service: "confirmation", status: "failed" });
-        }
-      }
 
       if (
         state.consent_confirmed_at &&
@@ -69,7 +53,6 @@ export async function GET(request: Request) {
       }
     }
 
-    const purged = await purgeExpiredUnconfirmedWaitlistLeads(30);
     return jsonResponse({
       ok: true,
       topic: {
@@ -79,7 +62,6 @@ export async function GET(request: Request) {
       },
       candidates: leads.length,
       processed: results.length,
-      purged,
       results
     });
   } catch (error) {

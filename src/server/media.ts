@@ -23,26 +23,29 @@ async function initializeMediaTable() {
       alt_text text not null default '',
       active boolean not null default false,
       created_at timestamptz not null default now(),
-      constraint site_media_slot_v2_check check (slot in (
+      constraint site_media_slot_v3_check check (slot in (
         'hero-carousel', 'page', 'site-header-logo', 'site-favicon',
         'home-carousel-pilot', 'home-carousel-memory', 'home-carousel-movie',
         'home-hero-family', 'home-memory-moment', 'home-briefing',
         'home-package-response', 'home-movie-night', 'home-trust-boundary', 'home-hardware',
-        'pilot-hero', 'about-hero', 'about-nexus', 'about-harbor-os'
+        'pilot-hero', 'about-hero', 'about-story-speaker-privacy', 'about-story-package-recorded',
+        'about-nexus', 'about-harbor-os'
       )),
       constraint site_media_mime_type_check check (mime_type in ('image/jpeg', 'image/png', 'image/gif'))
     )
   `;
   await db`alter table site_media drop constraint if exists site_media_slot_check`;
+  await db`alter table site_media drop constraint if exists site_media_slot_v2_check`;
   await db`
     do $$
     begin
-      alter table site_media add constraint site_media_slot_v2_check check (slot in (
+      alter table site_media add constraint site_media_slot_v3_check check (slot in (
         'hero-carousel', 'page', 'site-header-logo', 'site-favicon',
         'home-carousel-pilot', 'home-carousel-memory', 'home-carousel-movie',
         'home-hero-family', 'home-memory-moment', 'home-briefing',
         'home-package-response', 'home-movie-night', 'home-trust-boundary', 'home-hardware',
-        'pilot-hero', 'about-hero', 'about-nexus', 'about-harbor-os'
+        'pilot-hero', 'about-hero', 'about-story-speaker-privacy', 'about-story-package-recorded',
+        'about-nexus', 'about-harbor-os'
       ));
     exception when duplicate_object then null;
     end $$

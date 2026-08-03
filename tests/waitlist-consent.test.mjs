@@ -26,19 +26,21 @@ test("home-v6 and home-v7 receive the Kickstarter consent scope", () => {
   assert.equal(contactConsentScopeForRoute("unknown"), "none");
 });
 
-test("launch-page pending-confirmation metadata is fixed by the server", () => {
+test("launch-page consent becomes active at submission time", () => {
   const now = new Date("2026-07-15T00:00:00.000Z");
   assert.deepEqual(serverConsentMetadata("home-v6", now), {
     consent_scope: "kickstarter_updates",
     consent_version: "home_v6_2026_07",
     consent_requested_at: "2026-07-15T00:00:00.000Z",
-    consent_status: "pending_confirmation"
+    consent_confirmed_at: "2026-07-15T00:00:00.000Z",
+    consent_status: "confirmed"
   });
   assert.deepEqual(serverConsentMetadata("home-v7", now), {
     consent_scope: "kickstarter_updates",
     consent_version: "home_v7_2026_07",
     consent_requested_at: "2026-07-15T00:00:00.000Z",
-    consent_status: "pending_confirmation"
+    consent_confirmed_at: "2026-07-15T00:00:00.000Z",
+    consent_status: "confirmed"
   });
   assert.deepEqual(serverConsentMetadata("home-v5", now), {});
   assert.deepEqual(serverConsentMetadata("home-v4", now), {});
@@ -49,6 +51,7 @@ test("dynamic JSONB metadata values declare their PostgreSQL type", async () => 
   const typedValues = [
     "consentScope",
     "consentVersion",
+    "submittedAt",
     "requestedAt",
     "providerId",
     "topicId"

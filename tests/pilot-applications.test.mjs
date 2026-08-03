@@ -100,6 +100,10 @@ test("about harbor presents the approved company story without fabricated names"
   assert.match(about, /https:\/\/harbornavi\.com\/about-harbor/);
   assert.match(about, /Harbor Innovations/);
   assert.match(about, /Our homes kept recording\. They still forgot us\./);
+  assert.match(about, /What time will Alex be out tomorrow\?/);
+  assert.match(about, /No identity check/);
+  assert.match(about, /Recorded\. No alert sent\./);
+  assert.match(about, /A useful home should recognize the situation and notify the owner/);
   assert.match(about, /A home memory should last a lifetime/);
   assert.match(about, /Privacy is not a premium feature/);
   assert.match(about, /Nexus AI Workstation/);

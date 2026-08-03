@@ -347,6 +347,39 @@ export function waitlistIntegrationState(lead: Pick<WaitlistIntegrationLead, "me
   };
 }
 
+export async function activateWaitlistConsent(
+  leadId: string,
+  consentScope: string,
+  consentVersion: string,
+  submittedAt: string
+) {
+  const db = sql();
+  const rows = (await db`
+    update waitlist_leads
+    set
+      metadata = metadata || jsonb_build_object(
+        'consent_scope', ${consentScope}::text,
+        'consent_version', ${consentVersion}::text,
+        'consent_requested_at', coalesce(metadata->>'consent_requested_at', ${submittedAt}::text),
+        'consent_confirmed_at', coalesce(metadata->>'consent_confirmed_at', ${submittedAt}::text),
+        'consent_status', 'confirmed',
+        'confirmation_email_status', 'not_required',
+        'contact_sync_status', case
+          when metadata->>'contact_sync_status' = 'synced' then 'synced'
+          when metadata->>'contact_sync_status' = 'sending'
+            and nullif(metadata->>'contact_sync_attempted_at', '')::timestamptz > now() - interval '5 minutes'
+          then 'sending'
+          else 'pending'
+        end,
+        'contact_sync_error', null
+      ),
+      updated_at = now()
+    where id = ${leadId}
+    returning id, email, route, form_location, path, referrer, utm_source, utm_campaign, created_at, metadata
+  `) as unknown as WaitlistIntegrationLead[];
+  return rows[0] || null;
+}
+
 export async function prepareWaitlistConsent(
   leadId: string,
   consentScope: string,
@@ -624,17 +657,6 @@ export async function listRetryableWaitlistIntegrations(limit = 50) {
     from waitlist_leads
     where
       (
-        metadata->>'consent_confirmed_at' is null
-        and coalesce((metadata->>'confirmation_email_attempt_count')::int, 0) < 5
-        and (
-          metadata->>'confirmation_email_status' in ('pending', 'failed')
-          or (
-            metadata->>'confirmation_email_status' = 'sending'
-            and nullif(metadata->>'confirmation_email_attempted_at', '')::timestamptz <= now() - interval '5 minutes'
-          )
-        )
-      )
-      or (
         metadata->>'consent_confirmed_at' is not null
         and coalesce((metadata->>'contact_sync_attempt_count')::int, 0) < 10
         and (

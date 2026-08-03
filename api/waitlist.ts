@@ -1,7 +1,7 @@
 import { jsonResponse } from "../src/server/config.js";
 import {
   deliverOperatorNotification,
-  deliverWaitlistConfirmation
+  syncConfirmedWaitlistLead
 } from "../src/server/waitlist-integrations.js";
 import {
   activeWaitlistConsentVersion,
@@ -10,14 +10,14 @@ import {
   serverConsentMetadata
 } from "../src/server/waitlist-consent.js";
 import {
+  activateWaitlistConsent,
   normalizeEmail,
   prepareOperatorNotification,
-  prepareWaitlistConsent,
   updateWaitlistProfile,
   upsertWaitlistLead,
   waitlistIntegrationState
 } from "../src/server/waitlist.js";
-import { waitlistConfirmationBaseUrl } from "../src/server/waitlist-email.js";
+import { getPublicWaitlistActivity } from "../src/server/analytics.js";
 import { savePilotApplication } from "../src/server/pilot-applications.js";
 import {
   arePilotApplicationsOpen,
@@ -174,43 +174,34 @@ export async function POST(request: Request) {
     });
 
     if (consentScope !== "none") {
-      const prepared = await prepareWaitlistConsent(
+      const activated = await activateWaitlistConsent(
         lead.id,
         consentScope,
         consentMetadata.consent_version || activeWaitlistConsentVersion,
-        consentMetadata.consent_requested_at || new Date().toISOString()
+        consentMetadata.consent_confirmed_at || new Date().toISOString()
       );
-      if (!prepared) throw new Error("Unable to prepare waitlist confirmation");
+      if (!activated) throw new Error("Unable to activate waitlist subscription");
 
-      let confirmationResult;
+      const preparedNotification = await prepareOperatorNotification(lead.id);
+      let contactSyncStatus = waitlistIntegrationState(activated).contact_sync_status;
+      let operatorNotificationStatus = waitlistIntegrationState(preparedNotification || activated).operator_notification_status;
       try {
-        confirmationResult = await deliverWaitlistConfirmation(
-          prepared.id,
-          waitlistConfirmationBaseUrl(request.url)
-        );
+        const result = await syncConfirmedWaitlistLead(activated.id);
+        contactSyncStatus = result.skipped ? contactSyncStatus : "synced";
       } catch (error) {
-        console.error("Waitlist lead saved, but subscriber confirmation failed", error);
-        return jsonResponse({
-          error: "Your email was saved, but we could not send the confirmation email. Please try again.",
-          code: "confirmation_delivery_failed",
-          lead_saved: true,
-          retryable: true
-        }, { status: 503 });
+        contactSyncStatus = "pending_retry";
+        console.error("Waitlist lead saved, but contact sync failed", error);
       }
 
-      const state = waitlistIntegrationState(prepared);
-      if (
-        confirmationResult.skipped &&
-        !state.consent_confirmed_at &&
-        !["sent", "sending"].includes(state.confirmation_email_status)
-      ) {
-        return jsonResponse({
-          error: "Your email was saved, but we could not send the confirmation email. Please try again later.",
-          code: "confirmation_delivery_unavailable",
-          lead_saved: true,
-          retryable: true
-        }, { status: 503 });
+      try {
+        const result = await deliverOperatorNotification(activated.id);
+        operatorNotificationStatus = result.skipped ? operatorNotificationStatus : "sent";
+      } catch (error) {
+        operatorNotificationStatus = "pending_retry";
+        console.error("Waitlist lead saved, but operator notification failed", error);
       }
+
+      const activity = await getPublicWaitlistActivity();
 
       return jsonResponse({
         ok: true,
@@ -219,9 +210,11 @@ export async function POST(request: Request) {
           email: lead.email,
           submission_count: lead.submission_count
         },
-        subscription_status: state.consent_confirmed_at ? "confirmed" : "pending_confirmation",
-        confirmation_email_sent: !confirmationResult.skipped,
-        contact_sync_status: state.consent_confirmed_at ? state.contact_sync_status : "awaiting_confirmation"
+        subscription_status: "confirmed",
+        confirmation_email_required: false,
+        contact_sync_status: contactSyncStatus,
+        operator_notification_status: operatorNotificationStatus,
+        waitlist_people: activity.waitlist_people
       });
     }
 

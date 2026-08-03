@@ -1,4 +1,5 @@
 ---
+import EnglishFormValidation from "../components/EnglishFormValidation.astro";
 import SiteHeader from "../components/SiteHeaderV7.astro";
 import SiteMediaLoader from "../components/SiteMediaLoader.astro";
 import {
@@ -14,6 +15,7 @@ import "../styles/pilot-families.css";
 <!doctype html>
 <html lang="en">
   <head>
+    <EnglishFormValidation />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>First 5 Pilot Families | HarborNavi</title>
@@ -189,7 +191,7 @@ import "../styles/pilot-families.css";
         <form data-pilot-form>
           <label> Name <input type="text" name="name" autocomplete="name" maxlength="120" required /> </label>
           <label> Email <input type="email" name="email" autocomplete="email" maxlength="254" required /> </label>
-          <label> ZIP Code <input type="text" name="zip_code" autocomplete="postal-code" inputmode="numeric" pattern="[0-9]{5}(-[0-9]{4})?" maxlength="10" required /> </label>
+          <label> ZIP Code <input type="text" name="zip_code" autocomplete="postal-code" inputmode="numeric" pattern="[0-9]{5}(-[0-9]{4})?" data-pattern-message="Please enter a valid ZIP code, such as 94107." maxlength="10" required /> </label>
           <label class="full-field"> What smart devices do you currently use? <textarea name="smart_devices" rows="4" maxlength="1200" required></textarea> </label>
           <label class="full-field"> Why are you interested? <textarea name="interest_reason" rows="4" maxlength="1200" required></textarea> </label>
           <label class="full-field"> How did you hear about us?

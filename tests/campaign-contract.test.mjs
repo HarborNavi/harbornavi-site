@@ -67,7 +67,9 @@ test("home-v6 keeps exactly two email-only waitlist forms with honeypots", async
   }
   assert.match(homeV6, /document\.querySelectorAll\("\[data-early-form\]"\)/);
   assert.match(homeV6, /fetch\("\/api\/waitlist"/);
-  assert.match(homeV6, /subscription_status === "confirmed"/);
+  assert.match(homeV6, /setSuccessModalState\("joined"\)/);
+  assert.match(homeV6, /No confirmation step is required/);
+  assert.doesNotMatch(homeV6, /Check your inbox/);
   assert.match(homeV6, /email_confirmation_complete/);
 });
 
@@ -162,15 +164,15 @@ test("Vercel routing stays within the Hobby function limit", async () => {
   assert.match(await source(".github/workflows/retry-waitlist.yml"), /cron: "17 \* \* \* \*"/);
 });
 
-test("privacy copy documents the V6 double-opt-in and historical-page boundary", async () => {
+test("privacy copy documents immediate waitlist enrollment and historical-page boundary", async () => {
   const privacy = await source("src/pages/privacy.astro");
 
   assert.match(privacy, /<code>\/home-v6<\/code> is the current launch page/);
   assert.match(privacy, /<code>\/home-v4<\/code> and <code>\/home-v5<\/code> are no-index historical comparisons/);
-  assert.match(privacy, /starts as pending and is not added\s+to a marketing audience at submission time/);
-  assert.match(privacy, /signed confirmation link\s+expires after seven days/);
-  assert.match(privacy, /one Resend Topic for\s+HarborNavi Kickstarter pre-launch updates/);
-  assert.match(privacy, /An unconfirmed V6 lead is deleted from Neon after 30 days/);
+  assert.match(privacy, /joins the HarborNavi waitlist immediately/);
+  assert.match(privacy, /does not require a confirmation link after submission/);
+  assert.match(privacy, /one Resend Topic for HarborNavi Kickstarter pre-launch/);
+  assert.match(privacy, /waitlist@harbornavi\.com/);
   assert.match(privacy, /voluntary product survey hosted by SurveyMonkey/);
   assert.match(privacy, /Survey answers are separate from launch-list\s+consent/);
 });
@@ -195,6 +197,7 @@ test("campaign analytics events are allowlisted and unknown events stay ignored"
 test("home-v7 shows anonymous live waitlist activity and qualified privacy claims", async () => {
   const homeV7 = await source("src/components/HomeV7Landing.astro");
   const analytics = await source("src/server/analytics.ts");
+  const publicWaitlist = await source("src/server/public-waitlist.ts");
   const eventsApi = await source("api/events.ts");
   assert.equal((homeV7.match(/<aside class="waitlist-countboard[^>]*data-waitlist-activity/g) || []).length, 2);
   assert.match(homeV7, /people have joined/);
@@ -208,7 +211,11 @@ test("home-v7 shows anonymous live waitlist activity and qualified privacy claim
   assert.match(homeV7, /Microscope/);
   assert.match(homeV7, /waitlist_cta_click/);
   assert.match(homeV7, /fetch\("\/api\/events"/);
+  assert.equal((homeV7.match(/data-waitlist-interest-count>509/g) || []).length, 2);
+  assert.match(homeV7, /renderWaitlistActivity\(responseBody\.waitlist_people\)/);
+  assert.match(homeV7, /No confirmation step is required/);
   assert.match(analytics, /count\(distinct lower\(email\)\)/);
+  assert.match(publicWaitlist, /publicWaitlistBaseline = 509/);
   assert.match(analytics, /consent_confirmed_at/);
   assert.match(analytics, /getPublicWaitlistActivity/);
   assert.match(eventsApi, /export async function GET/);
@@ -216,8 +223,28 @@ test("home-v7 shows anonymous live waitlist activity and qualified privacy claim
   assert.match(homeV7, /Mode IO\.AI's dynamic privacy and AI safety technology/);
   assert.match(homeV7, /Hong Kong University of Science and Technology/);
   assert.match(homeV7, /95%\+/);
-  assert.match(homeV7, /internal benchmark results/);
+  assert.match(homeV7, /Risk Identification Accuracy/);
+  assert.match(homeV7, /False-positive rate below 5%/);
+  assert.match(homeV7, /7\+ years/);
+  assert.match(homeV7, /privacy compliance, and legal engineering/);
+  assert.match(homeV7, /Millions-scale/);
+  assert.match(homeV7, /security-scenario data/);
+  assert.match(homeV7, /internal benchmarks, team experience/);
   assert.doesNotMatch(homeV7, /world(?:'s|’s) first/i);
+});
+
+test("waitlist API activates submissions without confirmation email delivery", async () => {
+  const api = await source("api/waitlist.ts");
+  const waitlist = await source("src/server/waitlist.ts");
+  const cron = await source("api/cron/retry-waitlist.ts");
+
+  assert.match(api, /activateWaitlistConsent/);
+  assert.match(api, /subscription_status: "confirmed"/);
+  assert.match(api, /confirmation_email_required: false/);
+  assert.match(api, /waitlist_people: activity\.waitlist_people/);
+  assert.doesNotMatch(api, /deliverWaitlistConfirmation/);
+  assert.match(waitlist, /confirmation_email_status', 'not_required'/);
+  assert.doesNotMatch(cron, /deliverWaitlistConfirmation/);
 });
 
 test("home-v7 replaces the wide comparison table with mobile category tabs", async () => {
@@ -230,4 +257,33 @@ test("home-v7 replaces the wide comparison table with mobile category tabs", asy
   assert.match(styles, /\.mobile-compare \{ display: none; \}/);
   assert.match(styles, /\.compare-wrap \{ display: none; \}/);
   assert.match(styles, /\.mobile-compare \{ display: block; \}/);
+});
+
+test("all interactive forms force browser validation prompts to English", async () => {
+  const validation = await source("src/components/EnglishFormValidation.astro");
+  assert.match(validation, /document\.addEventListener\("invalid"/);
+  assert.match(validation, /Please fill out this field\./);
+  assert.match(validation, /Please enter your email address\./);
+  assert.match(validation, /Please enter a valid email address\./);
+  assert.match(validation, /Please select an option\./);
+  assert.match(validation, /Please choose a file\./);
+
+  const formPages = [
+    "src/components/LandingPage.astro",
+    "src/components/HomeV2Landing.astro",
+    "src/components/HomeV3Landing.astro",
+    "src/components/HomeV6Landing.astro",
+    "src/components/HomeV7Landing.astro",
+    "src/pages/pilot-families.astro",
+    "src/pages/admin.astro",
+    "src/pages/admin666.astro"
+  ];
+
+  for (const path of formPages) {
+    const page = await source(path);
+    assert.match(page, /EnglishFormValidation/);
+    assert.match(page, /<EnglishFormValidation \/>/);
+  }
+
+  assert.match(await source("src/pages/pilot-families.astro"), /Please enter a valid ZIP code, such as 94107\./);
 });

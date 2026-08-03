@@ -1,4 +1,8 @@
 import { sql } from "./db.js";
+import {
+  publicWaitlistBaselineStartedAt,
+  publicWaitlistPeople
+} from "./public-waitlist.js";
 import { isAllowedAnalyticsEventName } from "./analytics-events.js";
 import { sanitizeAnalyticsProperties } from "./analytics-sanitize.js";
 
@@ -71,15 +75,18 @@ export async function recordAnalyticsEvent(payload: AnalyticsPayload) {
 
 export async function getPublicWaitlistActivity() {
   const rows = (await sql()`
-    select count(distinct lower(email))::int as waitlist_people
+    select count(distinct lower(email))::int as new_waitlist_people
     from waitlist_leads
     where
-      coalesce(route, '') not in ('home-v6', 'home-v7')
-      or metadata->>'consent_confirmed_at' is not null
-  `) as unknown as Array<{ waitlist_people: number }>;
+      created_at >= ${publicWaitlistBaselineStartedAt}::timestamptz
+      and (
+        coalesce(route, '') not in ('home-v6', 'home-v7')
+        or metadata->>'consent_confirmed_at' is not null
+      )
+  `) as unknown as Array<{ new_waitlist_people: number }>;
 
   return {
-    waitlist_people: Number(rows[0]?.waitlist_people || 0),
+    waitlist_people: publicWaitlistPeople(rows[0]?.new_waitlist_people),
     updated_at: new Date().toISOString()
   };
 }

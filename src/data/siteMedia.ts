@@ -166,6 +166,28 @@ export const siteMediaPlacements: SiteMediaPlacement[] = [
     aspectRatio: "16:9"
   },
   {
+    key: "about-story-speaker-privacy",
+    page: "About Harbor",
+    pagePath: "/about-harbor#founding-story - Smart speaker privacy scenario",
+    label: "Visitor asking the smart speaker",
+    description: "The first founding-story image showing a visitor asking for the homeowner's schedule.",
+    defaultUrl: "/assets/about-story-speaker-privacy-v1.jpg",
+    defaultAlt: "An unfamiliar visitor asking a smart speaker about the homeowner's schedule while the home is empty.",
+    recommendedSize: "1536 x 1024 px",
+    aspectRatio: "3:2"
+  },
+  {
+    key: "about-story-package-recorded",
+    page: "About Harbor",
+    pagePath: "/about-harbor#founding-story - Package camera scenario",
+    label: "Package theft recorded without an alert",
+    description: "The second founding-story image showing a camera recording package theft without a useful alert.",
+    defaultUrl: "/assets/about-story-package-recorded-v1.jpg",
+    defaultAlt: "A porch camera recording a stranger opening a delivered package without sending a useful alert.",
+    recommendedSize: "1536 x 1024 px",
+    aspectRatio: "3:2"
+  },
+  {
     key: "about-nexus",
     page: "About Harbor",
     pagePath: "/about-harbor - Project 01",

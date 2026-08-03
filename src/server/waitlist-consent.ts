@@ -27,10 +27,12 @@ export function contactConsentScopeForRoute(route: string | null | undefined): W
 export function serverConsentMetadata(route: string, now = new Date()): Record<string, string> {
   const consentVersion = waitlistConsentVersionForRoute(route);
   if (!consentVersion) return {};
+  const submittedAt = now.toISOString();
   return {
     consent_scope: "kickstarter_updates",
     consent_version: consentVersion,
-    consent_requested_at: now.toISOString(),
-    consent_status: "pending_confirmation"
+    consent_requested_at: submittedAt,
+    consent_confirmed_at: submittedAt,
+    consent_status: "confirmed"
   };
 }

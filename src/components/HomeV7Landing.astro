@@ -13,6 +13,7 @@ import {
   Target,
   Workflow
 } from "@lucide/astro";
+import EnglishFormValidation from "./EnglishFormValidation.astro";
 import SiteMediaLoader from "./SiteMediaLoader.astro";
 import "../styles/home-v7.css";
 
@@ -143,6 +144,7 @@ const structuredData = JSON.stringify({
 <!doctype html>
 <html lang="en">
   <head>
+    <EnglishFormValidation />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="index,follow" />
@@ -232,10 +234,10 @@ const structuredData = JSON.stringify({
             </form>
             <aside class="waitlist-countboard" data-waitlist-activity aria-label="Live HarborNavi waitlist count" aria-live="polite">
               <span class="waitlist-countboard-label"><span aria-hidden="true"></span>Live waitlist</span>
-              <span class="waitlist-countboard-total"><strong data-waitlist-interest-count>0</strong><span>people have joined</span></span>
+              <span class="waitlist-countboard-total"><strong data-waitlist-interest-count>509</strong><span>people have joined</span></span>
             </aside>
             <p id="v6-hero-error" class="form-error" data-form-error aria-live="polite" hidden>We could not save your email. Please try again.</p>
-            <p id="v6-hero-note" class="form-note">Follow product updates and get early-bird pricing. Email confirmation required. <a href="/privacy">Privacy</a></p>
+            <p id="v6-hero-note" class="form-note">Submit once to join the waitlist and receive product updates. Unsubscribe anytime. <a href="/privacy">Privacy</a></p>
           </div>
           <figure class="hero-visual">
             <img src={heroImage} alt="A child sharing a drawing with family as a pet runs beside HarborNavi and selected home memories gather locally" width="1536" height="1024" loading="eager" fetchpriority="high" data-media-slot="home-hero-family" />
@@ -357,11 +359,11 @@ const structuredData = JSON.stringify({
             </ol>
           </div>
           <div class="privacy-proof-grid" aria-label="Mode IO.AI privacy capability highlights">
-            <article><strong>95%+</strong><span>Detection accuracy reported in Mode IO.AI internal benchmarks</span></article>
-            <article><strong>&le;5%</strong><span>False-positive rate reported in the same internal benchmarks</span></article>
-            <article><strong>Local first</strong><span>Privacy review can run close to the data, before external AI transmission</span></article>
+            <article><strong><b>95%+</b><em>Risk Identification Accuracy</em></strong><span>False-positive rate below 5%</span></article>
+            <article><strong>7+ years</strong><span>Experience across AI safety, privacy compliance, and legal engineering</span></article>
+            <article><strong>Millions-scale</strong><span>Agent commands, behaviors, and security-scenario data</span></article>
           </div>
-          <p class="privacy-benchmark-note">Performance figures are Mode IO.AI internal benchmark results and should be validated for each deployment environment.</p>
+          <p class="privacy-benchmark-note">Figures summarize Mode IO.AI internal benchmarks, team experience, and accumulated security-scenario data. Deployment results may vary.</p>
         </section>
 
         <section id="compatibility" class="compatibility-section" aria-labelledby="compat-title">
@@ -478,10 +480,10 @@ const structuredData = JSON.stringify({
           </form>
           <aside class="waitlist-countboard final-activity" data-waitlist-activity aria-label="Live HarborNavi waitlist count" aria-live="polite">
             <span class="waitlist-countboard-label"><span aria-hidden="true"></span>Live waitlist</span>
-            <span class="waitlist-countboard-total"><strong data-waitlist-interest-count>0</strong><span>people have joined</span></span>
+            <span class="waitlist-countboard-total"><strong data-waitlist-interest-count>509</strong><span>people have joined</span></span>
           </aside>
           <p id="v6-final-error" class="form-error" data-form-error aria-live="polite" hidden>We could not save your email. Please try again.</p>
-          <p id="v6-final-note" class="form-note">Follow product updates and get early-bird pricing. Email confirmation required. <a href="/privacy">Privacy</a></p>
+          <p id="v6-final-note" class="form-note">Submit once to join the waitlist and receive product updates. Unsubscribe anytime. <a href="/privacy">Privacy</a></p>
         </section>
       </main>
 
@@ -494,9 +496,9 @@ const structuredData = JSON.stringify({
         <button class="modal-backdrop" type="button" tabindex="-1" aria-label="Close thank you dialog" data-modal-close></button>
         <div class="modal-panel">
           <button class="modal-close" type="button" aria-label="Close thank you dialog" data-modal-close>&times;</button>
-          <p class="eyebrow" data-success-eyebrow>Check your inbox</p>
-          <h2 id="v6-success-title" data-success-title>Confirm your email to join the waitlist.</h2>
-          <p id="v6-success-description" data-success-description>We sent a confirmation link. Your address will not receive Kickstarter updates until you confirm it.</p>
+          <p class="eyebrow" data-success-eyebrow>You're on the list</p>
+          <h2 id="v6-success-title" data-success-title>Welcome to the HarborNavi waitlist.</h2>
+          <p id="v6-success-description" data-success-description>Your email has been added. No confirmation step is required.</p>
           <div class="survey-invite" data-confirmation-extras>
             <p class="survey-label">Optional &middot; About 3&ndash;5 minutes</p>
             <h3>Help us build HarborNavi around real homes.</h3>
@@ -586,18 +588,23 @@ const structuredData = JSON.stringify({
 
       const waitlistActivityElements = Array.from(document.querySelectorAll("[data-waitlist-activity]"));
 
+      function renderWaitlistActivity(count) {
+        if (!Number.isFinite(Number(count))) return;
+        const total = Math.max(509, Number(count));
+        waitlistActivityElements.forEach((element) => {
+          const countElement = element.querySelector("[data-waitlist-interest-count]");
+          if (countElement) countElement.textContent = new Intl.NumberFormat().format(total);
+          element.dataset.status = "ready";
+        });
+      }
+
       async function loadWaitlistActivity() {
         if (!waitlistActivityElements.length) return;
         try {
           const response = await fetch("/api/events", { headers: { accept: "application/json" } });
           const body = await response.json().catch(() => ({}));
           if (!response.ok || !Number.isFinite(Number(body.waitlist_people))) return;
-          const count = Math.max(0, Number(body.waitlist_people));
-          waitlistActivityElements.forEach((element) => {
-            const countElement = element.querySelector("[data-waitlist-interest-count]");
-            if (countElement) countElement.textContent = new Intl.NumberFormat().format(count);
-            element.dataset.status = "ready";
-          });
+          renderWaitlistActivity(body.waitlist_people);
         } catch {}
       }
 
@@ -662,10 +669,10 @@ const structuredData = JSON.stringify({
         const description = successModal.querySelector("[data-success-description]");
         const extras = successModal.querySelectorAll("[data-confirmation-extras]");
         const content = {
-          pending: {
-            eyebrow: "Check your inbox",
-            title: "Confirm your email to join the waitlist.",
-            description: "We sent a confirmation link. Your address will not receive Kickstarter updates until you confirm it.",
+          joined: {
+            eyebrow: "You're on the list",
+            title: "Welcome to the HarborNavi waitlist.",
+            description: "Your email has been added. No confirmation step is required.",
             extras: true
           },
           confirmed: {
@@ -829,9 +836,13 @@ const structuredData = JSON.stringify({
               form_location: formLocation
             });
             form.reset();
-            setSuccessModalState(responseBody.subscription_status === "confirmed" ? "confirmed" : "pending");
+            setSuccessModalState("joined");
             openSuccessModal();
-            window.setTimeout(loadWaitlistActivity, 16000);
+            if (Number.isFinite(Number(responseBody.waitlist_people))) {
+              renderWaitlistActivity(responseBody.waitlist_people);
+            } else {
+              loadWaitlistActivity();
+            }
           } catch (requestError) {
             window.harborTrack("early_bird_error", {
               route,

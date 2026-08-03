@@ -1,4 +1,5 @@
 ---
+import EnglishFormValidation from "./EnglishFormValidation.astro";
 import "../styles/home-v6.css";
 
 const discordUrl = "https://discord.gg/tC2bktRWWj";
@@ -104,6 +105,7 @@ const structuredData = JSON.stringify({
 <!doctype html>
 <html lang="en">
   <head>
+    <EnglishFormValidation />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="index,follow" />
@@ -155,7 +157,7 @@ const structuredData = JSON.stringify({
               <button type="submit">Join the launch list</button>
             </form>
             <p id="v6-hero-error" class="form-error" data-form-error aria-live="polite" hidden>We could not save your email. Please try again.</p>
-            <p id="v6-hero-note" class="form-note">Confirm by email to receive HarborNavi Kickstarter pre-launch updates. Unsubscribe anytime. <a href="/privacy">Privacy</a></p>
+            <p id="v6-hero-note" class="form-note">Submit once to join the launch list and receive HarborNavi Kickstarter pre-launch updates. Unsubscribe anytime. <a href="/privacy">Privacy</a></p>
           </div>
           <figure class="hero-visual">
             <img src={heroImage} alt="A child sharing a drawing with family as a pet runs beside HarborNavi and selected home memories gather locally" width="1536" height="1024" loading="eager" fetchpriority="high" />
@@ -333,7 +335,7 @@ const structuredData = JSON.stringify({
             <button type="submit">Join the launch list</button>
           </form>
           <p id="v6-final-error" class="form-error" data-form-error aria-live="polite" hidden>We could not save your email. Please try again.</p>
-          <p id="v6-final-note" class="form-note">Confirm by email to receive HarborNavi Kickstarter pre-launch updates. Unsubscribe anytime. <a href="/privacy">Privacy</a></p>
+          <p id="v6-final-note" class="form-note">Submit once to join the launch list and receive HarborNavi Kickstarter pre-launch updates. Unsubscribe anytime. <a href="/privacy">Privacy</a></p>
         </section>
       </main>
 
@@ -346,9 +348,9 @@ const structuredData = JSON.stringify({
         <button class="modal-backdrop" type="button" tabindex="-1" aria-label="Close thank you dialog" data-modal-close></button>
         <div class="modal-panel">
           <button class="modal-close" type="button" aria-label="Close thank you dialog" data-modal-close>&times;</button>
-          <p class="eyebrow" data-success-eyebrow>Check your inbox</p>
-          <h2 id="v6-success-title" data-success-title>Confirm your email to join the launch list.</h2>
-          <p id="v6-success-description" data-success-description>We sent a confirmation link. Your address will not receive Kickstarter updates until you confirm it.</p>
+          <p class="eyebrow" data-success-eyebrow>You're on the list</p>
+          <h2 id="v6-success-title" data-success-title>Welcome to the HarborNavi launch list.</h2>
+          <p id="v6-success-description" data-success-description>Your email has been added. No confirmation step is required.</p>
           <div class="survey-invite" data-confirmation-extras>
             <p class="survey-label">Optional &middot; About 3&ndash;5 minutes</p>
             <h3>Help us build HarborNavi around real homes.</h3>
@@ -465,10 +467,10 @@ const structuredData = JSON.stringify({
         const description = successModal.querySelector("[data-success-description]");
         const extras = successModal.querySelectorAll("[data-confirmation-extras]");
         const content = {
-          pending: {
-            eyebrow: "Check your inbox",
-            title: "Confirm your email to join the launch list.",
-            description: "We sent a confirmation link. Your address will not receive Kickstarter updates until you confirm it.",
+          joined: {
+            eyebrow: "You're on the list",
+            title: "Welcome to the HarborNavi launch list.",
+            description: "Your email has been added. No confirmation step is required.",
             extras: true
           },
           confirmed: {
@@ -576,7 +578,7 @@ const structuredData = JSON.stringify({
               form_location: formLocation
             });
             form.reset();
-            setSuccessModalState(responseBody.subscription_status === "confirmed" ? "confirmed" : "pending");
+            setSuccessModalState("joined");
             openSuccessModal();
           } catch (requestError) {
             window.harborTrack("early_bird_error", {

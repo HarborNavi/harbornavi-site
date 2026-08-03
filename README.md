@@ -7,7 +7,7 @@ This project is intentionally separate from the HarborNavi product coordination 
 ## Routes
 
 - `/` and `/home`: permanent redirects to the current `/home-v6` landing page.
-- `/home-v6`: current HarborNavi pre-launch page with a confirmed email subscription flow.
+- `/home-v6`: current HarborNavi pre-launch page with immediate waitlist enrollment.
 - `/home-v7`: isolated campaign version with the three-position hero carousel and Pilot Families entry point.
 - `/home-v2`: earlier HarborNavi early-access page retained for comparison.
 - `/home-v3`: five-question product narrative retained for comparison.
@@ -23,12 +23,12 @@ This project is intentionally separate from the HarborNavi product coordination 
 - `/admin`: password-protected waitlist lead admin.
 - `/admin666`: isolated campaign admin with Pilot Applications and Media management.
 - `/api/waitlist`: waitlist submission endpoint.
-- `/api/waitlist/confirm`: signed email-confirmation endpoint.
+- `/api/waitlist/confirm`: legacy signed email-confirmation endpoint for links already issued before immediate enrollment.
 - `/api/waitlist/profile`: optional post-submit lead profile endpoint.
 - `/api/reservations/*`: configuration-gated Founder priority reservation checkout and status endpoints.
 - `/api/stripe/webhook`: signed Stripe lifecycle webhook.
 - `/api/cron/refund-reservations`: scheduled automatic refund worker.
-- `/api/cron/retry-waitlist`: authenticated confirmation, contact-sync, and operator-alert retry worker.
+- `/api/cron/retry-waitlist`: authenticated contact-sync and operator-alert retry worker.
 - `/api/events`: first-party analytics event endpoint.
 - `/api/admin/*`: admin login, health check, analytics, and lead management endpoints.
 - `/api/admin/pilot-applications`: authenticated Pilot Families application list, routed through the existing admin health function.
@@ -51,11 +51,12 @@ Astro dev serves `/package/` correctly, but bare `/package` can collide with `pa
 
 - Hero visuals are generated storyboard placeholders under `public/assets/`.
 - `/home-v6` remains the default landing page; `/home-v7` is deployed as an isolated campaign version. V4 and V5 remain available only as no-index visual history and no longer accept email.
-- A V6 form submission stores a pending lead in Neon and sends a signed confirmation link that expires after seven days. Only a confirmed address is synced to the HarborNavi Kickstarter Resend Topic and followed by an operator alert.
-- Integration state is stored in `waitlist_leads.metadata`. GitHub Actions invokes `/api/cron/retry-waitlist` hourly, with a daily Vercel Cron fallback compatible with the Hobby plan. The worker retries eligible confirmation, contact-sync, and operator-alert failures, initializes the Kickstarter Topic when needed, and purges unconfirmed V6 leads after 30 days.
-- The Kickstarter Topic uses `default_subscription=opt_out`, while each confirmed address is explicitly synced as `opt_in`. `RESEND_KICKSTARTER_TOPIC_ID` is an optional override; the V6 flow has no Road Topic dependency.
+- A V6 or V7 form submission immediately records the normalized email and consent time in Neon. No confirmation email is required; contact sync and operator notifications are best-effort integrations that do not block enrollment.
+- Integration state is stored in `waitlist_leads.metadata`. GitHub Actions invokes `/api/cron/retry-waitlist` hourly, with a daily Vercel Cron fallback compatible with the Hobby plan. The worker retries eligible contact-sync and operator-alert failures and initializes the Kickstarter Topic when needed.
+- The public V7 counter starts at 509 and adds distinct waitlist emails created after `2026-08-03T09:08:53Z`. Duplicate submissions update the existing lead without increasing the public count.
+- The Kickstarter Topic uses `default_subscription=opt_out`, while each submitted address is explicitly synced as `opt_in`. `RESEND_KICKSTARTER_TOPIC_ID` is an optional override; the V6/V7 flow has no Road Topic dependency.
 - Vercel Production uses the Neon `main` branch. Vercel Preview uses the permanent schema-only Neon `preview` branch, so Fiona's Preview submissions cannot write to production lead or analytics data.
-- The complete production flow was accepted on 2026-07-29: pending submission, confirmation email and signed link, Resend Contact/Topic sync, operator alert, authenticated retry recovery, and formal-domain smoke checks all passed.
+- The prior double-opt-in production flow was accepted on 2026-07-29. It was replaced on 2026-08-03 by immediate waitlist enrollment; legacy confirmation links remain supported.
 - Campaign dates and public destinations are centralized in `src/data/campaign.ts`. External Tally/application, Kickstarter, and YouTube URLs come only from `PUBLIC_*` environment variables and render a clear unavailable state while empty. The application also requires `PUBLIC_ROAD_HOMES_PRIVACY_READY=true` after its provider, retention, deletion contact, and applicant rights are published.
 - Central milestones are Kickstarter pre-launch on `2026-09-15`, the road field test on `2026-11-12..2026-12-05`, the public field report on `2026-12-12`, and the planned Kickstarter launch on `2027-01-12`.
 - The external 15 Homes application is not written to the site's waitlist or analytics tables. Its provider should redirect completed applications to `/15-homes/thanks`.
