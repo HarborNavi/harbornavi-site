@@ -232,9 +232,9 @@ const structuredData = JSON.stringify({
               <input class="sr-only" name="company" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" />
               <button type="submit">Join the waitlist</button>
             </form>
-            <aside class="waitlist-countboard" data-waitlist-activity aria-label="Live HarborNavi waitlist count" aria-live="polite">
+            <aside class="waitlist-countboard" data-waitlist-activity data-status="loading" aria-label="Live HarborNavi waitlist count" aria-live="polite" aria-busy="true">
               <span class="waitlist-countboard-label"><span aria-hidden="true"></span>Live waitlist</span>
-              <span class="waitlist-countboard-total"><strong data-waitlist-interest-count>509</strong><span>people have joined</span></span>
+              <span class="waitlist-countboard-total"><strong data-waitlist-interest-count aria-label="Loading waitlist count"></strong><span>people have joined</span></span>
             </aside>
             <p id="v6-hero-error" class="form-error" data-form-error aria-live="polite" hidden>We could not save your email. Please try again.</p>
             <p id="v6-hero-note" class="form-note">Submit once to join the waitlist and receive product updates. Unsubscribe anytime. <a href="/privacy">Privacy</a></p>
@@ -478,9 +478,9 @@ const structuredData = JSON.stringify({
             <input class="sr-only" name="company" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" />
             <button type="submit">Join the waitlist</button>
           </form>
-          <aside class="waitlist-countboard final-activity" data-waitlist-activity aria-label="Live HarborNavi waitlist count" aria-live="polite">
+          <aside class="waitlist-countboard final-activity" data-waitlist-activity data-status="loading" aria-label="Live HarborNavi waitlist count" aria-live="polite" aria-busy="true">
             <span class="waitlist-countboard-label"><span aria-hidden="true"></span>Live waitlist</span>
-            <span class="waitlist-countboard-total"><strong data-waitlist-interest-count>509</strong><span>people have joined</span></span>
+            <span class="waitlist-countboard-total"><strong data-waitlist-interest-count aria-label="Loading waitlist count"></strong><span>people have joined</span></span>
           </aside>
           <p id="v6-final-error" class="form-error" data-form-error aria-live="polite" hidden>We could not save your email. Please try again.</p>
           <p id="v6-final-note" class="form-note">Submit once to join the waitlist and receive product updates. Unsubscribe anytime. <a href="/privacy">Privacy</a></p>
@@ -587,14 +587,19 @@ const structuredData = JSON.stringify({
       };
 
       const waitlistActivityElements = Array.from(document.querySelectorAll("[data-waitlist-activity]"));
+      const waitlistFallback = 509;
 
       function renderWaitlistActivity(count) {
         if (!Number.isFinite(Number(count))) return;
-        const total = Math.max(509, Number(count));
+        const total = Math.max(waitlistFallback, Number(count));
         waitlistActivityElements.forEach((element) => {
           const countElement = element.querySelector("[data-waitlist-interest-count]");
-          if (countElement) countElement.textContent = new Intl.NumberFormat().format(total);
+          if (countElement) {
+            countElement.textContent = new Intl.NumberFormat().format(total);
+            countElement.removeAttribute("aria-label");
+          }
           element.dataset.status = "ready";
+          element.setAttribute("aria-busy", "false");
         });
       }
 
@@ -603,9 +608,14 @@ const structuredData = JSON.stringify({
         try {
           const response = await fetch("/api/events", { headers: { accept: "application/json" } });
           const body = await response.json().catch(() => ({}));
-          if (!response.ok || !Number.isFinite(Number(body.waitlist_people))) return;
+          if (!response.ok || !Number.isFinite(Number(body.waitlist_people))) {
+            renderWaitlistActivity(waitlistFallback);
+            return;
+          }
           renderWaitlistActivity(body.waitlist_people);
-        } catch {}
+        } catch {
+          renderWaitlistActivity(waitlistFallback);
+        }
       }
 
       loadWaitlistActivity();

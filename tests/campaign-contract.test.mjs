@@ -211,7 +211,10 @@ test("home-v7 shows anonymous live waitlist activity and qualified privacy claim
   assert.match(homeV7, /Microscope/);
   assert.match(homeV7, /waitlist_cta_click/);
   assert.match(homeV7, /fetch\("\/api\/events"/);
-  assert.equal((homeV7.match(/data-waitlist-interest-count>509/g) || []).length, 2);
+  assert.equal((homeV7.match(/data-waitlist-activity data-status="loading"/g) || []).length, 2);
+  assert.equal((homeV7.match(/data-waitlist-interest-count aria-label="Loading waitlist count"><\/strong>/g) || []).length, 2);
+  assert.doesNotMatch(homeV7, /data-waitlist-interest-count>509/);
+  assert.match(homeV7, /element\.setAttribute\("aria-busy", "false"\)/);
   assert.match(homeV7, /renderWaitlistActivity\(responseBody\.waitlist_people\)/);
   assert.match(homeV7, /No confirmation step is required/);
   assert.match(analytics, /count\(distinct lower\(email\)\)/);

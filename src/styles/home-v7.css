@@ -165,8 +165,16 @@ p { margin: 0; }
 .waitlist-countboard-label { display: inline-flex; align-items: center; gap: 9px; font-size: 11px; font-weight: 800; line-height: 1.3; text-transform: uppercase; }
 .waitlist-countboard-label > span { flex: 0 0 auto; width: 7px; height: 7px; border-radius: 50%; background: #168b80; box-shadow: 0 0 0 4px rgba(22, 139, 128, 0.13); }
 .waitlist-countboard-total { display: inline-flex; align-items: baseline; justify-content: flex-end; gap: 9px; color: #385f5a; font-size: 12px; line-height: 1.35; }
-.waitlist-countboard-total strong { min-width: 1ch; color: #102e2a; font-size: 27px; line-height: 1; font-variant-numeric: tabular-nums; }
+.waitlist-countboard-total strong { display: inline-block; min-width: 3ch; color: #102e2a; font-size: 27px; line-height: 1; font-variant-numeric: tabular-nums; }
+.waitlist-countboard[data-status="loading"] .waitlist-countboard-total strong { width: 3ch; height: 0.8em; border-radius: 3px; background: rgba(22, 79, 72, 0.14); }
 .waitlist-countboard[data-status="ready"] .waitlist-countboard-label > span { box-shadow: 0 0 0 4px rgba(22, 139, 128, 0.13), 0 0 14px rgba(22, 139, 128, 0.3); }
+@media (prefers-reduced-motion: no-preference) {
+  .waitlist-countboard[data-status="loading"] .waitlist-countboard-total strong { animation: waitlist-count-loading 1.2s ease-in-out infinite alternate; }
+}
+@keyframes waitlist-count-loading {
+  from { opacity: 0.45; }
+  to { opacity: 1; }
+}
 .form-note { max-width: 590px; color: var(--muted); font-size: 12px; line-height: 1.55; }
 .form-note a { color: var(--lavender-deep); font-weight: 700; }
 .form-error { width: min(100%, 560px); color: #a62c45; font-size: 13px; font-weight: 650; }
