@@ -99,7 +99,9 @@ import "../styles/global.css";
           <article>
             <h2>Campaign analytics</h2>
             <p>
-              First-party campaign analytics records page and link events with route, session, and attribution data.
+              First-party campaign analytics records page and link events with route, session, and attribution data. A
+              one-year, HttpOnly, same-site anonymous visitor cookie is used to count unique visitors without relying on
+              page-view totals. Historical events without that identifier fall back to session-level counting.
               Email addresses, application answers, postal details, camera models, and household details are not sent
               as analytics event properties.
             </p>
@@ -108,7 +110,8 @@ import "../styles/global.css";
             <h2>Pilot Families application</h2>
             <p>
               The Pilot Families form collects name, email, ZIP Code, a high-level smart-device summary, interest in the
-              program, and referral source. Applications are stored in Neon for selection and pilot operations and do not
+              program, referral source, page route, referrer, anonymous visitor and session IDs, and UTM campaign fields.
+              Applications are stored in Neon for selection and pilot operations and do not
               create a marketing subscription. Do not submit passwords, camera credentials, raw footage, a full street
               address, or sensitive household details. Applications that are not selected are removed within 12 months
               after pilot selection closes; selected-family records are retained for the active pilot and related support.

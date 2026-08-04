@@ -86,7 +86,7 @@ const mediaPageGroups = Array.from(
             <div>
               <p class="admin-eyebrow">Pilot Families</p>
               <h2>Program applications</h2>
-              <p>Review the six answers submitted through the Pilot Families application. Technical request metadata is not shown here.</p>
+              <p>Review application answers and the first-party source captured when each application was submitted.</p>
             </div>
             <div class="lead-actions">
               <button type="button" data-refresh-pilot-applications>Refresh applications</button>
@@ -121,12 +121,13 @@ const mediaPageGroups = Array.from(
                   <th>Smart devices</th>
                   <th>Why interested</th>
                   <th>Referral</th>
+                  <th>Attribution</th>
                   <th>Status</th>
                   <th>Submitted</th>
                 </tr>
               </thead>
               <tbody data-pilot-applications-body>
-                <tr><td colspan="7">No pilot applications loaded yet.</td></tr>
+                <tr><td colspan="8">No pilot applications loaded yet.</td></tr>
               </tbody>
             </table>
           </div>
@@ -211,27 +212,57 @@ const mediaPageGroups = Array.from(
         </section>
 
         <section class="tab-panel" data-tab-panel="dashboard">
-          <div class="metric-grid analytics-metrics" aria-label="Growth metrics">
-            <article>
-              <span>Page views</span>
-              <strong data-analytics-page-views>0</strong>
-            </article>
-            <article>
-              <span>Form starts</span>
-              <strong data-analytics-form-starts>0</strong>
-            </article>
-            <article>
-              <span>Form submits</span>
-              <strong data-analytics-form-submits>0</strong>
-            </article>
-            <article>
-              <span>Saved leads</span>
-              <strong data-analytics-saved-leads>0</strong>
-            </article>
-            <article>
-              <span>Conversion</span>
-              <strong data-analytics-conversion>0%</strong>
-            </article>
+          <section class="analytics-funnel" aria-labelledby="waitlist-funnel-title">
+            <div class="analytics-funnel-heading">
+              <div><p class="admin-eyebrow">Waitlist funnel</p><h2 id="waitlist-funnel-title">Email waitlist acquisition</h2></div>
+              <p>Conversion = saved waitlist leads / unique visitors. Pilot traffic and applications are excluded.</p>
+            </div>
+            <div class="metric-grid analytics-metrics" aria-label="Waitlist funnel metrics">
+              <article><span>Unique visitors</span><strong data-waitlist-unique-visitors>0</strong></article>
+              <article><span>Page views</span><strong data-waitlist-page-views>0</strong></article>
+              <article><span>Form starts</span><strong data-waitlist-form-starts>0</strong></article>
+              <article><span>Form submits</span><strong data-waitlist-form-submits>0</strong></article>
+              <article><span>Saved leads</span><strong data-waitlist-saved-leads>0</strong></article>
+              <article><span>Visitor conversion</span><strong data-waitlist-conversion>0%</strong></article>
+            </div>
+            <div class="admin-panel">
+              <h3>Waitlist by route and source</h3>
+              <div class="lead-table-wrap">
+                <table class="compact-table funnel-table">
+                  <thead><tr><th>Route</th><th>Source</th><th>Campaign</th><th>Visitors</th><th>Views</th><th>Starts</th><th>Submits</th><th>Saved</th><th>Conversion</th></tr></thead>
+                  <tbody data-waitlist-funnel-body><tr><td colspan="9">No waitlist analytics loaded yet.</td></tr></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <section class="analytics-funnel" aria-labelledby="pilot-funnel-title">
+            <div class="analytics-funnel-heading">
+              <div><p class="admin-eyebrow">Pilot funnel</p><h2 id="pilot-funnel-title">Pilot family applications</h2></div>
+              <p>Conversion = saved Pilot applications / unique Pilot page visitors. Waitlist submissions are excluded.</p>
+            </div>
+            <div class="metric-grid analytics-metrics" aria-label="Pilot funnel metrics">
+              <article><span>Unique visitors</span><strong data-pilot-funnel-unique-visitors>0</strong></article>
+              <article><span>Page views</span><strong data-pilot-funnel-page-views>0</strong></article>
+              <article><span>Form starts</span><strong data-pilot-funnel-form-starts>0</strong></article>
+              <article><span>Form submits</span><strong data-pilot-funnel-form-submits>0</strong></article>
+              <article><span>Saved applications</span><strong data-pilot-funnel-saved>0</strong></article>
+              <article><span>Visitor conversion</span><strong data-pilot-funnel-conversion>0%</strong></article>
+            </div>
+            <div class="admin-panel">
+              <h3>Pilot by source</h3>
+              <div class="lead-table-wrap">
+                <table class="compact-table funnel-table">
+                  <thead><tr><th>Route</th><th>Source</th><th>Campaign</th><th>Visitors</th><th>Views</th><th>Starts</th><th>Submits</th><th>Applications</th><th>Conversion</th></tr></thead>
+                  <tbody data-pilot-funnel-body><tr><td colspan="9">No Pilot analytics loaded yet.</td></tr></tbody>
+                </table>
+              </div>
+            </div>
+          </section>
+
+          <p class="analytics-definition">Unique visitors use the first-party HarborNavi visitor ID. Historical events without one fall back to session ID.</p>
+
+          <div class="metric-grid analytics-metrics analytics-support-metrics" aria-label="Supporting growth metrics">
             <article>
               <span>Discord clicks</span>
               <strong data-analytics-discord>0</strong>
@@ -251,29 +282,6 @@ const mediaPageGroups = Array.from(
           </div>
 
           <div class="dashboard-grid">
-            <article class="admin-panel">
-              <h2>Funnel by route and source</h2>
-              <div class="lead-table-wrap">
-                <table class="compact-table">
-                  <thead>
-                    <tr>
-                      <th>Route</th>
-                      <th>Source</th>
-                      <th>Campaign</th>
-                      <th>Form</th>
-                      <th>Views</th>
-                      <th>Starts</th>
-                      <th>Submits</th>
-                      <th>Saved</th>
-                      <th>Discord</th>
-                    </tr>
-                  </thead>
-                  <tbody data-funnel-body>
-                    <tr><td colspan="9">No analytics loaded yet.</td></tr>
-                  </tbody>
-                </table>
-              </div>
-            </article>
             <article class="admin-panel">
               <h2>Event mix</h2>
               <div class="lead-table-wrap">
@@ -784,7 +792,14 @@ const mediaPageGroups = Array.from(
             application.zip_code,
             application.smart_devices,
             application.interest_reason,
-            application.referral_source
+            application.referral_source,
+            application.utm_source,
+            application.utm_medium,
+            application.utm_campaign,
+            application.utm_content,
+            application.utm_term,
+            application.referrer,
+            application.path
           ].filter(Boolean).join(" ").toLowerCase().includes(search);
         });
       }
@@ -800,7 +815,7 @@ const mediaPageGroups = Array.from(
         const visible = filteredPilotApplications();
         pilotApplicationsBody.innerHTML = "";
         if (!visible.length) {
-          pilotApplicationsBody.innerHTML = '<tr><td colspan="7">No matching pilot applications.</td></tr>';
+          pilotApplicationsBody.innerHTML = '<tr><td colspan="8">No matching pilot applications.</td></tr>';
           updatePilotApplicationMetrics();
           return;
         }
@@ -820,6 +835,14 @@ const mediaPageGroups = Array.from(
             cell.textContent = value || "";
             row.appendChild(cell);
           });
+
+          const attribution = document.createElement("td");
+          const attributionSource = document.createElement("strong");
+          attributionSource.textContent = [application.utm_source, application.utm_medium].filter(Boolean).join(" / ") || "direct";
+          const attributionDetail = document.createElement("small");
+          attributionDetail.textContent = [application.utm_campaign, application.utm_content, application.utm_term].filter(Boolean).join(" / ") || application.path || "";
+          attribution.append(attributionSource, attributionDetail);
+          row.appendChild(attribution);
 
           const status = document.createElement("td");
           const statusLabel = document.createElement("span");
@@ -854,7 +877,8 @@ const mediaPageGroups = Array.from(
           const row = document.createElement("tr");
           columns.forEach((column) => {
             const cell = document.createElement("td");
-            cell.textContent = String(item[column] ?? "");
+            const value = item[column] ?? "";
+            cell.textContent = column.endsWith("_rate") && value !== "" ? `${value}%` : String(value);
             row.appendChild(cell);
           });
           tbody.appendChild(row);
@@ -863,20 +887,35 @@ const mediaPageGroups = Array.from(
 
       function renderAnalytics() {
         const summary = analytics?.summary || {};
-        document.querySelector("[data-analytics-page-views]").textContent = String(summary.page_views || 0);
-        document.querySelector("[data-analytics-form-starts]").textContent = String(summary.form_starts || 0);
-        document.querySelector("[data-analytics-form-submits]").textContent = String(summary.form_submits || 0);
-        document.querySelector("[data-analytics-saved-leads]").textContent = String(summary.saved_leads || 0);
-        document.querySelector("[data-analytics-conversion]").textContent = `${summary.conversion_rate || 0}%`;
+        const waitlistSummary = analytics?.waitlist_summary || summary;
+        const pilotSummary = analytics?.pilot_summary || {};
+        document.querySelector("[data-waitlist-unique-visitors]").textContent = String(waitlistSummary.unique_visitors || 0);
+        document.querySelector("[data-waitlist-page-views]").textContent = String(waitlistSummary.page_views || 0);
+        document.querySelector("[data-waitlist-form-starts]").textContent = String(waitlistSummary.form_starts || 0);
+        document.querySelector("[data-waitlist-form-submits]").textContent = String(waitlistSummary.form_submits || 0);
+        document.querySelector("[data-waitlist-saved-leads]").textContent = String(waitlistSummary.saved_leads || 0);
+        document.querySelector("[data-waitlist-conversion]").textContent = `${waitlistSummary.conversion_rate || 0}%`;
+        document.querySelector("[data-pilot-funnel-unique-visitors]").textContent = String(pilotSummary.unique_visitors || 0);
+        document.querySelector("[data-pilot-funnel-page-views]").textContent = String(pilotSummary.page_views || 0);
+        document.querySelector("[data-pilot-funnel-form-starts]").textContent = String(pilotSummary.form_starts || 0);
+        document.querySelector("[data-pilot-funnel-form-submits]").textContent = String(pilotSummary.form_submits || 0);
+        document.querySelector("[data-pilot-funnel-saved]").textContent = String(pilotSummary.saved_applications || 0);
+        document.querySelector("[data-pilot-funnel-conversion]").textContent = `${pilotSummary.conversion_rate || 0}%`;
         document.querySelector("[data-analytics-discord]").textContent = String(summary.discord_clicks || 0);
         document.querySelector("[data-analytics-compatibility]").textContent = String(summary.compatibility_completes || 0);
         document.querySelector("[data-analytics-price-rate]").textContent = `${summary.positive_price_rate || 0}%`;
         document.querySelector("[data-analytics-reservations]").textContent = String(summary.founder_reservations || 0);
         renderRows(
-          document.querySelector("[data-funnel-body]"),
-          analytics?.funnel || [],
-          ["route", "source", "campaign", "form_location", "page_views", "form_starts", "form_submits", "saved_leads", "discord_clicks"],
-          "No funnel data yet."
+          document.querySelector("[data-waitlist-funnel-body]"),
+          analytics?.waitlist_funnel || analytics?.funnel || [],
+          ["route", "source", "campaign", "unique_visitors", "page_views", "form_starts", "form_submits", "saved_leads", "conversion_rate"],
+          "No waitlist funnel data yet."
+        );
+        renderRows(
+          document.querySelector("[data-pilot-funnel-body]"),
+          analytics?.pilot_funnel || [],
+          ["route", "source", "campaign", "unique_visitors", "page_views", "form_starts", "form_submits", "saved_applications", "conversion_rate"],
+          "No Pilot funnel data yet."
         );
         renderRows(
           document.querySelector("[data-events-body]"),
@@ -1294,6 +1333,16 @@ const mediaPageGroups = Array.from(
           "smart_devices",
           "interest_reason",
           "referral_source",
+          "route",
+          "path",
+          "referrer",
+          "session_id",
+          "visitor_id",
+          "utm_source",
+          "utm_medium",
+          "utm_campaign",
+          "utm_content",
+          "utm_term",
           "status",
           "created_at",
           "updated_at"

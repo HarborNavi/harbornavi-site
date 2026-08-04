@@ -27,7 +27,7 @@
 .pilot-countdown-status:empty { display: none; }
 .pilot-urgency[data-closed="true"] .pilot-countdown { opacity: 0.58; }
 .pilot-intro { display: grid; grid-template-columns: minmax(0, 1.1fr) minmax(360px, 0.7fr); gap: 64px; align-items: end; padding: 84px 0 54px; }
-.pilot-intro h2, .pilot-commitment h2, .pilot-privacy h2, .pilot-process h2, .pilot-faq h2, .pilot-application h2 { margin-bottom: 0; font-size: clamp(38px, 4.6vw, 60px); line-height: 1.1; }
+.pilot-intro h2, .pilot-commitment h2, .pilot-disclosure h2, .pilot-privacy h2, .pilot-process h2, .pilot-faq h2, .pilot-application h2 { margin-bottom: 0; font-size: clamp(38px, 4.6vw, 60px); line-height: 1.1; }
 .pilot-intro > p, .pilot-commitment-copy > p:not(.eyebrow), .pilot-process-copy > p, .pilot-application-intro > p { margin-bottom: 0; color: #56505d; font-size: 18px; line-height: 1.7; }
 .pilot-details { display: grid; grid-template-columns: repeat(3, minmax(0, 1fr)); border-top: 1px solid #ddd7e7; border-bottom: 1px solid #ddd7e7; }
 .pilot-details article { min-height: 270px; padding: 38px 34px 42px; border-right: 1px solid #ddd7e7; }
@@ -43,6 +43,16 @@
 .pilot-commitment-grid ul { display: grid; gap: 12px; margin: 0; padding: 0; list-style: none; }
 .pilot-commitment-grid li { position: relative; padding-left: 24px; color: #56505d; line-height: 1.6; }
 .pilot-commitment-grid li::before { content: ""; position: absolute; left: 0; top: 0.62em; width: 8px; height: 8px; background: #6d35d5; }
+.pilot-disclosure { display: grid; grid-template-columns: minmax(300px, 0.8fr) minmax(0, 1.2fr); gap: 72px; padding: 70px 0; border-top: 1px solid #ddd7e7; border-bottom: 1px solid #ddd7e7; }
+.pilot-disclosure-copy > p:not(.eyebrow) { margin: 24px 0 18px; color: #56505d; font-size: 17px; line-height: 1.7; }
+.pilot-disclosure-copy > a { color: #5424a8; font-size: 13px; font-weight: 760; }
+.pilot-disclosure-rules > ul { display: grid; margin: 0; padding: 0; border-top: 1px solid #d9d3df; list-style: none; }
+.pilot-disclosure-rules li { display: grid; grid-template-columns: 170px 1fr; gap: 24px; padding: 20px 0; border-bottom: 1px solid #d9d3df; }
+.pilot-disclosure-rules li strong { color: #5424a8; }
+.pilot-disclosure-rules li span { color: #56505d; line-height: 1.6; }
+.pilot-disclosure-rules blockquote { display: grid; gap: 8px; margin: 24px 0 0; padding: 18px 20px; border-left: 3px solid #6d35d5; background: #f0ebfa; color: #342158; }
+.pilot-disclosure-rules blockquote strong { font-size: 12px; text-transform: uppercase; }
+.pilot-disclosure-rules blockquote span { line-height: 1.6; }
 .pilot-privacy { display: grid; grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr); gap: 80px; padding: 64px; background: #17141d; color: #fff; }
 .pilot-privacy .eyebrow { color: #bda6ff; }
 .pilot-privacy > div > p:not(.eyebrow) { margin: 24px 0 0; color: #d7d2dc; font-size: 17px; line-height: 1.7; }
@@ -89,7 +99,7 @@
 @media (max-width: 900px) {
   .pilot-hero { min-height: 540px; }
   .pilot-hero-copy { width: 70%; min-height: 540px; padding: 42px; }
-  .pilot-intro, .pilot-commitment, .pilot-privacy, .pilot-process, .pilot-faq, .pilot-application { grid-template-columns: 1fr; gap: 42px; }
+  .pilot-intro, .pilot-commitment, .pilot-disclosure, .pilot-privacy, .pilot-process, .pilot-faq, .pilot-application { grid-template-columns: 1fr; gap: 42px; }
   .pilot-details { grid-template-columns: 1fr; }
   .pilot-urgency-inner { grid-template-columns: 1fr; gap: 24px; }
   .pilot-countdown { width: min(100%, 520px); grid-template-columns: repeat(4, minmax(0, 1fr)); }
@@ -111,12 +121,14 @@
   .pilot-countdown { width: 100%; }
   .pilot-countdown div { min-height: 76px; }
   .pilot-countdown strong { font-size: 25px; }
-  .pilot-intro, .pilot-commitment, .pilot-process, .pilot-faq, .pilot-application { padding-top: 72px; padding-bottom: 72px; }
-  .pilot-intro h2, .pilot-commitment h2, .pilot-privacy h2, .pilot-process h2, .pilot-faq h2, .pilot-application h2 { font-size: 36px; }
+  .pilot-intro, .pilot-commitment, .pilot-disclosure, .pilot-process, .pilot-faq, .pilot-application { padding-top: 72px; padding-bottom: 72px; }
+  .pilot-intro h2, .pilot-commitment h2, .pilot-disclosure h2, .pilot-privacy h2, .pilot-process h2, .pilot-faq h2, .pilot-application h2 { font-size: 36px; }
   .pilot-details article { padding: 28px 4px; }
   .pilot-details h3 { margin-top: 20px; }
   .pilot-commitment { gap: 34px; }
   .pilot-commitment-grid h3 { font-size: 23px; }
+  .pilot-disclosure { gap: 34px; }
+  .pilot-disclosure-rules li { grid-template-columns: 1fr; gap: 7px; }
   .pilot-privacy { width: calc(100% - 24px); gap: 30px; padding: 42px 24px; }
   .pilot-privacy li { grid-template-columns: 1fr; gap: 7px; }
   .pilot-process li { grid-template-columns: 80px 1fr; }

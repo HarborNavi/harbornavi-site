@@ -3,7 +3,11 @@ import { readFile } from "node:fs/promises";
 import test from "node:test";
 
 import { validatePilotApplication } from "../src/server/pilot-validation.ts";
-import { arePilotApplicationsOpen, pilotApplicationDeadline } from "../src/data/pilotProgram.ts";
+import {
+  arePilotApplicationsOpen,
+  pilotApplicationDeadline,
+  pilotRewardAdvertisingCopy
+} from "../src/data/pilotProgram.ts";
 
 const root = new URL("../", import.meta.url);
 const source = async (path) => readFile(new URL(path, root), "utf8");
@@ -15,10 +19,16 @@ test("pilot application validates the six required answers", () => {
     zip_code: "06510",
     smart_devices: "Home Assistant, cameras, lights",
     interest_reason: "We want to test private home memory.",
-    referral_source: "search"
+    referral_source: "search",
+    route: "pilot-families",
+    path: "/pilot-families",
+    utm_source: "youtube",
+    utm_campaign: "pilot-launch"
   });
   assert.ok("application" in valid);
   assert.equal(valid.application.email, "taylor@example.com");
+  assert.equal(valid.application.utm_source, "youtube");
+  assert.equal(valid.application.utm_campaign, "pilot-launch");
   assert.deepEqual(validatePilotApplication({
     name: "Taylor",
     email: "invalid",
@@ -48,7 +58,11 @@ test("pilot campaign banner and form stay on the approved contract", async () =>
   const pilotApplications = await source("src/server/pilot-applications.ts");
   const vercel = JSON.parse(await source("vercel.json"));
   assert.match(home, /Join the First 5 Pilot Families/);
-  assert.match(home, /Earn up to \$500/);
+  assert.equal(pilotRewardAdvertisingCopy, "Earn up to $500 after completing the agreed milestones.");
+  assert.match(home, /pilotRewardAdvertisingCopy/);
+  assert.match(page, /pilotRewardAdvertisingCopy/);
+  assert.doesNotMatch(home, /Earn up to \$500\./);
+  assert.doesNotMatch(page, /\+\$500|\$500 completion bonus|\$500 bonus terms/);
   assert.match(home, /href: "\/pilot-families"/);
   assert.match(home, /class="site-header-v7-cta" href="\/pilot-families">Join the Pilot Program<\/a>/);
   assert.match(home, /data-route="home-v7"/);
@@ -62,11 +76,23 @@ test("pilot campaign banner and form stay on the approved contract", async () =>
     assert.match(page, new RegExp(`name="${field}"`));
   }
   assert.match(page, /does not subscribe you to marketing email/);
+  assert.match(page, /pilot_apply_start/);
+  assert.match(page, /pilot_apply_submit/);
+  assert.match(page, /pilot_apply_saved/);
+  assert.match(page, /pilot_apply_error/);
+  assert.match(page, /session_id: getSessionId\(\)/);
+  assert.match(page, /utm_campaign: utm\.utm_campaign/);
   assert.match(page, /brand-new HarborNavi device/);
   assert.match(page, /lifetime subscription-free access/);
-  assert.match(page, /\$500 completion bonus/);
+  assert.match(page, /Milestone-based reward/);
   assert.match(page, /two weeks/);
   assert.match(page, /one or two short vlogs/);
+  assert.match(page, /clearly and conspicuously disclose their material connection/);
+  assert.match(page, /cash compensation, free or provided HarborNavi device/);
+  assert.match(page, /include the disclosure clearly in the video itself/);
+  assert.match(page, /both visible on-screen text and a spoken disclosure/);
+  assert.match(page, /ftc\.gov\/business-guidance\/resources\/disclosures-101-social-media-influencers/);
+  assert.match(page, /What must I disclose in a vlog, review, or post\?/);
   assert.match(page, /What will my family need to do\?/);
   assert.match(page, /How difficult is installation\?/);
   assert.match(page, /about 30 minutes/);
@@ -91,10 +117,16 @@ test("pilot campaign banner and form stay on the approved contract", async () =>
   });
   assert.match(admin, /data-tab-button="pilot-applications"/);
   assert.match(admin, /data-pilot-applications-body/);
+  assert.match(admin, /Attribution/);
+  assert.match(admin, /data-waitlist-funnel-body/);
+  assert.match(admin, /data-pilot-funnel-body/);
+  assert.match(admin, /Unique visitors/);
   assert.match(admin, /Export CSV/);
   assert.match(adminHealth, /listPilotApplications/);
   assert.match(pilotApplications, /from pilot_family_applications/);
   assert.match(pilotApplications, /create table if not exists pilot_family_applications/);
+  assert.match(pilotApplications, /visitor_id/);
+  assert.match(pilotApplications, /utm_source/);
   const listFunction = pilotApplications.slice(pilotApplications.indexOf("export async function listPilotApplications"));
   assert.doesNotMatch(listFunction, /\bmetadata\b/);
 });

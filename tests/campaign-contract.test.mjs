@@ -187,11 +187,32 @@ test("campaign analytics events are allowlisted and unknown events stay ignored"
     "youtube_live_click",
     "youtube_replay_click",
     "email_confirmation_complete",
-    "waitlist_cta_click"
+    "waitlist_cta_click",
+    "pilot_apply_start",
+    "pilot_apply_submit",
+    "pilot_apply_saved",
+    "pilot_apply_error"
   ];
   campaignEvents.forEach((eventName) => assert.equal(isAllowedAnalyticsEventName(eventName), true));
   assert.equal(isAllowedAnalyticsEventName("road_home_application_payload"), false);
   assert.equal(isAllowedAnalyticsEventName("unknown_event"), false);
+});
+
+test("analytics separates Waitlist and Pilot funnels and deduplicates visitors", async () => {
+  const analytics = await source("src/server/analytics.ts");
+  const eventsApi = await source("api/events.ts");
+  const schema = await source("db/analytics.sql");
+
+  assert.match(analytics, /count\(distinct coalesce\(nullif\(visitor_id/);
+  assert.match(analytics, /waitlist_summary/);
+  assert.match(analytics, /pilot_summary/);
+  assert.match(analytics, /waitlist_funnel/);
+  assert.match(analytics, /pilot_funnel/);
+  assert.match(analytics, /waitlistSummary\.saved_leads \/ waitlistSummary\.unique_visitors/);
+  assert.match(analytics, /pilotSummary\.saved_applications \/ pilotSummary\.unique_visitors/);
+  assert.match(eventsApi, /resolveVisitorId\(request\)/);
+  assert.match(eventsApi, /set-cookie/);
+  assert.match(schema, /add column if not exists visitor_id text/);
 });
 
 test("home-v7 shows anonymous live waitlist activity and qualified privacy claims", async () => {

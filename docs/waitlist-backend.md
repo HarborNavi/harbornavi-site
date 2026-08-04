@@ -143,9 +143,9 @@ The v4 migration adds:
 - `founder_reservation_status`
 - `founder_reservations`, which holds Stripe object IDs and refund lifecycle timestamps separately from public lead data
 
-`db/analytics.sql` creates first-party event storage with route, path, referrer, form location, session id, UTM fields, JSON properties, and timestamp indexes.
+`db/analytics.sql` creates first-party event storage with route, path, referrer, form location, session and anonymous visitor IDs, UTM fields, JSON properties, and timestamp indexes. The server runs the same idempotent table/column initialization before recording or reporting events, so an existing database receives the `visitor_id` column automatically.
 
-`db/pilot-families.sql` creates a separate application table for the six Pilot Families questions. The public form posts to `/api/pilot-application`, which validates and upserts by normalized email. It does not create waitlist consent, send confirmation email, or sync the applicant to the Kickstarter marketing Topic.
+`db/pilot-families.sql` creates a separate application table for the six Pilot Families questions plus route, referrer, anonymous visitor/session IDs, and UTM attribution. The public form posts to `/api/pilot-application`, which validates and upserts by normalized email. It does not create waitlist consent, send confirmation email, or sync the applicant to the Kickstarter marketing Topic.
 
 ## Waitlist Flow
 
@@ -224,6 +224,8 @@ The Founder reservation is a $10 Stripe Checkout payment for priority access to 
 
 `window.harborTrack` posts to `/api/events` with `navigator.sendBeacon`, falling back to `fetch` with `keepalive`. The event API stores only non-PII analytics data. Email addresses are not sent to `analytics_events`, and the server strips PII-like keys from the `properties` object.
 
+`/api/events` assigns a one-year, HttpOnly, same-site `harbornavi_visitor_id` cookie. Unique visitors are counted by that first-party ID; historical rows without it fall back to `session_id`. Page views remain a separate raw activity count and are never labeled as visitors.
+
 Tracked events include:
 
 - `page_view`
@@ -233,6 +235,7 @@ Tracked events include:
 - `price_view`, `price_intent_submit`
 - `reservation_start`, `reservation_complete`, `reservation_error`
 - `waitlist_start`, `waitlist_submit`, `waitlist_saved`, `waitlist_error`
+- `pilot_apply_start`, `pilot_apply_submit`, `pilot_apply_saved`, `pilot_apply_error`
 - `discord_click`
 - `road_home_apply_click`, `road_home_form_start`, `road_home_form_complete`
 - `kickstarter_prelaunch_click`, `youtube_live_click`, `youtube_replay_click`
@@ -244,26 +247,37 @@ Tracked events include:
 
 `/admin666` has five tabs while `/admin` retains its previous production interface:
 
-- Dashboard: 7-day, 30-day, or all-time funnel metrics.
+- Dashboard: separate Waitlist and Pilot funnels for 7-day, 30-day, or all-time ranges.
 - Leads: lead table with status/source/interest/camera/connection/price/reservation filters, notes, status updates, and expanded CSV export.
-- Pilot Applications: authenticated view and CSV export of the six Pilot Families application answers, review status, and submission time. Request metadata is not returned to the browser.
+- Pilot Applications: authenticated view and CSV export of the six Pilot Families application answers, source attribution, review status, and submission time. User-agent and accept-language request metadata remain server-only.
 - Media: JPG, PNG, and GIF upload management for the two editable hero-carousel positions; the Pilot Families campaign remains fixed first.
 - System: environment, database, waitlist, analytics, reservation table, Stripe gate, subscriber confirmation,
   Resend Contact sync, operator notification, Topic, and retry-state health.
 
-Dashboard metric definitions:
+Waitlist funnel definitions:
 
-- Page views: `page_view` and legacy `page_view_home_v2`.
+- Unique visitors: distinct first-party visitor IDs on non-Pilot page views, with a legacy session-ID fallback.
+- Page views: `page_view` and legacy `page_view_home_v2`, excluding the Pilot route.
 - Form starts: `early_bird_start` and `waitlist_start`.
 - Form submits: `early_bird_submit` and `waitlist_submit`.
 - Saved leads: `early_bird_saved` and `waitlist_saved`.
-- Conversion rate: saved leads divided by page views.
+- Conversion rate: saved leads divided by unique visitors.
+
+Pilot funnel definitions:
+
+- Unique visitors: distinct first-party visitor IDs on `pilot-families` page views, with a legacy session-ID fallback.
+- Page views: `page_view` and legacy `page_view_home_v2` on `pilot-families`.
+- Form starts, submits, and saved applications: `pilot_apply_start`, `pilot_apply_submit`, and `pilot_apply_saved`.
+- Conversion rate: saved applications divided by unique Pilot visitors.
+
+Supporting metrics:
+
 - Discord clicks: `discord_click`.
 - Compatibility profiles: completed post-submit compatibility forms.
 - Positive price rate: `definitely` plus `probably`, divided by completed price profiles.
 - Founder reservations: leads in paid, refund-pending, or refunded reservation states.
 
-The funnel table groups events by `route`, `utm_source`, `utm_campaign`, and `form_location`.
+Each funnel has its own table grouped by `route`, `utm_source`, and `utm_campaign`. Waitlist events never enter the Pilot table, and Pilot application events never enter the Waitlist table.
 
 ## Smoke Test
 

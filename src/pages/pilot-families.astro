@@ -6,6 +6,8 @@ import {
   pilotApplicationDeadline,
   pilotApplicationDeadlineLabel,
   pilotApplicationDeadlineShortLabel,
+  pilotDisclosureExample,
+  pilotRewardAdvertisingCopy,
   pilotSpotCount
 } from "../data/pilotProgram";
 import "../styles/global-v7.css";
@@ -19,7 +21,7 @@ import "../styles/pilot-families.css";
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>First 5 Pilot Families | HarborNavi</title>
-    <meta name="description" content="Apply for HarborNavi's two-week Pilot Families program. Selected families receive a new device, lifetime subscription-free access, and a $500 completion bonus." />
+    <meta name="description" content={`Apply for HarborNavi's two-week Pilot Families program. Selected families receive a new device and lifetime subscription-free access. ${pilotRewardAdvertisingCopy}`} />
     <link rel="icon" href="/favicon.png" type="image/png" sizes="512x512" data-media-slot="site-favicon" />
     <link rel="canonical" href="https://harbornavi.com/pilot-families" />
   </head>
@@ -33,7 +35,7 @@ import "../styles/pilot-families.css";
           <p class="eyebrow">HarborNavi Pilot Program</p>
           <p class="pilot-spots"><span aria-hidden="true"></span> Only {pilotSpotCount} pilot spots</p>
           <h1 id="pilot-title">Join the First 5 Pilot Families</h1>
-          <p>Pilot your home with HarborNavi. Two weeks. Yours to keep. +$500.</p>
+          <p>Pilot your home with HarborNavi. Two weeks. Yours to keep. {pilotRewardAdvertisingCopy}</p>
           <a class="pilot-primary" href="#apply">Apply to Join <span aria-hidden="true">→</span></a>
         </div>
       </section>
@@ -82,8 +84,8 @@ import "../styles/pilot-families.css";
         </article>
         <article>
           <span>03</span>
-          <h3>$500 completion bonus</h3>
-          <p>Earn an additional $500 after completing the agreed milestones.</p>
+          <h3>Milestone-based reward</h3>
+          <p>{pilotRewardAdvertisingCopy}</p>
         </article>
       </section>
 
@@ -101,7 +103,7 @@ import "../styles/pilot-families.css";
               <li>Set up HarborNavi in about 30 minutes with live, step-by-step support.</li>
               <li>Use it in normal household routines for two weeks.</li>
               <li>Share structured feedback through short check-ins.</li>
-              <li>Record one or two short vlogs about the experience.</li>
+              <li>Record one or two short vlogs about the experience and include the required benefit disclosure if they are shared or published.</li>
             </ul>
           </article>
           <article>
@@ -114,6 +116,23 @@ import "../styles/pilot-families.css";
               <li>Comfort sharing what works, what is confusing, and what should change.</li>
             </ul>
           </article>
+        </div>
+      </section>
+
+      <section class="pilot-disclosure section-shell" aria-labelledby="pilot-disclosure-title">
+        <div class="pilot-disclosure-copy">
+          <p class="eyebrow">Creator and participant disclosure</p>
+          <h2 id="pilot-disclosure-title">Make every HarborNavi benefit clear.</h2>
+          <p>Creators, selected pilot families, and anyone publishing a later pilot vlog, review, testimonial, or endorsement must clearly and conspicuously disclose their material connection to HarborNavi.</p>
+          <a href="https://www.ftc.gov/business-guidance/resources/disclosures-101-social-media-influencers" target="_blank" rel="noreferrer">Read FTC Disclosures 101 <span aria-hidden="true">↗</span></a>
+        </div>
+        <div class="pilot-disclosure-rules">
+          <ul>
+            <li><strong>Disclose every benefit</strong><span>State any cash compensation, free or provided HarborNavi device, lifetime subscription-free access, or other benefit.</span></li>
+            <li><strong>Put it where people will see it</strong><span>Place the disclosure with the endorsement, before a “more” break, and in the same language as the content.</span></li>
+            <li><strong>Disclose inside every video</strong><span>For vlogs and other video, include the disclosure clearly in the video itself, not only in a caption or description. HarborNavi requires both visible on-screen text and a spoken disclosure.</span></li>
+          </ul>
+          <blockquote><strong>Plain-language example</strong><span>“{pilotDisclosureExample}”</span></blockquote>
         </div>
       </section>
 
@@ -144,7 +163,7 @@ import "../styles/pilot-families.css";
         <aside>
           <p class="eyebrow">Before you decide</p>
           <h3>Clear terms before installation.</h3>
-          <p>Selected families receive the final schedule, device terms, completion milestones, $500 bonus terms, and participation agreement before committing.</p>
+          <p>Selected families receive the final schedule, device terms, agreed milestones, reward terms, disclosure requirements, and participation agreement before committing.</p>
           <a href="#pilot-faq">Read the pilot FAQ <span aria-hidden="true">→</span></a>
         </aside>
       </section>
@@ -157,7 +176,7 @@ import "../styles/pilot-families.css";
         <div class="pilot-faq-list">
           <details>
             <summary>What will my family need to do?</summary>
-            <p>Plan for a 30-minute guided setup, use HarborNavi in normal routines for two weeks, complete short feedback check-ins, and record one or two short vlogs.</p>
+            <p>Plan for a 30-minute guided setup, use HarborNavi in normal routines for two weeks, complete short feedback check-ins, and record one or two short vlogs. Any shared or published vlog must include the required benefit disclosure.</p>
           </details>
           <details>
             <summary>How difficult is installation?</summary>
@@ -177,7 +196,11 @@ import "../styles/pilot-families.css";
           </details>
           <details>
             <summary>What happens after the pilot?</summary>
-            <p>You keep the HarborNavi device and receive lifetime subscription-free access for that pilot device. Families that complete the agreed milestones can also receive the $500 completion bonus.</p>
+            <p>You keep the HarborNavi device and receive lifetime subscription-free access for that pilot device. {pilotRewardAdvertisingCopy}</p>
+          </details>
+          <details>
+            <summary>What must I disclose in a vlog, review, or post?</summary>
+            <p>Clearly disclose every HarborNavi benefit you received or may receive, including cash, a provided or free device, lifetime subscription-free access, or another benefit. Put the disclosure where it is easy to notice. For video, include it visibly and verbally in the video itself, not only in the caption or description.</p>
           </details>
         </div>
       </section>
@@ -216,9 +239,75 @@ import "../styles/pilot-families.css";
 
     <SiteMediaLoader />
     <script is:inline>
+      const route = document.body.dataset.route || "pilot-families";
+      const utmKeys = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"];
       const pilotCountdown = document.querySelector("[data-pilot-countdown]");
       const pilotForm = document.querySelector("[data-pilot-form]");
       const pilotMessage = document.querySelector("[data-pilot-message]");
+
+      function getSessionId() {
+        const key = "harbornavi_session_id";
+        let value = window.sessionStorage.getItem(key);
+        if (!value) {
+          value = `${Date.now().toString(36)}-${Math.random().toString(36).slice(2, 10)}`;
+          window.sessionStorage.setItem(key, value);
+        }
+        return value;
+      }
+
+      function getUtmPayload() {
+        const params = new URLSearchParams(window.location.search);
+        const current = {};
+        let hasCurrent = false;
+        utmKeys.forEach((key) => {
+          const value = params.get(key) || "";
+          current[key] = value;
+          hasCurrent = hasCurrent || Boolean(value);
+        });
+        if (hasCurrent) {
+          window.sessionStorage.setItem("harbornavi_utm", JSON.stringify(current));
+          return current;
+        }
+        try {
+          return JSON.parse(window.sessionStorage.getItem("harbornavi_utm") || "{}");
+        } catch {
+          return {};
+        }
+      }
+
+      function analyticsPayload(eventName, properties) {
+        const utm = getUtmPayload();
+        return {
+          event_name: eventName,
+          route,
+          path: window.location.pathname,
+          referrer: document.referrer,
+          form_location: properties?.form_location || "",
+          session_id: getSessionId(),
+          utm_source: utm.utm_source || "",
+          utm_medium: utm.utm_medium || "",
+          utm_campaign: utm.utm_campaign || "",
+          utm_content: utm.utm_content || "",
+          utm_term: utm.utm_term || "",
+          properties: properties || {}
+        };
+      }
+
+      window.harborTrack = function harborTrack(eventName, properties) {
+        const body = JSON.stringify(analyticsPayload(eventName, properties || {}));
+        if (navigator.sendBeacon) {
+          const queued = navigator.sendBeacon("/api/events", new Blob([body], { type: "application/json" }));
+          if (queued) return;
+        }
+        fetch("/api/events", {
+          method: "POST",
+          headers: { "content-type": "application/json" },
+          body,
+          keepalive: true
+        }).catch(() => {});
+      };
+
+      window.harborTrack("page_view", { route });
 
       if (pilotCountdown) {
         const deadline = Date.parse(pilotCountdown.dataset.deadline || "");
@@ -263,24 +352,46 @@ import "../styles/pilot-families.css";
         countdownTimer = window.setInterval(updateCountdown, 1000);
       }
 
+      let pilotFormStarted = false;
+      pilotForm?.addEventListener("focusin", () => {
+        if (pilotFormStarted) return;
+        pilotFormStarted = true;
+        window.harborTrack("pilot_apply_start", { route, form_location: "pilot_application" });
+      });
+
       pilotForm?.addEventListener("submit", async (event) => {
         event.preventDefault();
         const button = pilotForm.querySelector("button[type='submit']");
         const data = new FormData(pilotForm);
+        const utm = getUtmPayload();
+        window.harborTrack("pilot_apply_submit", { route, form_location: "pilot_application" });
         button.disabled = true;
         pilotMessage.hidden = true;
         try {
           const response = await fetch("/api/pilot-application", {
             method: "POST",
             headers: { "content-type": "application/json" },
-            body: JSON.stringify(Object.fromEntries(data.entries()))
+            body: JSON.stringify({
+              ...Object.fromEntries(data.entries()),
+              route,
+              path: window.location.pathname,
+              referrer: document.referrer,
+              session_id: getSessionId(),
+              utm_source: utm.utm_source || "",
+              utm_medium: utm.utm_medium || "",
+              utm_campaign: utm.utm_campaign || "",
+              utm_content: utm.utm_content || "",
+              utm_term: utm.utm_term || ""
+            })
           });
           const body = await response.json().catch(() => ({}));
           if (!response.ok) throw new Error(body.error || "We could not submit your application.");
+          window.harborTrack("pilot_apply_saved", { route, form_location: "pilot_application" });
           pilotForm.reset();
           pilotMessage.textContent = "Application received. We will contact selected families with the next steps.";
           pilotMessage.dataset.tone = "success";
         } catch (error) {
+          window.harborTrack("pilot_apply_error", { route, form_location: "pilot_application" });
           pilotMessage.textContent = error instanceof Error ? error.message : "We could not submit your application.";
           pilotMessage.dataset.tone = "error";
         } finally {

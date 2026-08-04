@@ -1,5 +1,6 @@
 import { jsonResponse } from "../src/server/config.js";
 import { getPublicWaitlistActivity, recordAnalyticsEvent } from "../src/server/analytics.js";
+import { resolveVisitorId, visitorCookieHeader } from "../src/server/visitor-id.js";
 
 export function OPTIONS() {
   return jsonResponse({ ok: true });
@@ -26,8 +27,12 @@ export async function POST(request: Request) {
   }
 
   try {
-    const result = await recordAnalyticsEvent(payload);
-    return jsonResponse({ ok: true, ...result });
+    const visitor = resolveVisitorId(request);
+    const result = await recordAnalyticsEvent(payload, visitor.id);
+    return jsonResponse(
+      { ok: true, ...result },
+      { headers: { "set-cookie": visitorCookieHeader(visitor.id, request.url) } }
+    );
   } catch (error) {
     console.error(error);
     return jsonResponse({ error: "Unable to record event" }, { status: 500 });

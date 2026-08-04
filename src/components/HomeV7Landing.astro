@@ -15,6 +15,7 @@ import {
 } from "@lucide/astro";
 import EnglishFormValidation from "./EnglishFormValidation.astro";
 import SiteMediaLoader from "./SiteMediaLoader.astro";
+import { pilotRewardAdvertisingCopy } from "../data/pilotProgram";
 import "../styles/site-header-v7.css";
 import "../styles/home-v7.css";
 
@@ -28,7 +29,7 @@ const heroCarouselSlides = [
     alt: "A family trying HarborNavi together during an early pilot experience.",
     eyebrow: "HarborNavi Pilot Program",
     title: "Join the First 5 Pilot Families",
-    description: "Two weeks at home. Yours to keep. Earn up to $500.",
+    description: `Two weeks at home. Yours to keep. ${pilotRewardAdvertisingCopy}`,
     cta: "Join the pilot →",
     highlight: true,
     href: "/pilot-families"

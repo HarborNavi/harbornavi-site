@@ -24,6 +24,52 @@ interface AnalyticsPayload {
   properties?: unknown;
 }
 
+let analyticsTableReady: Promise<void> | null = null;
+
+async function initializeAnalyticsTable() {
+  const db = sql();
+  await db`create extension if not exists pgcrypto`;
+  await db`
+    create table if not exists analytics_events (
+      id uuid primary key default gen_random_uuid(),
+      event_name text not null,
+      route text,
+      path text,
+      referrer text,
+      form_location text,
+      session_id text,
+      visitor_id text,
+      utm_source text,
+      utm_medium text,
+      utm_campaign text,
+      utm_content text,
+      utm_term text,
+      properties jsonb not null default '{}'::jsonb,
+      created_at timestamptz not null default now()
+    )
+  `;
+  await db`alter table analytics_events add column if not exists visitor_id text`;
+  await db`create index if not exists analytics_events_created_at_idx on analytics_events (created_at desc)`;
+  await db`create index if not exists analytics_events_event_name_idx on analytics_events (event_name)`;
+  await db`create index if not exists analytics_events_route_idx on analytics_events (route)`;
+  await db`create index if not exists analytics_events_utm_source_idx on analytics_events (utm_source)`;
+  await db`create index if not exists analytics_events_visitor_id_idx on analytics_events (visitor_id)`;
+  await db`
+    create index if not exists analytics_events_funnel_idx
+      on analytics_events (route, utm_source, utm_campaign, form_location, created_at desc)
+  `;
+}
+
+function ensureAnalyticsTable() {
+  if (!analyticsTableReady) {
+    analyticsTableReady = initializeAnalyticsTable().catch((error) => {
+      analyticsTableReady = null;
+      throw error;
+    });
+  }
+  return analyticsTableReady;
+}
+
 function nullableText(value: unknown, maxLength = 500) {
   if (typeof value !== "string") {
     return null;
@@ -32,12 +78,13 @@ function nullableText(value: unknown, maxLength = 500) {
   return trimmed ? trimmed.slice(0, maxLength) : null;
 }
 
-export async function recordAnalyticsEvent(payload: AnalyticsPayload) {
+export async function recordAnalyticsEvent(payload: AnalyticsPayload, visitorId?: string) {
   const eventName = nullableText(payload.event_name || payload.eventName, 80);
   if (!eventName || !isAllowedAnalyticsEventName(eventName)) {
     return { ignored: true };
   }
 
+  await ensureAnalyticsTable();
   const db = sql();
   await db`
     insert into analytics_events (
@@ -47,6 +94,7 @@ export async function recordAnalyticsEvent(payload: AnalyticsPayload) {
       referrer,
       form_location,
       session_id,
+      visitor_id,
       utm_source,
       utm_medium,
       utm_campaign,
@@ -61,6 +109,7 @@ export async function recordAnalyticsEvent(payload: AnalyticsPayload) {
       ${nullableText(payload.referrer, 500)},
       ${nullableText(payload.form_location || payload.formLocation, 80)},
       ${nullableText(payload.session_id || payload.sessionId, 120)},
+      ${nullableText(visitorId, 120)},
       ${nullableText(payload.utm_source, 120)},
       ${nullableText(payload.utm_medium, 120)},
       ${nullableText(payload.utm_campaign, 160)},
@@ -101,14 +150,47 @@ function resolveRangeDays(value: unknown) {
 
 export async function getAnalyticsDashboard(range: unknown) {
   const days = resolveRangeDays(range);
+  await ensureAnalyticsTable();
   const db = sql();
 
-  const summaryRows = (await db`
+  const waitlistSummaryRows = (await db`
     select
-      count(*) filter (where event_name in ('page_view', 'page_view_home_v2'))::int as page_views,
+      count(distinct coalesce(nullif(visitor_id, ''), nullif(session_id, ''), id::text))
+        filter (where event_name in ('page_view', 'page_view_home_v2') and coalesce(route, '') <> 'pilot-families')::int as unique_visitors,
+      count(*) filter (where event_name in ('page_view', 'page_view_home_v2') and coalesce(route, '') <> 'pilot-families')::int as page_views,
       count(*) filter (where event_name in ('early_bird_start', 'waitlist_start'))::int as form_starts,
       count(*) filter (where event_name in ('early_bird_submit', 'waitlist_submit'))::int as form_submits,
-      count(*) filter (where event_name in ('early_bird_saved', 'waitlist_saved'))::int as saved_leads,
+      count(*) filter (where event_name in ('early_bird_saved', 'waitlist_saved'))::int as saved_leads
+    from analytics_events
+    where (${days}::int = 0 or created_at >= now() - (${days}::int * interval '1 day'))
+  `) as unknown as Array<{
+    unique_visitors: number;
+    page_views: number;
+    form_starts: number;
+    form_submits: number;
+    saved_leads: number;
+  }>;
+
+  const pilotSummaryRows = (await db`
+    select
+      count(distinct coalesce(nullif(visitor_id, ''), nullif(session_id, ''), id::text))
+        filter (where event_name in ('page_view', 'page_view_home_v2') and route = 'pilot-families')::int as unique_visitors,
+      count(*) filter (where event_name in ('page_view', 'page_view_home_v2') and route = 'pilot-families')::int as page_views,
+      count(*) filter (where event_name = 'pilot_apply_start')::int as form_starts,
+      count(*) filter (where event_name = 'pilot_apply_submit')::int as form_submits,
+      count(*) filter (where event_name = 'pilot_apply_saved')::int as saved_applications
+    from analytics_events
+    where (${days}::int = 0 or created_at >= now() - (${days}::int * interval '1 day'))
+  `) as unknown as Array<{
+    unique_visitors: number;
+    page_views: number;
+    form_starts: number;
+    form_submits: number;
+    saved_applications: number;
+  }>;
+
+  const activitySummaryRows = (await db`
+    select
       count(*) filter (where event_name = 'discord_click')::int as discord_clicks,
       count(*) filter (where event_name = 'compatibility_check_complete')::int as compatibility_completes,
       count(*) filter (where event_name = 'reservation_start')::int as reservation_starts
@@ -124,21 +206,47 @@ export async function getAnalyticsDashboard(range: unknown) {
     reservation_starts: number;
   }>;
 
-  const funnelRows = (await db`
+  const waitlistFunnelRows = (await db`
     select
       coalesce(route, 'unknown') as route,
       coalesce(nullif(utm_source, ''), 'direct') as source,
       coalesce(nullif(utm_campaign, ''), '') as campaign,
-      coalesce(nullif(form_location, ''), '') as form_location,
+      count(distinct coalesce(nullif(visitor_id, ''), nullif(session_id, ''), id::text))
+        filter (where event_name in ('page_view', 'page_view_home_v2'))::int as unique_visitors,
       count(*) filter (where event_name in ('page_view', 'page_view_home_v2'))::int as page_views,
       count(*) filter (where event_name in ('early_bird_start', 'waitlist_start'))::int as form_starts,
       count(*) filter (where event_name in ('early_bird_submit', 'waitlist_submit'))::int as form_submits,
-      count(*) filter (where event_name in ('early_bird_saved', 'waitlist_saved'))::int as saved_leads,
-      count(*) filter (where event_name = 'discord_click')::int as discord_clicks
+      count(*) filter (where event_name in ('early_bird_saved', 'waitlist_saved'))::int as saved_leads
     from analytics_events
-    where (${days}::int = 0 or created_at >= now() - (${days}::int * interval '1 day'))
-    group by route, source, campaign, form_location
+    where
+      (${days}::int = 0 or created_at >= now() - (${days}::int * interval '1 day'))
+      and (
+        event_name in ('early_bird_start', 'waitlist_start', 'early_bird_submit', 'waitlist_submit', 'early_bird_saved', 'waitlist_saved')
+        or (event_name in ('page_view', 'page_view_home_v2') and coalesce(route, '') <> 'pilot-families')
+      )
+    group by route, source, campaign
     order by saved_leads desc, form_submits desc, page_views desc
+    limit 100
+  `) as unknown as Array<Record<string, unknown>>;
+
+  const pilotFunnelRows = (await db`
+    select
+      coalesce(route, 'pilot-families') as route,
+      coalesce(nullif(utm_source, ''), 'direct') as source,
+      coalesce(nullif(utm_campaign, ''), '') as campaign,
+      count(distinct coalesce(nullif(visitor_id, ''), nullif(session_id, ''), id::text))
+        filter (where event_name in ('page_view', 'page_view_home_v2'))::int as unique_visitors,
+      count(*) filter (where event_name in ('page_view', 'page_view_home_v2'))::int as page_views,
+      count(*) filter (where event_name = 'pilot_apply_start')::int as form_starts,
+      count(*) filter (where event_name = 'pilot_apply_submit')::int as form_submits,
+      count(*) filter (where event_name = 'pilot_apply_saved')::int as saved_applications
+    from analytics_events
+    where
+      (${days}::int = 0 or created_at >= now() - (${days}::int * interval '1 day'))
+      and route = 'pilot-families'
+      and event_name in ('page_view', 'page_view_home_v2', 'pilot_apply_start', 'pilot_apply_submit', 'pilot_apply_saved')
+    group by route, source, campaign
+    order by saved_applications desc, form_submits desc, page_views desc
     limit 100
   `) as unknown as Array<Record<string, unknown>>;
 
@@ -218,11 +326,21 @@ export async function getAnalyticsDashboard(range: unknown) {
     order by count desc, reservation_status asc
   `) as unknown as Array<Record<string, unknown>>;
 
-  const summary = summaryRows[0] || {
+  const waitlistSummary = waitlistSummaryRows[0] || {
+    unique_visitors: 0,
     page_views: 0,
     form_starts: 0,
     form_submits: 0,
-    saved_leads: 0,
+    saved_leads: 0
+  };
+  const pilotSummary = pilotSummaryRows[0] || {
+    unique_visitors: 0,
+    page_views: 0,
+    form_starts: 0,
+    form_submits: 0,
+    saved_applications: 0
+  };
+  const activitySummary = activitySummaryRows[0] || {
     discord_clicks: 0,
     compatibility_completes: 0,
     reservation_starts: 0
@@ -232,20 +350,42 @@ export async function getAnalyticsDashboard(range: unknown) {
     positive_price_profiles: 0,
     founder_reservations: 0
   };
+  const waitlistConversionRate = waitlistSummary.unique_visitors > 0
+    ? Math.round((waitlistSummary.saved_leads / waitlistSummary.unique_visitors) * 1000) / 10
+    : 0;
+  const pilotConversionRate = pilotSummary.unique_visitors > 0
+    ? Math.round((pilotSummary.saved_applications / pilotSummary.unique_visitors) * 1000) / 10
+    : 0;
+  const addConversionRate = (rows: Array<Record<string, unknown>>, savedKey: string) => rows.map((row) => ({
+    ...row,
+    conversion_rate: Number(row.unique_visitors) > 0
+      ? Math.round((Number(row[savedKey]) / Number(row.unique_visitors)) * 1000) / 10
+      : 0
+  }));
 
   return {
     range: days === 0 ? "all" : String(days),
     summary: {
-      ...summary,
+      ...waitlistSummary,
+      ...activitySummary,
       ...leadSummary,
-      conversion_rate:
-        summary.page_views > 0 ? Math.round((summary.saved_leads / summary.page_views) * 1000) / 10 : 0,
+      conversion_rate: waitlistConversionRate,
       positive_price_rate:
         leadSummary.price_profiles > 0
           ? Math.round((leadSummary.positive_price_profiles / leadSummary.price_profiles) * 1000) / 10
           : 0
     },
-    funnel: funnelRows,
+    waitlist_summary: {
+      ...waitlistSummary,
+      conversion_rate: waitlistConversionRate
+    },
+    pilot_summary: {
+      ...pilotSummary,
+      conversion_rate: pilotConversionRate
+    },
+    funnel: addConversionRate(waitlistFunnelRows, "saved_leads"),
+    waitlist_funnel: addConversionRate(waitlistFunnelRows, "saved_leads"),
+    pilot_funnel: addConversionRate(pilotFunnelRows, "saved_applications"),
     events: eventRows,
     lead_interests: leadRows,
     camera_connections: connectionRows,

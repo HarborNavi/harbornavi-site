@@ -23,6 +23,7 @@ import {
   arePilotApplicationsOpen,
   pilotApplicationDeadlineLabel
 } from "../src/data/pilotProgram.js";
+import { resolveVisitorId, visitorCookieHeader } from "../src/server/visitor-id.js";
 
 export function OPTIONS() {
   return jsonResponse({ ok: true });
@@ -103,6 +104,7 @@ async function postPilotApplication(request: Request) {
   }
   if (typeof payload.company === "string" && payload.company.trim()) return jsonResponse({ ok: true, ignored: true });
   try {
+    const visitor = resolveVisitorId(request);
     const result = await savePilotApplication({
       name: payload.name,
       email: payload.email,
@@ -110,13 +112,29 @@ async function postPilotApplication(request: Request) {
       smart_devices: payload.smart_devices,
       interest_reason: payload.interest_reason,
       referral_source: payload.referral_source,
+      route: payload.route,
+      path: payload.path,
+      referrer: payload.referrer,
+      session_id: payload.session_id,
+      visitor_id: visitor.id,
+      utm_source: payload.utm_source,
+      utm_medium: payload.utm_medium,
+      utm_campaign: payload.utm_campaign,
+      utm_content: payload.utm_content,
+      utm_term: payload.utm_term,
       metadata: {
         user_agent: request.headers.get("user-agent") || "",
         accept_language: request.headers.get("accept-language") || ""
       }
     });
     if ("error" in result) return jsonResponse({ error: result.error }, { status: 400 });
-    return jsonResponse({ ok: true, application: result.application }, { status: 201 });
+    return jsonResponse(
+      { ok: true, application: result.application },
+      {
+        status: 201,
+        headers: { "set-cookie": visitorCookieHeader(visitor.id, request.url) }
+      }
+    );
   } catch (error) {
     console.error(error);
     return jsonResponse({ error: "Unable to save pilot application" }, { status: 500 });

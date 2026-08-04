@@ -5,6 +5,16 @@ export interface PilotApplicationInput {
   smart_devices: unknown;
   interest_reason: unknown;
   referral_source: unknown;
+  route?: unknown;
+  path?: unknown;
+  referrer?: unknown;
+  session_id?: unknown;
+  visitor_id?: unknown;
+  utm_source?: unknown;
+  utm_medium?: unknown;
+  utm_campaign?: unknown;
+  utm_content?: unknown;
+  utm_term?: unknown;
   metadata?: Record<string, string>;
 }
 
@@ -25,6 +35,16 @@ export function validatePilotApplication(input: PilotApplicationInput) {
     smart_devices: text(input.smart_devices, 1200),
     interest_reason: text(input.interest_reason, 1200),
     referral_source: text(input.referral_source, 120),
+    route: text(input.route, 80),
+    path: text(input.path, 300),
+    referrer: text(input.referrer, 500),
+    session_id: text(input.session_id, 120),
+    visitor_id: text(input.visitor_id, 120),
+    utm_source: text(input.utm_source, 120),
+    utm_medium: text(input.utm_medium, 120),
+    utm_campaign: text(input.utm_campaign, 160),
+    utm_content: text(input.utm_content, 160),
+    utm_term: text(input.utm_term, 160),
     metadata: input.metadata || {}
   };
   if (!application.name) return { error: "Name is required." } as const;
