@@ -79,6 +79,14 @@ a {
   gap: 14px;
 }
 
+.admin-header nav > a,
+.admin-header nav > button {
+  display: inline-flex;
+  align-items: center;
+  justify-content: center;
+  text-align: center;
+}
+
 .admin-header a,
 .admin-header button,
 .lead-actions button,
