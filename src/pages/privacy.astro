@@ -1,5 +1,6 @@
 ---
-import SiteHeader from "../components/SiteHeader.astro";
+import SiteHeader from "../components/SiteHeaderV7.astro";
+import SiteMediaLoader from "../components/SiteMediaLoader.astro";
 import "../styles/global.css";
 ---
 
@@ -17,7 +18,7 @@ import "../styles/global.css";
     <link rel="canonical" href="https://harbornavi.com/privacy" />
   </head>
   <body data-route="privacy">
-    <SiteHeader activeRoute="privacy" />
+    <SiteHeader />
     <main>
       <section class="privacy-page section-shell">
         <p class="eyebrow">Privacy</p>
@@ -144,5 +145,6 @@ import "../styles/global.css";
       <span>HarborNavi</span>
       <a href="/home">Home</a>
     </footer>
+    <SiteMediaLoader />
   </body>
 </html>

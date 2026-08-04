@@ -50,9 +50,13 @@ test("pilot campaign banner and form stay on the approved contract", async () =>
   assert.match(home, /Join the First 5 Pilot Families/);
   assert.match(home, /Earn up to \$500/);
   assert.match(home, /href: "\/pilot-families"/);
+  assert.match(home, /class="site-header-v7-cta" href="\/pilot-families">Join the Pilot Program<\/a>/);
   assert.match(home, /data-route="home-v7"/);
   assert.match(home, /Join the waitlist/);
   assert.match(home, /early-bird pricing/);
+  assert.match(home, /Enter your email for early-bird pricing and launch updates\./);
+  assert.match(home, /What is the difference between the waitlist and the Pilot Program\?/);
+  assert.match(home, /Joining the waitlist does not submit a Pilot Program application\./);
   assert.match(home, /href="\/about-harbor"/);
   for (const field of ["name", "email", "zip_code", "smart_devices", "interest_reason", "referral_source"]) {
     assert.match(page, new RegExp(`name="${field}"`));
@@ -66,7 +70,7 @@ test("pilot campaign banner and form stay on the approved contract", async () =>
   assert.match(page, /What will my family need to do\?/);
   assert.match(page, /How difficult is installation\?/);
   assert.match(page, /about 30 minutes/);
-  assert.match(page, /Join the pilot program/);
+  assert.match(page, /<SiteHeader ctaHref="#apply" \/>/);
   assert.match(page, /Only \{pilotSpotCount\} pilot spots/);
   assert.match(page, /data-pilot-countdown/);
   assert.match(page, /Applications close \{pilotApplicationDeadlineShortLabel\}/);
@@ -110,4 +114,30 @@ test("about harbor presents the approved company story without fabricated names"
   assert.match(about, /Harbor OS/);
   assert.match(about, /Names and formal endorsements will be published only with permission/);
   assert.match(about, /\/pilot-families#apply/);
+});
+
+test("V7 public child pages share the home navigation contract", async () => {
+  const header = await source("src/components/SiteHeaderV7.astro");
+  const headerStyles = await source("src/styles/site-header-v7.css");
+  const home = await source("src/components/HomeV7Landing.astro");
+  const about = await source("src/pages/about-harbor.astro");
+  const pilot = await source("src/pages/pilot-families.astro");
+  const privacy = await source("src/pages/privacy.astro");
+
+  assert.match(home, /import "\.\.\/styles\/site-header-v7\.css"/);
+  assert.match(home, /class="site-header-v7"/);
+  assert.match(header, /class="site-header-v7"/);
+  assert.match(header, /width="42" height="23"/);
+  assert.match(header, /href="\/home-v7#memory"/);
+  assert.match(header, /href="\/home-v7#compare"/);
+  assert.match(header, /Join the Pilot Program/);
+  assert.match(headerStyles, /width: min\(1280px, calc\(100% - 64px\)\)/);
+  assert.match(headerStyles, /min-height: 78px/);
+  assert.match(headerStyles, /font-size: 13px/);
+  assert.match(headerStyles, /@media \(max-width: 900px\)/);
+  assert.match(about, /SiteHeaderV7\.astro/);
+  assert.match(pilot, /SiteHeaderV7\.astro/);
+  assert.match(privacy, /SiteHeaderV7\.astro/);
+  assert.doesNotMatch(about, /note="About Harbor"/);
+  assert.doesNotMatch(pilot, /Only \$\{pilotSpotCount\} spots/);
 });

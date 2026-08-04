@@ -47,3 +47,22 @@ test("all V7 website images have clear upload placements", async () => {
   assert.match(about, /data-media-slot="about-story-package-recorded"/);
   assert.match(about, /data-media-slot="about-harbor-os"/);
 });
+
+test("V7 images recover from failed managed assets and WebP requests", async () => {
+  const loader = await source("src/components/SiteMediaLoader.astro");
+  const home = await source("src/components/HomeV7Landing.astro");
+
+  assert.match(loader, /addEventListener\("error"/);
+  assert.match(loader, /image\.complete && image\.naturalWidth === 0/);
+  assert.match(loader, /currentSrc !== state\.defaultSrc/);
+  assert.match(loader, /defaultSrc\.endsWith\("\.webp"\)/);
+  assert.match(loader, /formatFallbackAttempted/);
+  assert.match(loader, /fallbackState\.defaultAttempted = false/);
+
+  const webpUrls = [...home.matchAll(/\/assets\/[a-z0-9-]+\.webp/g)].map(([url]) => url);
+  assert.ok(webpUrls.length > 0);
+  for (const webpUrl of new Set(webpUrls)) {
+    const pngUrl = webpUrl.replace(/\.webp$/, ".png");
+    await assert.doesNotReject(() => readFile(new URL(`public${pngUrl}`, root)));
+  }
+});

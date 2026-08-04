@@ -15,6 +15,7 @@ import {
 } from "@lucide/astro";
 import EnglishFormValidation from "./EnglishFormValidation.astro";
 import SiteMediaLoader from "./SiteMediaLoader.astro";
+import "../styles/site-header-v7.css";
 import "../styles/home-v7.css";
 
 const discordUrl = "https://discord.gg/tC2bktRWWj";
@@ -122,7 +123,8 @@ const faqItems = [
   ["Does it replace Home Assistant?", "No. Home Assistant remains the device layer; HarborNavi adds memory, conversation, and simpler temporary plans."],
   ["Will it work with every device?", "No. We start with supported Home Assistant paths, selected RTSP / ONVIF cameras, and planned Zigbee and IR."],
   ["When is fingerprint confirmation used?", "For sensitive setup changes such as adding a member, expanding permissions, or pairing a device."],
-  ["Does it require cloud AI?", "Core memory, permissions, and device workflows stay local. External models are optional."]
+  ["Does it require cloud AI?", "Core memory, permissions, and device workflows stay local. External models are optional."],
+  ["What is the difference between the waitlist and the Pilot Program?", "The waitlist is the quickest way to receive launch news and early-bird pricing updates. The Pilot Program is a separate application for a limited group of families to test HarborNavi at home for two weeks and share structured feedback. Joining the waitlist does not submit a Pilot Program application."]
 ];
 
 const structuredData = JSON.stringify({
@@ -165,13 +167,13 @@ const structuredData = JSON.stringify({
   </head>
   <body class="home-v6-page" data-route="home-v7">
     <div class="site-shell">
-      <div class="site-header-bar">
-        <header class="site-header">
-          <a class="brand" href="#top" aria-label="HarborNavi home">
-            <span class="brand-mark" aria-hidden="true"><img src="/harbornavi-logo-mark.png" alt="" width="42" height="23" data-media-slot="site-header-logo" /></span>
+      <div class="site-header-v7-bar">
+        <header class="site-header-v7">
+          <a class="site-header-v7-brand" href="#top" aria-label="HarborNavi home">
+            <span class="site-header-v7-mark" aria-hidden="true"><img src="/harbornavi-logo-mark.png" alt="" width="42" height="23" data-media-slot="site-header-logo" /></span>
             <span>HarborNavi</span>
           </a>
-          <nav aria-label="Page sections">
+          <nav class="site-header-v7-nav" aria-label="Page sections">
             <a href="#memory">Memory</a>
             <a href="#how-it-works">How it works</a>
             <a href="#compatibility">Compatibility</a>
@@ -179,7 +181,7 @@ const structuredData = JSON.stringify({
             <a href="#compare">Compare</a>
             <a href="/about-harbor">About Harbor</a>
           </nav>
-          <a class="header-cta" href="#join">Join the waitlist</a>
+          <a class="site-header-v7-cta" href="/pilot-families">Join the Pilot Program</a>
         </header>
       </div>
 
@@ -226,12 +228,15 @@ const structuredData = JSON.stringify({
             <div class="hero-description">
               <p>Family moments and home signals disappear across recordings and apps. HarborNavi turns the pieces you choose into one private memory you can ask and act on.</p>
             </div>
-            <form class="email-form" data-early-form data-form-location="hero">
-              <label class="sr-only" for="v6-hero-email">Email address</label>
-              <input id="v6-hero-email" type="email" name="email" autocomplete="email" placeholder="Email address" aria-describedby="v6-hero-note v6-hero-error" required />
-              <input class="sr-only" name="company" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" />
-              <button type="submit">Join the waitlist</button>
-            </form>
+            <div class="waitlist-signup">
+              <p class="waitlist-benefit">Enter your email for early-bird pricing and launch updates.</p>
+              <form class="email-form" data-early-form data-form-location="hero">
+                <label class="sr-only" for="v6-hero-email">Email address</label>
+                <input id="v6-hero-email" type="email" name="email" autocomplete="email" placeholder="Email address" aria-describedby="v6-hero-note v6-hero-error" required />
+                <input class="sr-only" name="company" type="text" tabindex="-1" autocomplete="off" aria-hidden="true" />
+                <button type="submit">Join the waitlist</button>
+              </form>
+            </div>
             <aside class="waitlist-countboard" data-waitlist-activity data-status="loading" aria-label="Live HarborNavi waitlist count" aria-live="polite" aria-busy="true">
               <span class="waitlist-countboard-label"><span aria-hidden="true"></span>Live waitlist</span>
               <span class="waitlist-countboard-total"><strong data-waitlist-interest-count aria-label="Loading waitlist count"></strong><span>people have joined</span></span>
@@ -338,7 +343,10 @@ const structuredData = JSON.stringify({
           <div class="privacy-tech-intro">
             <p class="eyebrow">Enterprise privacy, adapted for home</p>
             <h2 id="privacy-tech-title">Privacy should understand context before anything leaves home.</h2>
-            <p>HarborNavi is integrating Mode IO.AI's dynamic privacy and AI safety technology into its local-first architecture. Sensitive context can be reviewed before an optional external model receives a request, while the private home timeline remains on HarborNavi.</p>
+            <p class="privacy-partnership-copy">
+              <strong class="privacy-partnership-highlight">HarborNavi is integrating Mode IO.AI's dynamic privacy and AI safety technology into its local-first architecture.</strong>
+              <span>Sensitive context can be reviewed before an optional external model receives a request, while the private home timeline remains on HarborNavi.</span>
+            </p>
             <a href="https://modeio.ai/ai-governance" target="_blank" rel="noreferrer">Explore Mode IO.AI privacy technology <span aria-hidden="true">&nearr;</span></a>
           </div>
           <div class="privacy-context-model" aria-label="Dynamic privacy context model">

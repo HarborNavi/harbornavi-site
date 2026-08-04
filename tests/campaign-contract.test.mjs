@@ -223,6 +223,7 @@ test("home-v7 shows anonymous live waitlist activity and qualified privacy claim
   assert.match(analytics, /getPublicWaitlistActivity/);
   assert.match(eventsApi, /export async function GET/);
   assert.match(eventsApi, /public, max-age=15/);
+  assert.match(homeV7, /class="privacy-partnership-highlight"/);
   assert.match(homeV7, /Mode IO\.AI's dynamic privacy and AI safety technology/);
   assert.match(homeV7, /Hong Kong University of Science and Technology/);
   assert.match(homeV7, /95%\+/);

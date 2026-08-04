@@ -1,5 +1,47 @@
 <script>
   const mediaElements = Array.from(document.querySelectorAll("[data-media-slot]"));
+  const imageFallbacks = new WeakMap();
+
+  function handleImageError(image) {
+    const state = imageFallbacks.get(image);
+    if (!state) return;
+    const currentSrc = image.getAttribute("src") || "";
+
+    if (!state.defaultAttempted && state.defaultSrc && currentSrc !== state.defaultSrc) {
+      state.defaultAttempted = true;
+      image.alt = state.defaultAlt;
+      image.src = state.defaultSrc;
+      return;
+    }
+
+    state.defaultAttempted = true;
+    if (!state.formatFallbackAttempted && state.formatFallbackSrc && currentSrc !== state.formatFallbackSrc) {
+      state.formatFallbackAttempted = true;
+      image.alt = state.defaultAlt;
+      image.src = state.formatFallbackSrc;
+    }
+  }
+
+  function installImageFallback(image) {
+    const defaultSrc = image.getAttribute("src") || "";
+    const formatFallbackSrc = image.dataset.mediaFallbackSrc
+      || (defaultSrc.endsWith(".webp") ? `${defaultSrc.slice(0, -5)}.png` : "");
+    const state = {
+      defaultSrc,
+      defaultAlt: image.alt,
+      formatFallbackSrc,
+      defaultAttempted: false,
+      formatFallbackAttempted: false
+    };
+
+    imageFallbacks.set(image, state);
+    image.addEventListener("error", () => handleImageError(image));
+    if (image.complete && image.naturalWidth === 0) handleImageError(image);
+  }
+
+  mediaElements.forEach((element) => {
+    if (element instanceof HTMLImageElement) installImageFallback(element);
+  });
 
   if (mediaElements.length) {
     fetch("/api/assets")
@@ -30,6 +72,11 @@
             return;
           }
           if (element instanceof HTMLImageElement) {
+            const fallbackState = imageFallbacks.get(element);
+            if (fallbackState) {
+              fallbackState.defaultAttempted = false;
+              fallbackState.formatFallbackAttempted = false;
+            }
             element.src = asset.url;
             if (asset.alt_text) element.alt = asset.alt_text;
           }

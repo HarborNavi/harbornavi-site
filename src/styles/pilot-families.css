@@ -1,5 +1,4 @@
 .pilot-page { min-width: 320px; overflow-x: hidden; background: #fbfafc; color: #17141d; }
-.pilot-page .site-header { max-width: 1280px; }
 .pilot-page main [id] { scroll-margin-top: 96px; }
 .pilot-page h1, .pilot-page h2, .pilot-page h3, .pilot-page p { margin-top: 0; letter-spacing: 0; }
 .pilot-hero { position: relative; width: min(calc(100% - 48px), 1280px); min-height: 480px; margin: 18px auto 0; overflow: hidden; background: #18151d; }
@@ -99,9 +98,6 @@
   .pilot-privacy { padding: 48px; }
 }
 @media (max-width: 640px) {
-  .pilot-page .header-note { display: none; }
-  .pilot-page .site-header { grid-template-columns: 1fr auto; padding: 14px; }
-  .pilot-page .header-cta { padding: 0 10px; font-size: 12px; white-space: nowrap; }
   .pilot-hero { width: calc(100% - 24px); min-height: 560px; margin-top: 8px; }
   .pilot-hero > img { object-position: 66% center; }
   .pilot-hero-overlay { background: linear-gradient(180deg, rgba(17, 14, 22, 0.38), rgba(17, 14, 22, 0.9) 58%, rgba(17, 14, 22, 0.98)); }

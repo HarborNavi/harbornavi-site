@@ -1,28 +1,30 @@
 ---
-import type { RouteKey } from "../data/landingPages";
+import "../styles/site-header-v7.css";
 
 interface Props {
-  activeRoute?: RouteKey | "privacy" | "about" | "pilot-families";
   ctaHref?: string;
   ctaLabel?: string;
-  note?: string;
 }
 
-const { activeRoute, ctaHref: requestedCtaHref, ctaLabel: requestedCtaLabel, note: requestedNote } = Astro.props;
-const ctaHref = requestedCtaHref || (activeRoute === "privacy" ? "/home-v7#join" : "#waitlist");
-const ctaLabel = requestedCtaLabel || "Join the waitlist";
-const note = requestedNote || "Private beta list";
+const { ctaHref = "/pilot-families", ctaLabel = "Join the Pilot Program" } = Astro.props;
 ---
 
-<div class="site-header-bar">
-  <header class="site-header">
-    <a class="brand" href="/home-v7" aria-label="HarborNavi home">
-      <span class="brand-mark" aria-hidden="true">
-        <img src="/harbornavi-logo-mark.png" alt="" width="62" height="34" data-media-slot="site-header-logo" />
+<div class="site-header-v7-bar">
+  <header class="site-header-v7">
+    <a class="site-header-v7-brand" href="/home-v7" aria-label="HarborNavi home">
+      <span class="site-header-v7-mark" aria-hidden="true">
+        <img src="/harbornavi-logo-mark.png" alt="" width="42" height="23" data-media-slot="site-header-logo" />
       </span>
       <span>HarborNavi</span>
     </a>
-    <p class="header-note">{note}</p>
-    <a class="header-cta" href={ctaHref} data-track="waitlist_start">{ctaLabel}</a>
+    <nav class="site-header-v7-nav" aria-label="Page sections">
+      <a href="/home-v7#memory">Memory</a>
+      <a href="/home-v7#how-it-works">How it works</a>
+      <a href="/home-v7#compatibility">Compatibility</a>
+      <a href="/home-v7#hardware">Hardware</a>
+      <a href="/home-v7#compare">Compare</a>
+      <a href="/about-harbor">About Harbor</a>
+    </nav>
+    <a class="site-header-v7-cta" href={ctaHref} data-track="waitlist_start">{ctaLabel}</a>
   </header>
 </div>
