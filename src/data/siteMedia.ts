@@ -193,10 +193,10 @@ export const siteMediaPlacements: SiteMediaPlacement[] = [
     pagePath: "/about-harbor - Project 01",
     label: "Nexus AI Workstation image",
     description: "The image used for the Nexus AI Workstation project story.",
-    defaultUrl: "/assets/home-v2-ai-box.png",
-    defaultAlt: "A compact local AI workstation representing the Nexus hardware foundation.",
-    recommendedSize: "1536 x 1024 px",
-    aspectRatio: "3:2"
+    defaultUrl: "/assets/about-nexus-workstation-v1.jpg",
+    defaultAlt: "The Nexus AI Workstation installed in a warm home workspace.",
+    recommendedSize: "1600 x 900 px",
+    aspectRatio: "16:9"
   },
   {
     key: "about-harbor-os",

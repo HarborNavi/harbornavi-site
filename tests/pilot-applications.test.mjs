@@ -143,6 +143,7 @@ test("about harbor presents the approved company story without fabricated names"
   assert.match(about, /A home memory should last a lifetime/);
   assert.match(about, /Privacy is not a premium feature/);
   assert.match(about, /Nexus AI Workstation/);
+  assert.match(about, /about-nexus-workstation-v1\.jpg/);
   assert.match(about, /Harbor OS/);
   assert.match(about, /Names and formal endorsements will be published only with permission/);
   assert.match(about, /\/pilot-families#apply/);
@@ -163,10 +164,17 @@ test("V7 public child pages share the home navigation contract", async () => {
   assert.match(header, /href="\/home-v7#memory"/);
   assert.match(header, /href="\/home-v7#compare"/);
   assert.match(header, /Join the Pilot Program/);
+  assert.match(header, /data-header-menu/);
+  assert.match(header, /aria-controls="site-header-v7-navigation"/);
+  assert.match(home, /data-header-menu/);
+  assert.match(home, /SiteHeaderMenu/);
   assert.match(headerStyles, /width: min\(1280px, calc\(100% - 64px\)\)/);
   assert.match(headerStyles, /min-height: 78px/);
   assert.match(headerStyles, /font-size: 13px/);
   assert.match(headerStyles, /@media \(max-width: 900px\)/);
+  assert.match(headerStyles, /data-menu-open="true"/);
+  assert.match(headerStyles, /justify-self: stretch/);
+  assert.doesNotMatch(headerStyles, /overflow-x: auto/);
   assert.match(about, /SiteHeaderV7\.astro/);
   assert.match(pilot, /SiteHeaderV7\.astro/);
   assert.match(privacy, /SiteHeaderV7\.astro/);

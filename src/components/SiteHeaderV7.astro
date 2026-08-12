@@ -1,4 +1,6 @@
 ---
+import { Menu, X } from "@lucide/astro";
+import SiteHeaderMenu from "./SiteHeaderMenu.astro";
 import "../styles/site-header-v7.css";
 
 interface Props {
@@ -15,9 +17,9 @@ const { ctaHref = "/pilot-families", ctaLabel = "Join the Pilot Program" } = Ast
       <span class="site-header-v7-mark" aria-hidden="true">
         <img src="/harbornavi-logo-mark.png" alt="" width="42" height="23" data-media-slot="site-header-logo" />
       </span>
-      <span>HarborNavi</span>
+      <span class="site-header-v7-brand-name">HarborNavi</span>
     </a>
-    <nav class="site-header-v7-nav" aria-label="Page sections">
+    <nav id="site-header-v7-navigation" class="site-header-v7-nav" aria-label="Page sections">
       <a href="/home-v7#memory">Memory</a>
       <a href="/home-v7#how-it-works">How it works</a>
       <a href="/home-v7#compatibility">Compatibility</a>
@@ -26,5 +28,10 @@ const { ctaHref = "/pilot-families", ctaLabel = "Join the Pilot Program" } = Ast
       <a href="/about-harbor">About Harbor</a>
     </nav>
     <a class="site-header-v7-cta" href={ctaHref} data-track="waitlist_start">{ctaLabel}</a>
+    <button class="site-header-v7-menu" type="button" aria-label="Open navigation menu" aria-controls="site-header-v7-navigation" aria-expanded="false" data-header-menu>
+      <span class="site-header-v7-menu-open" aria-hidden="true"><Menu size={20} strokeWidth={2} /></span>
+      <span class="site-header-v7-menu-close" aria-hidden="true"><X size={20} strokeWidth={2} /></span>
+    </button>
   </header>
+  <SiteHeaderMenu />
 </div>
