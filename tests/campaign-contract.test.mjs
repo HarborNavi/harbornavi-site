@@ -215,12 +215,19 @@ test("analytics separates Waitlist and Pilot funnels and deduplicates visitors",
   assert.match(schema, /add column if not exists visitor_id text/);
 });
 
-test("home-v7 shows anonymous live waitlist activity and qualified privacy claims", async () => {
+test("home-v7 exposes only a waitlist milestone and qualified privacy claims", async () => {
   const homeV7 = await source("src/components/HomeV7Landing.astro");
   const analytics = await source("src/server/analytics.ts");
-  const publicWaitlist = await source("src/server/public-waitlist.ts");
+  const waitlistMetrics = await source("src/server/waitlist-metrics.ts");
   const eventsApi = await source("api/events.ts");
-  assert.equal((homeV7.match(/<aside class="waitlist-countboard[^>]*data-waitlist-activity/g) || []).length, 2);
+  const waitlistApi = await source("api/waitlist.ts");
+  const adminApi = await source("api/admin/analytics.ts");
+  const admin = await source("src/pages/admin.astro");
+  const admin666 = await source("src/pages/admin666.astro");
+  assert.equal((homeV7.match(/<aside class="waitlist-countboard/g) || []).length, 2);
+  assert.equal((homeV7.match(/<strong>500\+<\/strong>/g) || []).length, 2);
+  assert.equal((homeV7.match(/Waitlist milestone/g) || []).length, 2);
+  assert.doesNotMatch(homeV7, /Live waitlist/);
   assert.match(homeV7, /people have joined/);
   assert.match(homeV7, /CircleUserRound/);
   assert.match(homeV7, /privacy-context-ask-icon/);
@@ -231,19 +238,25 @@ test("home-v7 shows anonymous live waitlist activity and qualified privacy claim
   assert.match(homeV7, /LockKeyhole/);
   assert.match(homeV7, /Microscope/);
   assert.match(homeV7, /waitlist_cta_click/);
-  assert.match(homeV7, /fetch\("\/api\/events"/);
-  assert.equal((homeV7.match(/data-waitlist-activity data-status="loading"/g) || []).length, 2);
-  assert.equal((homeV7.match(/data-waitlist-interest-count aria-label="Loading waitlist count"><\/strong>/g) || []).length, 2);
-  assert.doesNotMatch(homeV7, /data-waitlist-interest-count>509/);
-  assert.match(homeV7, /element\.setAttribute\("aria-busy", "false"\)/);
-  assert.match(homeV7, /renderWaitlistActivity\(responseBody\.waitlist_people\)/);
+  assert.doesNotMatch(homeV7, /fetch\("\/api\/events"\s*,\s*\{\s*headers/);
+  assert.doesNotMatch(homeV7, /waitlistFallback|loadWaitlistActivity|renderWaitlistActivity|waitlist_people/);
   assert.match(homeV7, /No confirmation step is required/);
   assert.match(analytics, /count\(distinct lower\(email\)\)/);
-  assert.match(publicWaitlist, /publicWaitlistBaseline = 509/);
+  assert.match(waitlistMetrics, /WAITLIST_PRIVATE_BASELINE/);
+  assert.match(waitlistMetrics, /WAITLIST_PRIVATE_BASELINE_STARTED_AT/);
   assert.match(analytics, /consent_confirmed_at/);
-  assert.match(analytics, /getPublicWaitlistActivity/);
+  assert.match(analytics, /getPrivateWaitlistActivity/);
+  assert.match(analytics, /private_waitlist: privateWaitlist/);
+  assert.match(analytics, /configured: false/);
   assert.match(eventsApi, /export async function GET/);
-  assert.match(eventsApi, /public, max-age=15/);
+  assert.match(eventsApi, /status: 405/);
+  assert.doesNotMatch(eventsApi, /waitlist_people|getPrivateWaitlistActivity/);
+  assert.doesNotMatch(waitlistApi, /waitlist_people|getPrivateWaitlistActivity/);
+  assert.match(adminApi, /verifyAdminToken/);
+  assert.match(admin, /data-private-waitlist-people/);
+  assert.match(admin666, /data-private-waitlist-people/);
+  assert.match(admin, /"Unavailable"/);
+  assert.match(admin666, /"Unavailable"/);
   assert.match(homeV7, /class="privacy-partnership-highlight"/);
   assert.match(homeV7, /Mode IO\.AI's dynamic privacy and AI safety technology/);
   assert.match(homeV7, /Hong Kong University of Science and Technology/);
@@ -266,7 +279,7 @@ test("waitlist API activates submissions without confirmation email delivery", a
   assert.match(api, /activateWaitlistConsent/);
   assert.match(api, /subscription_status: "confirmed"/);
   assert.match(api, /confirmation_email_required: false/);
-  assert.match(api, /waitlist_people: activity\.waitlist_people/);
+  assert.doesNotMatch(api, /waitlist_people/);
   assert.doesNotMatch(api, /deliverWaitlistConfirmation/);
   assert.match(waitlist, /confirmation_email_status', 'not_required'/);
   assert.doesNotMatch(cron, /deliverWaitlistConfirmation/);

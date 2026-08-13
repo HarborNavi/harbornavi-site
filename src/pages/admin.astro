@@ -68,6 +68,10 @@ import "../styles/admin.css";
         <section class="tab-panel" data-tab-panel="dashboard">
           <div class="metric-grid analytics-metrics" aria-label="Growth metrics">
             <article>
+              <span>Exact waitlist</span>
+              <strong data-private-waitlist-people>Unavailable</strong>
+            </article>
+            <article>
               <span>Page views</span>
               <strong data-analytics-page-views>0</strong>
             </article>
@@ -640,6 +644,9 @@ import "../styles/admin.css";
 
       function renderAnalytics() {
         const summary = analytics?.summary || {};
+        document.querySelector("[data-private-waitlist-people]").textContent = analytics?.private_waitlist?.configured
+          ? String(analytics.private_waitlist.waitlist_people)
+          : "Unavailable";
         document.querySelector("[data-analytics-page-views]").textContent = String(summary.page_views || 0);
         document.querySelector("[data-analytics-form-starts]").textContent = String(summary.form_starts || 0);
         document.querySelector("[data-analytics-form-submits]").textContent = String(summary.form_submits || 0);

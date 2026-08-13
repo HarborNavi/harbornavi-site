@@ -1,8 +1,8 @@
 import { sql } from "./db.js";
 import {
-  publicWaitlistBaselineStartedAt,
-  publicWaitlistPeople
-} from "./public-waitlist.js";
+  privateWaitlistPeople,
+  resolvePrivateWaitlistConfig
+} from "./waitlist-metrics.js";
 import { isAllowedAnalyticsEventName } from "./analytics-events.js";
 import { sanitizeAnalyticsProperties } from "./analytics-sanitize.js";
 
@@ -122,12 +122,13 @@ export async function recordAnalyticsEvent(payload: AnalyticsPayload, visitorId?
   return { ignored: false };
 }
 
-export async function getPublicWaitlistActivity() {
+export async function getPrivateWaitlistActivity() {
+  const { baseline, startedAt } = resolvePrivateWaitlistConfig();
   const rows = (await sql()`
     select count(distinct lower(email))::int as new_waitlist_people
     from waitlist_leads
     where
-      created_at >= ${publicWaitlistBaselineStartedAt}::timestamptz
+      created_at >= ${startedAt}::timestamptz
       and (
         coalesce(route, '') not in ('home-v6', 'home-v7')
         or metadata->>'consent_confirmed_at' is not null
@@ -135,7 +136,7 @@ export async function getPublicWaitlistActivity() {
   `) as unknown as Array<{ new_waitlist_people: number }>;
 
   return {
-    waitlist_people: publicWaitlistPeople(rows[0]?.new_waitlist_people),
+    waitlist_people: privateWaitlistPeople(baseline, rows[0]?.new_waitlist_people),
     updated_at: new Date().toISOString()
   };
 }
@@ -152,6 +153,12 @@ export async function getAnalyticsDashboard(range: unknown) {
   const days = resolveRangeDays(range);
   await ensureAnalyticsTable();
   const db = sql();
+  let privateWaitlist: Awaited<ReturnType<typeof getPrivateWaitlistActivity>> | null = null;
+  try {
+    privateWaitlist = await getPrivateWaitlistActivity();
+  } catch (error) {
+    console.error("Private waitlist metric is unavailable", error);
+  }
 
   const waitlistSummaryRows = (await db`
     select
@@ -365,6 +372,9 @@ export async function getAnalyticsDashboard(range: unknown) {
 
   return {
     range: days === 0 ? "all" : String(days),
+    private_waitlist: privateWaitlist
+      ? { configured: true, ...privateWaitlist }
+      : { configured: false },
     summary: {
       ...waitlistSummary,
       ...activitySummary,

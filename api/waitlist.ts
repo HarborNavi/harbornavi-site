@@ -17,7 +17,6 @@ import {
   upsertWaitlistLead,
   waitlistIntegrationState
 } from "../src/server/waitlist.js";
-import { getPublicWaitlistActivity } from "../src/server/analytics.js";
 import { savePilotApplication } from "../src/server/pilot-applications.js";
 import {
   arePilotApplicationsOpen,
@@ -219,8 +218,6 @@ export async function POST(request: Request) {
         console.error("Waitlist lead saved, but operator notification failed", error);
       }
 
-      const activity = await getPublicWaitlistActivity();
-
       return jsonResponse({
         ok: true,
         lead: {
@@ -231,8 +228,7 @@ export async function POST(request: Request) {
         subscription_status: "confirmed",
         confirmation_email_required: false,
         contact_sync_status: contactSyncStatus,
-        operator_notification_status: operatorNotificationStatus,
-        waitlist_people: activity.waitlist_people
+        operator_notification_status: operatorNotificationStatus
       });
     }
 

@@ -283,8 +283,8 @@ Each funnel has its own table grouped by `route`, `utm_source`, and `utm_campaig
 
 The prior double-opt-in V6 flow was accepted on 2026-07-29 and replaced on 2026-08-03 by immediate enrollment. New smoke
 tests must verify an immediate confirmed response, no confirmation delivery, a synced Resend Contact, an operator alert,
-and successful retry after an injected provider failure. The public V7 counter starts at 509 and adds distinct leads
-created after `2026-08-03T09:08:53Z`.
+and successful retry after an injected provider failure. The public V7 page shows only the `500+` milestone. The exact
+waitlist total is calculated from server-only Vercel configuration and is available only in the authenticated admin.
 
 After Vercel env vars and both database tables are ready, use a controlled Preview environment and an inbox that the
 tester owns. Do not use a third party's address:
@@ -302,10 +302,10 @@ curl -X POST "$SITE_ORIGIN/api/waitlist" \
   -d "{\"email\":\"$SMOKE_EMAIL\",\"route\":\"home-v6\",\"form_location\":\"smoke\",\"utm_source\":\"smoke\",\"utm_campaign\":\"analytics_smoke\"}"
 ```
 
-Confirm that the POST returns `subscription_status=confirmed`, `confirmation_email_required=false`, and the updated
-`waitlist_people` total. Verify the Resend contact is `opt_in` for exactly one Kickstarter Topic and the operator alert
-is sent. Also test duplicate submissions, an induced provider failure followed by cron recovery, and removal of Preview
-smoke data. Duplicate email submissions must not increase the public total.
+Confirm that the POST returns `subscription_status=confirmed` and `confirmation_email_required=false`, without an exact
+waitlist total. Verify the Resend contact is `opt_in` for exactly one Kickstarter Topic and the operator alert is sent.
+Also test duplicate submissions, an induced provider failure followed by cron recovery, and removal of Preview smoke
+data. Duplicate email submissions must not increase the exact total shown in the authenticated admin.
 
 Before enabling real reservations, repeat checkout, cancel, duplicate-click, webhook retry, and refund tests with Stripe test-mode keys and Stripe CLI forwarding to `/api/stripe/webhook`.
 

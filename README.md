@@ -33,7 +33,7 @@ This project is intentionally separate from the HarborNavi product coordination 
 - `/api/admin/*`: admin login, health check, analytics, and lead management endpoints.
 - `/api/admin/pilot-applications`: authenticated Pilot Families application list, routed through the existing admin health function.
 - `/api/assets`: public delivery of active website-image overrides plus authenticated admin upload, assignment, activation, and deletion.
-- `GET /api/events`: public, cached aggregate of anonymous waitlist CTA interest; `POST /api/events` records allowlisted campaign events.
+- `GET /api/events`: disabled with `405 Method Not Allowed`; `POST /api/events` records allowlisted campaign events.
 - `/api/pilot-application`: Pilot Families application endpoint, routed through the existing waitlist function without marketing consent.
 
 ## Commands
@@ -53,7 +53,7 @@ Astro dev serves `/package/` correctly, but bare `/package` can collide with `pa
 - `/home-v6` remains the default landing page; `/home-v7` is deployed as an isolated campaign version. V4 and V5 remain available only as no-index visual history and no longer accept email.
 - A V6 or V7 form submission immediately records the normalized email and consent time in Neon. No confirmation email is required; contact sync and operator notifications are best-effort integrations that do not block enrollment.
 - Integration state is stored in `waitlist_leads.metadata`. GitHub Actions invokes `/api/cron/retry-waitlist` hourly, with a daily Vercel Cron fallback compatible with the Hobby plan. The worker retries eligible contact-sync and operator-alert failures and initializes the Kickstarter Topic when needed.
-- The public V7 counter starts at 509 and adds distinct waitlist emails created after `2026-08-03T09:08:53Z`. Duplicate submissions update the existing lead without increasing the public count.
+- The public V7 counter shows only the `500+` milestone and does not request or receive an exact count. The exact total is calculated from server-only `WAITLIST_PRIVATE_BASELINE` and `WAITLIST_PRIVATE_BASELINE_STARTED_AT` values and is returned only by the authenticated admin analytics endpoint. Duplicate submissions update the existing lead without increasing the exact count.
 - The Kickstarter Topic uses `default_subscription=opt_out`, while each submitted address is explicitly synced as `opt_in`. `RESEND_KICKSTARTER_TOPIC_ID` is an optional override; the V6/V7 flow has no Road Topic dependency.
 - Vercel Production uses the Neon `main` branch. Vercel Preview uses the permanent schema-only Neon `preview` branch, so Fiona's Preview submissions cannot write to production lead or analytics data.
 - The prior double-opt-in production flow was accepted on 2026-07-29. It was replaced on 2026-08-03 by immediate waitlist enrollment; legacy confirmation links remain supported.

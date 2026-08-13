@@ -218,6 +218,7 @@ const mediaPageGroups = Array.from(
               <p>Conversion = saved waitlist leads / unique visitors. Pilot traffic and applications are excluded.</p>
             </div>
             <div class="metric-grid analytics-metrics" aria-label="Waitlist funnel metrics">
+              <article><span>Exact waitlist</span><strong data-private-waitlist-people>Unavailable</strong></article>
               <article><span>Unique visitors</span><strong data-waitlist-unique-visitors>0</strong></article>
               <article><span>Page views</span><strong data-waitlist-page-views>0</strong></article>
               <article><span>Form starts</span><strong data-waitlist-form-starts>0</strong></article>
@@ -889,6 +890,9 @@ const mediaPageGroups = Array.from(
         const summary = analytics?.summary || {};
         const waitlistSummary = analytics?.waitlist_summary || summary;
         const pilotSummary = analytics?.pilot_summary || {};
+        document.querySelector("[data-private-waitlist-people]").textContent = analytics?.private_waitlist?.configured
+          ? String(analytics.private_waitlist.waitlist_people)
+          : "Unavailable";
         document.querySelector("[data-waitlist-unique-visitors]").textContent = String(waitlistSummary.unique_visitors || 0);
         document.querySelector("[data-waitlist-page-views]").textContent = String(waitlistSummary.page_views || 0);
         document.querySelector("[data-waitlist-form-starts]").textContent = String(waitlistSummary.form_starts || 0);

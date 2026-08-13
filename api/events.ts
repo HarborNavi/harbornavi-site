@@ -1,5 +1,5 @@
 import { jsonResponse } from "../src/server/config.js";
-import { getPublicWaitlistActivity, recordAnalyticsEvent } from "../src/server/analytics.js";
+import { recordAnalyticsEvent } from "../src/server/analytics.js";
 import { resolveVisitorId, visitorCookieHeader } from "../src/server/visitor-id.js";
 
 export function OPTIONS() {
@@ -7,15 +7,10 @@ export function OPTIONS() {
 }
 
 export async function GET() {
-  try {
-    return jsonResponse(
-      { ok: true, ...(await getPublicWaitlistActivity()) },
-      { headers: { "cache-control": "public, max-age=15, stale-while-revalidate=45" } }
-    );
-  } catch (error) {
-    console.error(error);
-    return jsonResponse({ error: "Unable to load waitlist activity" }, { status: 500 });
-  }
+  return jsonResponse(
+    { error: "Method not allowed" },
+    { status: 405, headers: { allow: "OPTIONS, POST" } }
+  );
 }
 
 export async function POST(request: Request) {
