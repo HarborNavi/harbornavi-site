@@ -126,14 +126,17 @@ test("public roots redirect to home-v6 and archived pages stay out of the sitema
   }
   assert.match(sitemap, /<loc>https:\/\/harbornavi\.com\/home-v6<\/loc>/);
   assert.match(sitemap, /<loc>https:\/\/harbornavi\.com\/home-v7<\/loc>/);
+  assert.match(sitemap, /<loc>https:\/\/harbornavi\.com\/home-v8<\/loc>/);
   assert.match(sitemap, /<loc>https:\/\/harbornavi\.com\/about-harbor<\/loc>/);
   assert.doesNotMatch(sitemap, /<loc>https:\/\/harbornavi\.com\/home-v[45]<\/loc>/);
 });
 
-test("home-v7 and admin666 are isolated from the retained production routes", async () => {
+test("home-v7, home-v8, and admin666 are isolated from the retained production routes", async () => {
   const homeV6 = await source("src/components/HomeV6Landing.astro");
   const homeV7Page = await source("src/pages/home-v7.astro");
   const homeV7 = await source("src/components/HomeV7Landing.astro");
+  const homeV8Page = await source("src/pages/home-v8.astro");
+  const homeV8 = await source("src/components/HomeV8Landing.astro");
   const admin = await source("src/pages/admin.astro");
   const admin666 = await source("src/pages/admin666.astro");
 
@@ -141,6 +144,12 @@ test("home-v7 and admin666 are isolated from the retained production routes", as
   assert.match(homeV7, /https:\/\/harbornavi\.com\/home-v7/);
   assert.match(homeV7, /data-route="home-v7"/);
   assert.match(homeV7, /Join the First 5 Pilot Families/);
+  assert.match(homeV7, /Home is where the heart is\. And where your memories live\./);
+  assert.match(homeV8Page, /HomeV8Landing/);
+  assert.match(homeV8, /https:\/\/harbornavi\.com\/home-v8/);
+  assert.match(homeV8, /data-route="home-v8"/);
+  assert.match(homeV8, /Join the First 5 Pilot Families/);
+  assert.match(homeV8, /A mind for the household\. Finally at home\./);
   assert.doesNotMatch(homeV6, /Join the First 5 Pilot Families/);
   assert.match(admin666, /data-tab-button="pilot-applications"/);
   assert.match(admin666, /data-tab-button="media"/);
@@ -215,8 +224,9 @@ test("analytics separates Waitlist and Pilot funnels and deduplicates visitors",
   assert.match(schema, /add column if not exists visitor_id text/);
 });
 
-test("home-v7 exposes only a waitlist milestone and qualified privacy claims", async () => {
+test("home-v7 and home-v8 expose only a waitlist milestone and qualified privacy claims", async () => {
   const homeV7 = await source("src/components/HomeV7Landing.astro");
+  const homeV8 = await source("src/components/HomeV8Landing.astro");
   const analytics = await source("src/server/analytics.ts");
   const waitlistMetrics = await source("src/server/waitlist-metrics.ts");
   const eventsApi = await source("api/events.ts");
@@ -224,11 +234,16 @@ test("home-v7 exposes only a waitlist milestone and qualified privacy claims", a
   const adminApi = await source("api/admin/analytics.ts");
   const admin = await source("src/pages/admin.astro");
   const admin666 = await source("src/pages/admin666.astro");
-  assert.equal((homeV7.match(/<aside class="waitlist-countboard/g) || []).length, 2);
-  assert.equal((homeV7.match(/<strong>500\+<\/strong>/g) || []).length, 2);
-  assert.equal((homeV7.match(/Waitlist milestone/g) || []).length, 2);
-  assert.doesNotMatch(homeV7, /Live waitlist/);
-  assert.match(homeV7, /people have joined/);
+  for (const home of [homeV7, homeV8]) {
+    assert.equal((home.match(/<aside class="waitlist-countboard/g) || []).length, 2);
+    assert.equal((home.match(/<strong>500\+<\/strong>/g) || []).length, 2);
+    assert.equal((home.match(/Waitlist milestone/g) || []).length, 2);
+    assert.doesNotMatch(home, /Live waitlist/);
+    assert.match(home, /people have joined/);
+    assert.doesNotMatch(home, /fetch\("\/api\/events"\s*,\s*\{\s*headers/);
+    assert.doesNotMatch(home, /waitlistFallback|loadWaitlistActivity|renderWaitlistActivity|waitlist_people/);
+    assert.match(home, /No confirmation step is required/);
+  }
   assert.match(homeV7, /CircleUserRound/);
   assert.match(homeV7, /privacy-context-ask-icon/);
   assert.match(homeV7, /Inbox/);
@@ -271,6 +286,26 @@ test("home-v7 exposes only a waitlist milestone and qualified privacy claims", a
   assert.doesNotMatch(homeV7, /world(?:'s|’s) first/i);
 });
 
+test("home-v8 leads with household intelligence, then proves local privacy", async () => {
+  const homeV8 = await source("src/components/HomeV8Landing.astro");
+  const heroIndex = homeV8.indexOf('<h1 id="hero-title">A mind for the household. Finally at home.</h1>');
+  const intelligenceIndex = homeV8.indexOf('<section id="intelligence"');
+  const privacyIndex = homeV8.indexOf('<section id="privacy-tech"');
+
+  assert.ok(heroIndex >= 0);
+  assert.ok(intelligenceIndex > heroIndex);
+  assert.ok(privacyIndex > intelligenceIndex);
+  assert.match(homeV8, /Sci-fi intelligence\. Home-warmed care\. Kept entirely at home\./);
+  assert.match(homeV8, /understands context, remembers what matters, and turns plain words into coordinated action/);
+  assert.match(homeV8, /One local mind\. Three jobs\./);
+  assert.match(homeV8, /Understand context \+ Orchestrate devices \+ Remember what matters/);
+  assert.match(homeV8, /Your home, finally fluent\. Your data, finally home\./);
+  assert.match(homeV8, /Is HarborNavi just a memory box\?/);
+  assert.doesNotMatch(homeV8, /Home is where the heart is/);
+  assert.doesNotMatch(homeV8, /Private home memory/);
+  assert.doesNotMatch(homeV8, /What this home memory is being built to do/);
+});
+
 test("waitlist API activates submissions without confirmation email delivery", async () => {
   const api = await source("api/waitlist.ts");
   const waitlist = await source("src/server/waitlist.ts");
@@ -285,13 +320,16 @@ test("waitlist API activates submissions without confirmation email delivery", a
   assert.doesNotMatch(cron, /deliverWaitlistConfirmation/);
 });
 
-test("home-v7 replaces the wide comparison table with mobile category tabs", async () => {
+test("home-v7 and home-v8 replace the wide comparison table with mobile category tabs", async () => {
   const homeV7 = await source("src/components/HomeV7Landing.astro");
+  const homeV8 = await source("src/components/HomeV8Landing.astro");
   const styles = await source("src/styles/home-v7.css");
-  assert.match(homeV7, /data-mobile-compare/);
-  assert.equal((homeV7.match(/data-mobile-compare-tab=/g) || []).length, 4);
-  assert.match(homeV7, /role="tabpanel"/);
-  assert.match(homeV7, /selectMobileComparison/);
+  for (const home of [homeV7, homeV8]) {
+    assert.match(home, /data-mobile-compare/);
+    assert.equal((home.match(/data-mobile-compare-tab=/g) || []).length, 4);
+    assert.match(home, /role="tabpanel"/);
+    assert.match(home, /selectMobileComparison/);
+  }
   assert.match(styles, /\.mobile-compare \{ display: none; \}/);
   assert.match(styles, /\.compare-wrap \{ display: none; \}/);
   assert.match(styles, /\.mobile-compare \{ display: block; \}/);
@@ -312,6 +350,7 @@ test("all interactive forms force browser validation prompts to English", async 
     "src/components/HomeV3Landing.astro",
     "src/components/HomeV6Landing.astro",
     "src/components/HomeV7Landing.astro",
+    "src/components/HomeV8Landing.astro",
     "src/pages/pilot-families.astro",
     "src/pages/admin.astro",
     "src/pages/admin666.astro"

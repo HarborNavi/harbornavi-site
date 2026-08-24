@@ -5,13 +5,14 @@ import test from "node:test";
 const root = new URL("../", import.meta.url);
 const source = async (path) => readFile(new URL(path, root), "utf8");
 
-test("all V7 website images have clear upload placements", async () => {
+test("all V7 and V8 website images have clear upload placements", async () => {
   const media = await source("src/server/media.ts");
   const schema = await source("db/media.sql");
   const admin = await source("src/pages/admin666.astro");
   const placements = await source("src/data/siteMedia.ts");
   const loader = await source("src/components/SiteMediaLoader.astro");
   const home = await source("src/components/HomeV7Landing.astro");
+  const homeV8 = await source("src/components/HomeV8Landing.astro");
   const pilot = await source("src/pages/pilot-families.astro");
   const about = await source("src/pages/about-harbor.astro");
   assert.match(media, /image\/jpeg/);
@@ -34,7 +35,7 @@ test("all V7 website images have clear upload placements", async () => {
   assert.match(admin, /Restore default/);
   assert.doesNotMatch(admin, /<option value="page">Other page media<\/option>/);
   assert.equal((placements.match(/key: "/g) || []).length, 18);
-  assert.match(placements, /pagePath: "\/home-v7 - Top carousel, slide 1"/);
+  assert.match(placements, /pagePath: "\/home-v7 and \/home-v8 - Top carousel, slide 1"/);
   assert.match(placements, /pagePath: "\/pilot-families - Hero"/);
   assert.match(placements, /pagePath: "\/about-harbor#founding-story - Smart speaker privacy scenario"/);
   assert.match(placements, /pagePath: "\/about-harbor#founding-story - Package camera scenario"/);
@@ -42,15 +43,17 @@ test("all V7 website images have clear upload placements", async () => {
   assert.match(loader, /querySelectorAll\("\[data-media-slot\]"\)/);
   assert.match(loader, /home-carousel-memory/);
   assert.match(home, /data-media-slot="home-hardware"/);
+  assert.match(homeV8, /data-media-slot="home-hardware"/);
   assert.match(pilot, /data-media-slot="pilot-hero"/);
   assert.match(about, /data-media-slot="about-story-speaker-privacy"/);
   assert.match(about, /data-media-slot="about-story-package-recorded"/);
   assert.match(about, /data-media-slot="about-harbor-os"/);
 });
 
-test("V7 images recover from failed managed assets and WebP requests", async () => {
+test("V7 and V8 images recover from failed managed assets and WebP requests", async () => {
   const loader = await source("src/components/SiteMediaLoader.astro");
   const home = await source("src/components/HomeV7Landing.astro");
+  const homeV8 = await source("src/components/HomeV8Landing.astro");
 
   assert.match(loader, /addEventListener\("error"/);
   assert.match(loader, /image\.complete && image\.naturalWidth === 0/);
@@ -65,4 +68,8 @@ test("V7 images recover from failed managed assets and WebP requests", async () 
     const pngUrl = webpUrl.replace(/\.webp$/, ".png");
     await assert.doesNotReject(() => readFile(new URL(`public${pngUrl}`, root)));
   }
+  assert.deepEqual(
+    [...new Set([...homeV8.matchAll(/\/assets\/[a-z0-9-]+\.webp/g)].map(([url]) => url))].sort(),
+    [...new Set(webpUrls)].sort()
+  );
 });

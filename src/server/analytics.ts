@@ -130,7 +130,7 @@ export async function getPrivateWaitlistActivity() {
     where
       created_at >= ${startedAt}::timestamptz
       and (
-        coalesce(route, '') not in ('home-v6', 'home-v7')
+        coalesce(route, '') not in ('home-v6', 'home-v7', 'home-v8')
         or metadata->>'consent_confirmed_at' is not null
       )
   `) as unknown as Array<{ new_waitlist_people: number }>;

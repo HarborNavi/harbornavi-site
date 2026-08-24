@@ -8,7 +8,8 @@ This project is intentionally separate from the HarborNavi product coordination 
 
 - `/` and `/home`: permanent redirects to the current `/home-v6` landing page.
 - `/home-v6`: current HarborNavi pre-launch page with immediate waitlist enrollment.
-- `/home-v7`: isolated campaign version with the three-position hero carousel and Pilot Families entry point.
+- `/home-v7`: isolated Home Memory campaign version with the three-position hero carousel and Pilot Families entry point.
+- `/home-v8`: local-first household intelligence narrative with the same waitlist and Pilot Families entry points.
 - `/home-v2`: earlier HarborNavi early-access page retained for comparison.
 - `/home-v3`: five-question product narrative retained for comparison.
 - `/home-v4`: archived Kickstarter concept, marked `noindex`; its form is inactive.
@@ -50,7 +51,7 @@ Astro dev serves `/package/` correctly, but bare `/package` can collide with `pa
 ## Current Notes
 
 - Hero visuals are generated storyboard placeholders under `public/assets/`.
-- `/home-v6` remains the default landing page; `/home-v7` is deployed as an isolated campaign version. V4 and V5 remain available only as no-index visual history and no longer accept email.
+- `/home-v6` remains the default landing page; `/home-v7` and `/home-v8` are deployed as isolated campaign versions. V4 and V5 remain available only as no-index visual history and no longer accept email.
 - A V6 or V7 form submission immediately records the normalized email and consent time in Neon. No confirmation email is required; contact sync and operator notifications are best-effort integrations that do not block enrollment.
 - Integration state is stored in `waitlist_leads.metadata`. GitHub Actions invokes `/api/cron/retry-waitlist` hourly, with a daily Vercel Cron fallback compatible with the Hobby plan. The worker retries eligible contact-sync and operator-alert failures and initializes the Kickstarter Topic when needed.
 - The public V7 counter shows only the `500+` milestone and does not request or receive an exact count. The exact total is calculated from server-only `WAITLIST_PRIVATE_BASELINE` and `WAITLIST_PRIVATE_BASELINE_STARTED_AT` values and is returned only by the authenticated admin analytics endpoint. Duplicate submissions update the existing lead without increasing the exact count.
@@ -61,7 +62,7 @@ Astro dev serves `/package/` correctly, but bare `/package` can collide with `pa
 - Central milestones are Kickstarter pre-launch on `2026-09-15`, the road field test on `2026-11-12..2026-12-05`, the public field report on `2026-12-12`, and the planned Kickstarter launch on `2027-01-12`.
 - The external 15 Homes application is not written to the site's waitlist or analytics tables. Its provider should redirect completed applications to `/15-homes/thanks`.
 - Resend Broadcasts, rather than the transactional Email API, are used for reviewed Kickstarter marketing sends and unsubscribe handling.
-- Compatibility model research and price-fit testing remain separate follow-up work; the existing profile and reservation APIs are retained but are not called by `/home-v6` or `/home-v7`.
+- Compatibility model research and price-fit testing remain separate follow-up work; the existing profile and reservation APIs are retained but are not called by `/home-v6`, `/home-v7`, or `/home-v8`.
 - The `/admin666` page has Dashboard, Leads, Pilot Applications, Media, and System tabs for first-party funnel analytics, application review, and lead operations. The existing `/admin` route remains unchanged.
 - Backend setup lives in `docs/waitlist-backend.md`; database schema lives in `db/waitlist.sql` and `db/analytics.sql`.
 - Existing Neon projects should apply `db/growth-v4.sql` before deploying the v4 APIs.

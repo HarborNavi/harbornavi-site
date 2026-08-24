@@ -52,20 +52,25 @@ test("pilot application deadline is shared by the page and API", async () => {
 
 test("pilot campaign banner and form stay on the approved contract", async () => {
   const home = await source("src/components/HomeV7Landing.astro");
+  const homeV8 = await source("src/components/HomeV8Landing.astro");
   const page = await source("src/pages/pilot-families.astro");
   const admin = await source("src/pages/admin666.astro");
   const adminHealth = await source("api/admin/health.ts");
   const pilotApplications = await source("src/server/pilot-applications.ts");
   const vercel = JSON.parse(await source("vercel.json"));
   assert.match(home, /Join the First 5 Pilot Families/);
+  assert.match(homeV8, /Join the First 5 Pilot Families/);
   assert.equal(pilotRewardAdvertisingCopy, "Earn up to $500 after completing the agreed milestones.");
   assert.match(home, /pilotRewardAdvertisingCopy/);
+  assert.match(homeV8, /pilotRewardAdvertisingCopy/);
   assert.match(page, /pilotRewardAdvertisingCopy/);
   assert.doesNotMatch(home, /Earn up to \$500\./);
+  assert.doesNotMatch(homeV8, /Earn up to \$500\./);
   assert.doesNotMatch(page, /\+\$500|\$500 completion bonus|\$500 bonus terms/);
   assert.match(home, /href: "\/pilot-families"/);
   assert.match(home, /class="site-header-v7-cta" href="\/pilot-families">Join the Pilot Program<\/a>/);
   assert.match(home, /data-route="home-v7"/);
+  assert.match(homeV8, /data-route="home-v8"/);
   assert.match(home, /Join the waitlist/);
   assert.match(home, /early-bird pricing/);
   assert.match(home, /Enter your email for early-bird pricing and launch updates\./);

@@ -4,7 +4,8 @@ export const activeWaitlistRoute = "home-v6";
 export const activeWaitlistConsentVersion = "home_v6_2026_07";
 export const waitlistConsentVersions = {
   "home-v6": activeWaitlistConsentVersion,
-  "home-v7": "home_v7_2026_07"
+  "home-v7": "home_v7_2026_07",
+  "home-v8": "home_v8_2026_08"
 } as const;
 
 export function normalizeWaitlistRoute(value: unknown) {
