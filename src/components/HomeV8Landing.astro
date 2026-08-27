@@ -16,6 +16,7 @@ import {
   X
 } from "@lucide/astro";
 import EnglishFormValidation from "./EnglishFormValidation.astro";
+import RedditPixel from "./RedditPixel.astro";
 import SiteHeaderMenu from "./SiteHeaderMenu.astro";
 import SiteMediaLoader from "./SiteMediaLoader.astro";
 import { pilotRewardAdvertisingCopy } from "../data/pilotProgram";
@@ -87,7 +88,7 @@ const hardwareValues = [
   ["Household context", "Planned 128GB eMMC plus two M.2 slots give selected events, clips, and home history a local place to live."],
   ["Local intelligence", "Dedicated K3-class compute gives understanding and home workflows a stable place to run."],
   ["Device links", "Dual 2.5GbE, HDMI, Home Assistant, selected cameras, planned Zigbee, and IR."],
-  ["Physical trust", "Planned fingerprint confirmation and a secure element protect sensitive setup changes."]
+  ["Hardware trust", "Fingerprint confirmation for sensitive changes, with Match-on-Chip biometric comparison and an eSE chip protecting device identity and encryption keys."]
 ];
 
 const comparisonProducts = [
@@ -128,7 +129,9 @@ const faqItems = [
   ["Is it another camera recorder?", "Cameras are one source. HarborNavi connects selected moments with sensors, device state, and household permissions."],
   ["Does it replace Home Assistant?", "No. Home Assistant remains the device layer; HarborNavi adds local context, conversation, and simpler temporary plans."],
   ["Will it work with every device?", "No. We start with supported Home Assistant paths, selected RTSP / ONVIF cameras, and planned Zigbee and IR."],
-  ["When is fingerprint confirmation used?", "For sensitive setup changes such as adding a member, expanding permissions, or pairing a device."],
+  ["When is fingerprint confirmation used?", "HarborNavi can require a successful match at the box before adding a member, expanding permissions, pairing a device, or changing who can access private household context."],
+  ["How does the fingerprint check work?", "The fingerprint is checked inside the fingerprint module. HarborNavi receives the match decision and applies it only to the sensitive change being requested."],
+  ["What does the security chip protect?", "The eSE chip keeps device identity, trusted credentials, and encryption keys separate from the main system. The eSE chip and its COS have achieved SOGIS CC EAL5+ certification; that certification applies to the selected security components, not HarborNavi as a complete product."],
   ["Does it require cloud AI?", "Core household context, permissions, and device workflows stay local. External models are optional, and sensitive context can be reviewed before a request leaves home."],
   ["What is the difference between the waitlist and the Pilot Program?", "The waitlist is the quickest way to receive launch news and early-bird pricing updates. The Pilot Program is a separate application for a limited group of families to test HarborNavi at home for two weeks and share structured feedback. Joining the waitlist does not submit a Pilot Program application."]
 ];
@@ -153,6 +156,7 @@ const structuredData = JSON.stringify({
 <html lang="en">
   <head>
     <EnglishFormValidation />
+    <RedditPixel />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="index,follow" />
@@ -340,13 +344,38 @@ const structuredData = JSON.stringify({
             </div>
           </article>
 
-          <aside class="trust-story" data-scenario-event="scenario_trust_boundary">
+          <aside id="goodix-security" class="trust-story" data-scenario-event="scenario_trust_boundary">
             <div class="trust-copy">
-              <p class="eyebrow">The steward, not the server</p>
-              <h2>Reliable means knowing when not to act.</h2>
-              <p>Planned fingerprint confirmation keeps member, permission, and pairing changes at the box. Everyday questions stay easy.</p>
+              <p class="eyebrow">For sensitive changes</p>
+              <h2>One touch confirms it's you. Hardware protects what comes next.</h2>
+              <p>Before anyone adds a family member, changes permissions, or pairs a device, HarborNavi can require a fingerprint scan on the box. Matching happens inside the fingerprint module, while an eSE chip protects the device identity and encryption keys behind the approval.</p>
             </div>
-            <figure><img src="/assets/home-v6-trust-boundary-id.webp" alt="Local fingerprint confirmation on HarborNavi for a sensitive household access change" width="1536" height="1024" loading="lazy" data-media-slot="home-trust-boundary" /></figure>
+            <figure>
+              <img src="/assets/home-v6-trust-boundary-id.webp" alt="A person confirming a sensitive HarborNavi change with a fingerprint at the box" width="1536" height="1024" loading="lazy" data-media-slot="home-trust-boundary" />
+              <figcaption>A protected change continues only after local fingerprint confirmation.</figcaption>
+            </figure>
+            <div class="fingerprint-detail">
+              <div class="fingerprint-sequence security-chain">
+                <p class="fingerprint-label">How a protected change is approved</p>
+                <ol>
+                  <li class="match-on-chip-step"><span><Fingerprint size={20} strokeWidth={1.8} aria-hidden="true" /></span><div><small>01 &middot; Match-on-Chip</small><strong>Confirm it's you</strong><p>Your fingerprint is checked inside the fingerprint module, so HarborNavi's main system does not perform the biometric comparison.</p></div></li>
+                  <li><span><LockKeyhole size={20} strokeWidth={1.8} aria-hidden="true" /></span><div><small>02 &middot; Security solution</small><strong>Keep identity and keys protected</strong><p>An eSE chip separates device identity, trusted credentials, and encryption keys from the main system.</p></div></li>
+                  <li><span><Workflow size={20} strokeWidth={1.8} aria-hidden="true" /></span><div><small>03 &middot; Permission check</small><strong>Approve only this change</strong><p>HarborNavi checks the person, permission, and request. One successful match never unlocks everything.</p></div></li>
+                </ol>
+              </div>
+              <div class="ese-certification" aria-label="Embedded Secure Element security certification">
+                <p class="fingerprint-label">Security-chip certification</p>
+                <strong class="ese-certification-level"><small>SOGIS</small>CC EAL5<span>+</span></strong>
+                <h3>Independently evaluated security.</h3>
+                <p>The eSE chip and its COS have achieved SOGIS CC EAL5+ certification under Common Criteria, a widely recognized international framework for evaluating security products.</p>
+                <a href="https://www.goodix.com/en/product/security_products/ese" target="_blank" rel="noreferrer">Learn about the eSE technology <span aria-hidden="true">&nearr;</span></a>
+                <small class="certification-scope">Certification applies to the selected security chip, not HarborNavi as a complete product. Final hardware remains subject to validation, and secure software and access controls are still required.</small>
+              </div>
+              <details class="fingerprint-technical-sequence">
+                <summary>For technical readers</summary>
+                <p>Finger touches sensor &rarr; touch-wake circuit raises <code>key_int</code> &rarr; main MCU wakes &rarr; MCU drives <code>WAKEUP</code> high &rarr; fingerprint algorithm chip initializes and completes the match &rarr; authorized result enters the protected-action policy path &rarr; MCU drives <code>WAKEUP</code> low &rarr; module and system return to sleep.</p>
+              </details>
+            </div>
           </aside>
         </section>
 
@@ -415,7 +444,7 @@ const structuredData = JSON.stringify({
               <div><dt>Storage</dt><dd>128GB eMMC planned base; two M.2 slots for optional SSDs that extend HarborNavi-managed retention</dd></div>
               <div><dt>Network and display</dt><dd>Dual 2.5GbE and HDMI output</dd></div>
               <div><dt>Device links</dt><dd>Home Assistant, selected camera paths, planned Zigbee, and planned IR</dd></div>
-              <div><dt>Trust hardware</dt><dd>Planned fingerprint confirmation and embedded secure element</dd></div>
+              <div><dt>Trust hardware</dt><dd>Match-on-chip fingerprint module; eSE chip and COS with SOGIS CC EAL5+ certification</dd></div>
             </dl>
           </details>
         </section>
@@ -585,6 +614,7 @@ const structuredData = JSON.stringify({
       }
 
       window.harborTrack = function harborTrack(eventName, properties) {
+        window.harborRedditTrack?.(eventName);
         window.harborEvents = window.harborEvents || [];
         window.harborEvents.push({
           eventName,

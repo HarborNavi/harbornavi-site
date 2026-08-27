@@ -1,5 +1,6 @@
 ---
 import EnglishFormValidation from "../components/EnglishFormValidation.astro";
+import RedditPixel from "../components/RedditPixel.astro";
 import SiteHeader from "../components/SiteHeaderV7.astro";
 import SiteMediaLoader from "../components/SiteMediaLoader.astro";
 import {
@@ -18,6 +19,7 @@ import "../styles/pilot-families.css";
 <html lang="en">
   <head>
     <EnglishFormValidation />
+    <RedditPixel />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>First 5 Pilot Families | HarborNavi</title>
@@ -294,6 +296,7 @@ import "../styles/pilot-families.css";
       }
 
       window.harborTrack = function harborTrack(eventName, properties) {
+        window.harborRedditTrack?.(eventName);
         const body = JSON.stringify(analyticsPayload(eventName, properties || {}));
         if (navigator.sendBeacon) {
           const queued = navigator.sendBeacon("/api/events", new Blob([body], { type: "application/json" }));

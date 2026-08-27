@@ -1,5 +1,6 @@
 ---
 import EnglishFormValidation from "./EnglishFormValidation.astro";
+import RedditPixel from "./RedditPixel.astro";
 import "../styles/home-v6.css";
 
 const discordUrl = "https://discord.gg/tC2bktRWWj";
@@ -106,6 +107,7 @@ const structuredData = JSON.stringify({
 <html lang="en">
   <head>
     <EnglishFormValidation />
+    <RedditPixel />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="index,follow" />
@@ -417,6 +419,7 @@ const structuredData = JSON.stringify({
       }
 
       window.harborTrack = function harborTrack(eventName, properties) {
+        window.harborRedditTrack?.(eventName);
         window.harborEvents = window.harborEvents || [];
         window.harborEvents.push({
           eventName,

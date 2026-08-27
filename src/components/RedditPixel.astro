@@ -1,0 +1,42 @@
+---
+const pixelId = import.meta.env.PUBLIC_REDDIT_PIXEL_ID?.trim() ?? "";
+const enabled = /^[A-Za-z0-9_-]{6,100}$/.test(pixelId);
+---
+
+{enabled && (
+  <script is:inline define:vars={{ pixelId }}>
+    (() => {
+      if (window.harborRedditTrack) return;
+
+      const conversionEvents = {
+        early_bird_saved: "SignUp",
+        waitlist_saved: "SignUp",
+        pilot_apply_saved: "Lead"
+      };
+
+      if (!window.rdt) {
+        const reddit = window.rdt = function (...args) {
+          if (reddit.sendEvent) {
+            reddit.sendEvent(...args);
+          } else {
+            reddit.callQueue.push(args);
+          }
+        };
+        reddit.callQueue = [];
+
+        const script = document.createElement("script");
+        script.async = true;
+        script.src = "https://www.redditstatic.com/ads/pixel.js";
+        document.head.appendChild(script);
+      }
+
+      window.rdt("init", pixelId);
+      window.rdt("track", "PageVisit");
+
+      window.harborRedditTrack = (eventName) => {
+        const redditEvent = conversionEvents[eventName];
+        if (redditEvent) window.rdt("track", redditEvent);
+      };
+    })();
+  </script>
+)}

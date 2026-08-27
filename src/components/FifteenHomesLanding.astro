@@ -1,5 +1,6 @@
 ---
 import CampaignAnalytics from "./CampaignAnalytics.astro";
+import RedditPixel from "./RedditPixel.astro";
 import { campaign } from "../data/campaign";
 import "../styles/fifteen-homes.css";
 
@@ -14,6 +15,7 @@ const phaseCopy = {
 <!doctype html>
 <html lang="en">
   <head>
+    <RedditPixel />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{campaign.name} | HarborNavi</title>

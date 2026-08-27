@@ -1,5 +1,6 @@
 ---
 import EnglishFormValidation from "./EnglishFormValidation.astro";
+import RedditPixel from "./RedditPixel.astro";
 import SiteHeader from "./SiteHeader.astro";
 import { landingAssets } from "../data/landingAssets";
 import { demoOptions, faqItems, type LandingPageContent } from "../data/landingPages";
@@ -40,6 +41,7 @@ const structuredData = JSON.stringify({
 <html lang="en">
   <head>
     <EnglishFormValidation />
+    <RedditPixel />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{page.metaTitle} | HarborNavi</title>
@@ -447,6 +449,7 @@ const structuredData = JSON.stringify({
       }
 
       window.harborTrack = function harborTrack(eventName, properties) {
+        window.harborRedditTrack?.(eventName);
         window.harborEvents = window.harborEvents || [];
         window.harborEvents.push({
           eventName,

@@ -1,4 +1,5 @@
 ---
+import RedditPixel from "../components/RedditPixel.astro";
 import SiteHeader from "../components/SiteHeaderV7.astro";
 import SiteMediaLoader from "../components/SiteMediaLoader.astro";
 import "../styles/global.css";
@@ -7,12 +8,13 @@ import "../styles/global.css";
 <!doctype html>
 <html lang="en">
   <head>
+    <RedditPixel />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Privacy | HarborNavi</title>
     <meta
       name="description"
-      content="How HarborNavi handles launch-list email, Pilot Families applications, campaign analytics, and 15 Homes application data."
+      content="How HarborNavi handles launch-list email, Pilot Families applications, campaign analytics, Reddit advertising measurement, and 15 Homes application data."
     />
     <link rel="icon" href="/favicon.png" type="image/png" sizes="512x512" />
     <link rel="canonical" href="https://harbornavi.com/privacy" />
@@ -25,8 +27,8 @@ import "../styles/global.css";
         <h1>How the HarborNavi website handles your information.</h1>
         <p>
           This page explains the current public data flows for the HarborNavi launch list, first-party campaign
-          analytics, Pilot Families applications, and 15 Homes Across America. The website signup flow is separate from the planned local-first
-          product data path.
+          analytics, Reddit advertising measurement, Pilot Families applications, and 15 Homes Across America. The
+          website signup flow is separate from the planned local-first product data path.
         </p>
         <div class="privacy-grid">
           <article>
@@ -104,6 +106,17 @@ import "../styles/global.css";
               page-view totals. Historical events without that identifier fall back to session-level counting.
               Email addresses, application answers, postal details, camera models, and household details are not sent
               as analytics event properties.
+            </p>
+          </article>
+          <article>
+            <h2>Reddit advertising measurement</h2>
+            <p>
+              When the Reddit advertising integration is enabled, public pages load the Reddit Pixel and send a page
+              visit event. HarborNavi also sends a sign-up event after a waitlist submission is saved and a lead event
+              after a Pilot Families application is saved. Form fields such as email address, ZIP Code, device summary,
+              and application answers are not passed to Reddit. Reddit may process browser, device, referrer, and
+              advertising identifiers under its <a href="https://www.reddit.com/policies/privacy-policy" target="_blank" rel="noreferrer">privacy policy</a>.
+              The Pixel is not loaded on HarborNavi admin pages.
             </p>
           </article>
           <article>

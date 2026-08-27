@@ -55,6 +55,7 @@ const { route, completeOnLoad = false } = Astro.props;
     const visitorSession = sessionId();
 
     window.harborTrack = function harborTrack(eventName, properties) {
+      window.harborRedditTrack?.(eventName);
       const payload = {
         event_name: eventName,
         route,

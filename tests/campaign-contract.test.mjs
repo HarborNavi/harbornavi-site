@@ -306,6 +306,36 @@ test("home-v8 leads with household intelligence, then proves local privacy", asy
   assert.doesNotMatch(homeV8, /What this home memory is being built to do/);
 });
 
+test("home-v8 explains the match-on-chip and eSE security chain without overstating certification", async () => {
+  const homeV8 = await source("src/components/HomeV8Landing.astro");
+  const styles = await source("src/styles/home-v7.css");
+
+  assert.match(homeV8, /For sensitive changes/);
+  assert.match(homeV8, /One touch confirms it's you\. Hardware protects what comes next\./);
+  assert.match(homeV8, /Match-on-Chip/);
+  assert.match(homeV8, /Confirm it's you/);
+  assert.match(homeV8, /require a fingerprint scan on the box/);
+  assert.match(homeV8, /main system does not perform the biometric comparison/);
+  assert.match(homeV8, /02 &middot; Security solution/);
+  assert.match(homeV8, /Keep identity and keys protected/);
+  assert.match(homeV8, /Approve only this change/);
+  assert.match(homeV8, /One successful match never unlocks everything/);
+  assert.match(homeV8, /eSE chip and its COS have achieved SOGIS CC EAL5\+ certification under Common Criteria/);
+  assert.match(homeV8, /widely recognized international framework for evaluating security products/);
+  assert.match(homeV8, /An eSE chip separates device identity, trusted credentials, and encryption keys from the main system/);
+  assert.match(homeV8, /goodix\.com\/en\/product\/security_products\/ese/);
+  assert.match(homeV8, /Certification applies to the selected security chip, not HarborNavi as a complete product/);
+  assert.match(homeV8, /Final hardware remains subject to validation/);
+  assert.match(homeV8, /key_int/);
+  assert.match(homeV8, /WAKEUP/);
+  assert.match(homeV8, /secure software and access controls are still required/i);
+  assert.doesNotMatch(homeV8, /planned (?:eSE|secure element|certified security chip)/i);
+  assert.doesNotMatch(homeV8, /never leaks|cannot leak|guarantees? (?:privacy|security)|HarborNavi (?:is|has been) (?:SOGIS )?CC EAL/i);
+  assert.match(styles, /\.fingerprint-detail/);
+  assert.match(styles, /\.match-on-chip-step/);
+  assert.match(styles, /\.ese-certification-level/);
+});
+
 test("waitlist API activates submissions without confirmation email delivery", async () => {
   const api = await source("api/waitlist.ts");
   const waitlist = await source("src/server/waitlist.ts");
