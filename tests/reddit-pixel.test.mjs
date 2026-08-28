@@ -105,13 +105,15 @@ test("all first-party analytics dispatchers forward successful conversions to Re
 });
 
 test("Reddit Pixel configuration and disclosure stay documented", async () => {
-  const [environment, privacy, readme] = await Promise.all([
+  const [environment, productionEnvironment, privacy, readme] = await Promise.all([
     source(".env.example"),
+    source(".env.production"),
     source("src/pages/privacy.astro"),
     source("README.md")
   ]);
 
   assert.match(environment, /PUBLIC_GOOGLE_TAG_MANAGER_ID=""/);
+  assert.match(productionEnvironment, /PUBLIC_GOOGLE_TAG_MANAGER_ID="GTM-MXJJ9BXG"/);
   assert.match(environment, /PUBLIC_REDDIT_PIXEL_ID=""/);
   assert.match(privacy, /Reddit advertising measurement/);
   assert.match(privacy, /Marketing tools are off unless you select Allow marketing cookies/);
@@ -121,5 +123,6 @@ test("Reddit Pixel configuration and disclosure stay documented", async () => {
   assert.match(privacy, /not loaded\s+on HarborNavi admin pages/);
   assert.match(readme, /reddit_page_visit/);
   assert.match(readme, /reddit_sign_up/);
+  assert.match(readme, /GTM-MXJJ9BXG/);
   assert.match(readme, /no GTM request or Reddit event occurs before `granted` consent/);
 });

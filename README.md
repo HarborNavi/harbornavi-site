@@ -50,7 +50,7 @@ Astro dev serves `/package/` correctly, but bare `/package` can collide with `pa
 
 ## Reddit Pixel through Google Tag Manager (Home V8)
 
-Home V8 loads a GTM web container only when `PUBLIC_GOOGLE_TAG_MANAGER_ID` contains a valid `GTM-...` container ID and the visitor explicitly allows marketing cookies. The Reddit Pixel ID stays in GTM and must not be added to the site source. The necessary `harbornavi_marketing_consent` preference cookie stores `granted` or `denied` for up to 180 days; no GTM request or Reddit event occurs before `granted` consent.
+Home V8 loads GTM container `GTM-MXJJ9BXG`, configured as the public production default in `.env.production`, only when the visitor explicitly allows marketing cookies. A deployment environment variable named `PUBLIC_GOOGLE_TAG_MANAGER_ID` can override that public default. The Reddit Pixel ID stays in GTM and must not be added to the site source. The necessary `harbornavi_marketing_consent` preference cookie stores `granted` or `denied` for up to 180 days; no GTM request or Reddit event occurs before `granted` consent.
 
 Configure these tags in the GTM web container using the official Reddit Pixel template and the same Pixel ID from Reddit Ads Events Manager:
 
