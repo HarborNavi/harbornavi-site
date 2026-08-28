@@ -1,0 +1,48 @@
+---
+const containerId = import.meta.env.PUBLIC_GOOGLE_TAG_MANAGER_ID?.trim() ?? "";
+const enabled = /^GTM-[A-Z0-9]+$/.test(containerId);
+const consentCookieName = "harbornavi_marketing_consent";
+---
+
+{enabled && (
+  <script is:inline define:vars={{ consentCookieName, containerId }}>
+    (() => {
+      const conversionEvents = {
+        page_view: "reddit_page_visit",
+        early_bird_saved: "reddit_sign_up"
+      };
+      let marketingAllowed = document.cookie.split("; ").some((part) => part === `${consentCookieName}=granted`);
+      let containerLoaded = false;
+      let pageVisitSent = false;
+
+      function loadContainer() {
+        if (!marketingAllowed || containerLoaded) return;
+        containerLoaded = true;
+        window.dataLayer = window.dataLayer || [];
+        window.dataLayer.push({ "gtm.start": Date.now(), event: "gtm.js" });
+
+        const script = document.createElement("script");
+        script.async = true;
+        script.src = `https://www.googletagmanager.com/gtm.js?id=${encodeURIComponent(containerId)}`;
+        document.head.appendChild(script);
+      }
+
+      function pushConversion(eventName) {
+        const gtmEvent = conversionEvents[eventName];
+        if (!marketingAllowed || !gtmEvent) return;
+        if (gtmEvent === "reddit_page_visit" && pageVisitSent) return;
+        loadContainer();
+        window.dataLayer.push({ event: gtmEvent });
+        if (gtmEvent === "reddit_page_visit") pageVisitSent = true;
+      }
+
+      window.harborSetMarketingConsent = (granted) => {
+        marketingAllowed = Boolean(granted);
+        if (marketingAllowed) pushConversion("page_view");
+      };
+
+      window.harborRedditTrack = pushConversion;
+      loadContainer();
+    })();
+  </script>
+)}

@@ -1,0 +1,122 @@
+---
+const containerId = import.meta.env.PUBLIC_GOOGLE_TAG_MANAGER_ID?.trim() ?? "";
+const enabled = /^GTM-[A-Z0-9]+$/.test(containerId);
+---
+
+{enabled && (
+  <>
+    <section
+      class="marketing-consent-banner"
+      data-marketing-consent-banner
+      role="region"
+      aria-labelledby="marketing-consent-title"
+      hidden
+    >
+      <div class="marketing-consent-copy">
+        <p class="marketing-consent-eyebrow">Privacy choices</p>
+        <h2 id="marketing-consent-title">Marketing cookies are optional.</h2>
+        <p>
+          With your permission, Google Tag Manager loads the Reddit Pixel to measure ad performance. We do not send
+          your email address or form answers. <a href="/privacy">Privacy details</a>
+        </p>
+      </div>
+      <div class="marketing-consent-actions">
+        <button class="marketing-consent-decline" type="button" data-marketing-consent-decline>Decline</button>
+        <button class="marketing-consent-allow" type="button" data-marketing-consent-allow>Allow marketing cookies</button>
+      </div>
+    </section>
+
+    <dialog class="marketing-consent-dialog" data-marketing-consent-dialog aria-labelledby="cookie-settings-title" aria-describedby="cookie-settings-description">
+      <form class="marketing-consent-form" data-marketing-consent-form>
+        <header>
+          <p class="marketing-consent-eyebrow">Privacy choices</p>
+          <h2 id="cookie-settings-title">Cookie settings</h2>
+          <p id="cookie-settings-description">Required preference storage keeps this choice. Marketing tools stay off unless you enable them.</p>
+        </header>
+
+        <div class="marketing-consent-option">
+          <label for="marketing-cookie-toggle">
+            <span>
+              <strong>Marketing cookies</strong>
+              <small>Google Tag Manager and the Reddit Pixel for advertising measurement.</small>
+            </span>
+            <span class="marketing-consent-switch">
+              <input id="marketing-cookie-toggle" type="checkbox" role="switch" data-marketing-consent-toggle />
+              <span aria-hidden="true"></span>
+            </span>
+          </label>
+        </div>
+
+        <p class="marketing-consent-detail">
+          You can change this choice at any time. Turning it off stops future marketing events and clears known Reddit
+          cookies on this site. See our <a href="/privacy">privacy notice</a>.
+        </p>
+
+        <div class="marketing-consent-dialog-actions">
+          <button type="button" data-marketing-consent-cancel>Cancel</button>
+          <button class="marketing-consent-save" type="submit">Save preferences</button>
+        </div>
+      </form>
+    </dialog>
+
+    <script is:inline>
+      (() => {
+        const cookieName = "harbornavi_marketing_consent";
+        const preferenceLifetimeSeconds = 60 * 60 * 24 * 180;
+        const banner = document.querySelector("[data-marketing-consent-banner]");
+        const dialog = document.querySelector("[data-marketing-consent-dialog]");
+        const form = document.querySelector("[data-marketing-consent-form]");
+        const toggle = document.querySelector("[data-marketing-consent-toggle]");
+
+        function readConsent() {
+          const prefix = `${cookieName}=`;
+          const entry = document.cookie.split("; ").find((part) => part.startsWith(prefix));
+          const value = entry ? decodeURIComponent(entry.slice(prefix.length)) : "";
+          return value === "granted" || value === "denied" ? value : "";
+        }
+
+        function writeConsent(value) {
+          const secure = window.location.protocol === "https:" ? "; Secure" : "";
+          document.cookie = `${cookieName}=${encodeURIComponent(value)}; Max-Age=${preferenceLifetimeSeconds}; Path=/; SameSite=Lax${secure}`;
+        }
+
+        function clearKnownRedditCookies() {
+          const secure = window.location.protocol === "https:" ? "; Secure" : "";
+          ["_rdt_cid", "_rdt_em", "_rdt_uuid"].forEach((name) => {
+            document.cookie = `${name}=; Max-Age=0; Path=/; SameSite=Lax${secure}`;
+          });
+        }
+
+        function applyConsent(granted) {
+          writeConsent(granted ? "granted" : "denied");
+          banner.hidden = true;
+          if (!granted) clearKnownRedditCookies();
+          window.harborSetMarketingConsent?.(granted);
+        }
+
+        function syncToggle() {
+          toggle.checked = readConsent() === "granted";
+        }
+
+        document.querySelector("[data-marketing-consent-allow]")?.addEventListener("click", () => applyConsent(true));
+        document.querySelector("[data-marketing-consent-decline]")?.addEventListener("click", () => applyConsent(false));
+
+        document.querySelectorAll("[data-cookie-settings-open]").forEach((button) => {
+          button.addEventListener("click", () => {
+            syncToggle();
+            dialog.showModal();
+          });
+        });
+
+        document.querySelector("[data-marketing-consent-cancel]")?.addEventListener("click", () => dialog.close());
+        form?.addEventListener("submit", (event) => {
+          event.preventDefault();
+          applyConsent(toggle.checked);
+          dialog.close();
+        });
+
+        if (!readConsent()) banner.hidden = false;
+      })();
+    </script>
+  </>
+)}

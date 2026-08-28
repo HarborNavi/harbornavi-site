@@ -1,10 +1,11 @@
 ---
 const pixelId = import.meta.env.PUBLIC_REDDIT_PIXEL_ID?.trim() ?? "";
 const enabled = /^[A-Za-z0-9_-]{6,100}$/.test(pixelId);
+const consentCookieName = "harbornavi_marketing_consent";
 ---
 
 {enabled && (
-  <script is:inline define:vars={{ pixelId }}>
+  <script is:inline define:vars={{ consentCookieName, pixelId }}>
     (() => {
       if (window.harborRedditTrack) return;
 
@@ -13,30 +14,46 @@ const enabled = /^[A-Za-z0-9_-]{6,100}$/.test(pixelId);
         waitlist_saved: "SignUp",
         pilot_apply_saved: "Lead"
       };
+      let marketingAllowed = document.cookie.split("; ").some((part) => part === `${consentCookieName}=granted`);
+      let initialized = false;
 
-      if (!window.rdt) {
-        const reddit = window.rdt = function (...args) {
-          if (reddit.sendEvent) {
-            reddit.sendEvent(...args);
-          } else {
-            reddit.callQueue.push(args);
-          }
-        };
-        reddit.callQueue = [];
+      function initializePixel() {
+        if (!marketingAllowed || initialized) return;
+        initialized = true;
 
-        const script = document.createElement("script");
-        script.async = true;
-        script.src = "https://www.redditstatic.com/ads/pixel.js";
-        document.head.appendChild(script);
+        if (!window.rdt) {
+          const reddit = window.rdt = function (...args) {
+            if (reddit.sendEvent) {
+              reddit.sendEvent(...args);
+            } else {
+              reddit.callQueue.push(args);
+            }
+          };
+          reddit.callQueue = [];
+
+          const script = document.createElement("script");
+          script.async = true;
+          script.src = "https://www.redditstatic.com/ads/pixel.js";
+          document.head.appendChild(script);
+        }
+
+        window.rdt("init", pixelId);
+        window.rdt("track", "PageVisit");
       }
 
-      window.rdt("init", pixelId);
-      window.rdt("track", "PageVisit");
-
       window.harborRedditTrack = (eventName) => {
+        if (!marketingAllowed) return;
+        initializePixel();
         const redditEvent = conversionEvents[eventName];
         if (redditEvent) window.rdt("track", redditEvent);
       };
+
+      window.harborSetMarketingConsent = (granted) => {
+        marketingAllowed = Boolean(granted);
+        if (marketingAllowed) initializePixel();
+      };
+
+      initializePixel();
     })();
   </script>
 )}

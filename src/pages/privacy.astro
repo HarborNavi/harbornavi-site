@@ -111,12 +111,15 @@ import "../styles/global.css";
           <article>
             <h2>Reddit advertising measurement</h2>
             <p>
-              When the Reddit advertising integration is enabled, public pages load the Reddit Pixel and send a page
-              visit event. HarborNavi also sends a sign-up event after a waitlist submission is saved and a lead event
-              after a Pilot Families application is saved. Form fields such as email address, ZIP Code, device summary,
-              and application answers are not passed to Reddit. Reddit may process browser, device, referrer, and
-              advertising identifiers under its <a href="https://www.reddit.com/policies/privacy-policy" target="_blank" rel="noreferrer">privacy policy</a>.
-              The Pixel is not loaded on HarborNavi admin pages.
+              Marketing tools are off unless you select Allow marketing cookies on Home V8. If allowed, Google Tag
+              Manager loads the Reddit Pixel and sends a page visit event; a sign-up event is sent only after a waitlist
+              submission is saved. Form fields such as email address, ZIP Code, device summary, and application answers
+              are not passed to Reddit. Reddit may process browser, device, referrer, and advertising identifiers under
+              its <a href="https://www.reddit.com/policies/privacy-policy" target="_blank" rel="noreferrer">privacy policy</a>.
+              A necessary <code>harbornavi_marketing_consent</code> preference cookie stores the choice for up to 180
+              days. Cookie settings in the Home V8 footer can change or withdraw consent at any time. Withdrawing consent
+              blocks future marketing events and clears known Reddit cookies on this site. Marketing tools are not loaded
+              on HarborNavi admin pages.
             </p>
           </article>
           <article>

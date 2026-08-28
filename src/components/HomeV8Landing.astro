@@ -16,7 +16,8 @@ import {
   X
 } from "@lucide/astro";
 import EnglishFormValidation from "./EnglishFormValidation.astro";
-import RedditPixel from "./RedditPixel.astro";
+import GoogleTagManager from "./GoogleTagManager.astro";
+import MarketingConsent from "./MarketingConsent.astro";
 import SiteHeaderMenu from "./SiteHeaderMenu.astro";
 import SiteMediaLoader from "./SiteMediaLoader.astro";
 import { pilotRewardAdvertisingCopy } from "../data/pilotProgram";
@@ -25,6 +26,8 @@ import "../styles/home-v7.css";
 
 const discordUrl = "https://discord.gg/tC2bktRWWj";
 const surveyUrl = "https://www.surveymonkey.com/r/harbornavi";
+const gtmContainerId = import.meta.env.PUBLIC_GOOGLE_TAG_MANAGER_ID?.trim() ?? "";
+const marketingConsentEnabled = /^GTM-[A-Z0-9]+$/.test(gtmContainerId);
 const heroImage = "/assets/home-v7-v8-memory-hero-id.webp";
 const heroSocialImage = "/assets/home-v7-v8-memory-hero-id.png";
 const heroCarouselSlides = [
@@ -162,7 +165,7 @@ const structuredData = JSON.stringify({
 <html lang="en">
   <head>
     <EnglishFormValidation />
-    <RedditPixel />
+    <GoogleTagManager />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="index,follow" />
@@ -544,7 +547,10 @@ const structuredData = JSON.stringify({
 
       <footer>
         <a class="brand" href="#top" aria-label="HarborNavi home"><span class="brand-mark" aria-hidden="true"><img src="/harbornavi-logo-mark.png" alt="" width="42" height="23" data-media-slot="site-header-logo" /></span><span>HarborNavi</span></a>
-        <p>A mind for the household. Finally at home.</p>
+        <div class="footer-meta">
+          <p>A mind for the household. Finally at home.</p>
+          {marketingConsentEnabled && <button type="button" data-cookie-settings-open>Cookie settings</button>}
+        </div>
       </footer>
 
       <div class="modal" data-success-modal hidden role="dialog" aria-modal="true" aria-labelledby="v6-success-title" aria-describedby="v6-success-description">
@@ -567,6 +573,7 @@ const structuredData = JSON.stringify({
       </div>
     </div>
 
+    <MarketingConsent />
     <SiteMediaLoader />
     <script is:inline>
       const route = document.body.dataset.route || "home-v8";

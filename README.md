@@ -48,6 +48,21 @@ npm run build
 Use `npm run preview` after `npm run build` when checking production-style routing locally.
 Astro dev serves `/package/` correctly, but bare `/package` can collide with `package.json` in dev mode. Production preview and static output serve `/package` correctly.
 
+## Reddit Pixel through Google Tag Manager (Home V8)
+
+Home V8 loads a GTM web container only when `PUBLIC_GOOGLE_TAG_MANAGER_ID` contains a valid `GTM-...` container ID and the visitor explicitly allows marketing cookies. The Reddit Pixel ID stays in GTM and must not be added to the site source. The necessary `harbornavi_marketing_consent` preference cookie stores `granted` or `denied` for up to 180 days; no GTM request or Reddit event occurs before `granted` consent.
+
+Configure these tags in the GTM web container using the official Reddit Pixel template and the same Pixel ID from Reddit Ads Events Manager:
+
+| GTM tag | Reddit event to fire | GTM trigger type | Custom event name |
+| --- | --- | --- | --- |
+| `Reddit - Page Visit - Home V8` | `Page Visit` | Custom Event | `reddit_page_visit` |
+| `Reddit - Sign Up - Home V8` | `Sign Up` | Custom Event | `reddit_sign_up` |
+
+The page-visit event fires after V8 records its first-party page view. The sign-up event fires only after `/api/waitlist` successfully saves the address, not on a button click or failed submission. Neither event sends form fields or application answers to the GTM data layer.
+
+Use GTM Preview to confirm that no container request occurs after Decline, then allow marketing cookies and confirm both custom events. Publish the container and verify `PageVisit` and `SignUp` in Reddit Events Manager and Reddit Pixel Helper. Do not add a second `All Pages` Reddit Page Visit tag, because that would duplicate V8 page visits. `PUBLIC_REDDIT_PIXEL_ID` is the separate direct-pixel path for the other public pages and should remain empty when Reddit tracking is intended to run only through V8's GTM container. The direct-pixel component also honors the same consent cookie and stays off without `granted` consent.
+
 ## Current Notes
 
 - Hero visuals are generated storyboard placeholders under `public/assets/`.
@@ -66,7 +81,7 @@ Astro dev serves `/package/` correctly, but bare `/package` can collide with `pa
 - The `/admin666` page has Dashboard, Leads, Pilot Applications, Media, and System tabs for first-party funnel analytics, application review, and lead operations. The existing `/admin` route remains unchanged.
 - Backend setup lives in `docs/waitlist-backend.md`; database schema lives in `db/waitlist.sql` and `db/analytics.sql`.
 - Existing Neon projects should apply `db/growth-v4.sql` before deploying the v4 APIs.
-- Analytics is first-party and stored in Neon; no GA, PostHog, Plausible, or paid pixels are installed.
+- First-party analytics is stored in Neon. No GA, PostHog, or Plausible integration is installed; Reddit advertising measurement is optional and configuration-gated as documented above.
 - Campaign analytics accepts `road_home_apply_click`, `road_home_form_start`, `road_home_form_complete`, `kickstarter_prelaunch_click`, `youtube_live_click`, and `youtube_replay_click`. Application answers and PII are not sent with those events.
 - The private `/admin666` Media tab uploads JPG, PNG, and GIF files to Vercel Blob and stores their metadata in `site_media`. Image controls are grouped by exact page location for site branding, Home V7, Pilot Families, and About Harbor. Uploading to a location immediately replaces its current image; restoring the default disables the override without deleting upload history. Legacy `hero-carousel` and `page` uploads can be reassigned to a specific location. Connected Vercel deployments authenticate with OIDC through `BLOB_STORE_ID`; `BLOB_READ_WRITE_TOKEN` is only an optional local or legacy fallback.
 - Pilot Families applications are stored separately in `pilot_family_applications`; submitting this form does not join the Kickstarter marketing Topic. The two new tables are initialized idempotently on first use, while `db/media.sql` and `db/pilot-families.sql` remain the explicit migration records.
