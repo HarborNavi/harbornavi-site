@@ -48,6 +48,15 @@ test("all V7 and V8 website images have clear upload placements", async () => {
   assert.match(about, /data-media-slot="about-story-speaker-privacy"/);
   assert.match(about, /data-media-slot="about-story-package-recorded"/);
   assert.match(about, /data-media-slot="about-harbor-os"/);
+
+  const oldProductAssets = /home-v6-(?:pilot-families-v1|memory-hero-id|family-moment-id|homecoming-briefing-id|movie-night-id|trust-boundary-id|hardware-id)/;
+  for (const activePage of [home, homeV8, pilot, about, placements]) {
+    assert.doesNotMatch(activePage, oldProductAssets);
+  }
+  assert.match(pilot, /home-v7-v8-pilot-families-id\.webp/);
+  assert.match(about, /home-v7-v8-memory-hero-id\.webp/);
+  assert.match(about, /home-v7-v8-hardware-id\.webp/);
+  assert.match(placements, /defaultUrl: "\/assets\/home-v7-v8-hardware-id\.webp"/);
 });
 
 test("V7 and V8 images recover from failed managed assets and WebP requests", async () => {
