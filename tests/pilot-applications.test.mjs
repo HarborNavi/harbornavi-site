@@ -154,10 +154,10 @@ test("about harbor presents the approved company story without fabricated names"
   assert.match(about, /\/pilot-families#apply/);
 });
 
-test("V7 public child pages share the home navigation contract", async () => {
+test("V8 public child pages return to the active campaign navigation", async () => {
   const header = await source("src/components/SiteHeaderV7.astro");
   const headerStyles = await source("src/styles/site-header-v7.css");
-  const home = await source("src/components/HomeV7Landing.astro");
+  const home = await source("src/components/HomeV8Landing.astro");
   const about = await source("src/pages/about-harbor.astro");
   const pilot = await source("src/pages/pilot-families.astro");
   const privacy = await source("src/pages/privacy.astro");
@@ -166,8 +166,8 @@ test("V7 public child pages share the home navigation contract", async () => {
   assert.match(home, /class="site-header-v7"/);
   assert.match(header, /class="site-header-v7"/);
   assert.match(header, /width="42" height="23"/);
-  assert.match(header, /href="\/home-v7#memory"/);
-  assert.match(header, /href="\/home-v7#compare"/);
+  assert.match(header, /href="\/home-v8#intelligence"/);
+  assert.match(header, /href="\/home-v8#compare"/);
   assert.match(header, /Join the Pilot Program/);
   assert.match(header, /data-header-menu/);
   assert.match(header, /aria-controls="site-header-v7-navigation"/);
@@ -183,6 +183,10 @@ test("V7 public child pages share the home navigation contract", async () => {
   assert.match(about, /SiteHeaderV7\.astro/);
   assert.match(pilot, /SiteHeaderV7\.astro/);
   assert.match(privacy, /SiteHeaderV7\.astro/);
+  for (const page of [about, pilot, privacy]) {
+    assert.doesNotMatch(page, /href="\/home-v7"/);
+    assert.match(page, /href="\/home-v8"/);
+  }
   assert.doesNotMatch(about, /note="About Harbor"/);
   assert.doesNotMatch(pilot, /Only \$\{pilotSpotCount\} spots/);
 });
