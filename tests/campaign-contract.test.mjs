@@ -306,6 +306,35 @@ test("home-v8 leads with household intelligence, then proves local privacy", asy
   assert.doesNotMatch(homeV8, /What this home memory is being built to do/);
 });
 
+test("home-v7 and home-v8 share the approved product ID across every product-bearing scene", async () => {
+  const homeV7 = await source("src/components/HomeV7Landing.astro");
+  const homeV8 = await source("src/components/HomeV8Landing.astro");
+  const runtimeImages = [
+    "home-v7-v8-pilot-families-id.webp",
+    "home-v7-v8-memory-hero-id.webp",
+    "home-v7-v8-family-moment-id.webp",
+    "home-v7-v8-homecoming-briefing-id.webp",
+    "home-v7-v8-movie-night-id.webp",
+    "home-v7-v8-trust-boundary-id.webp",
+    "home-v7-v8-hardware-id.webp"
+  ];
+
+  for (const filename of runtimeImages) {
+    for (const home of [homeV7, homeV8]) {
+      assert.match(home, new RegExp(`/assets/${filename.replace(".", "\\.")}`));
+    }
+    const bytes = await readFile(new URL(`public/assets/${filename}`, root));
+    assert.equal(bytes.subarray(0, 4).toString("ascii"), "RIFF");
+    assert.equal(bytes.subarray(8, 12).toString("ascii"), "WEBP");
+  }
+
+  for (const home of [homeV7, homeV8]) {
+    assert.match(home, /11 &times; 8\.5 &times; 4\.5 cm/);
+    assert.match(home, /front infrared window/);
+    assert.doesNotMatch(home, /home-v6-(?:pilot-families-v1|memory-hero-id|family-moment-id|homecoming-briefing-id|movie-night-id|trust-boundary-id|hardware-id)/);
+  }
+});
+
 test("home-v8 explains the match-on-chip and eSE security chain without overstating certification", async () => {
   const homeV8 = await source("src/components/HomeV8Landing.astro");
   const styles = await source("src/styles/home-v7.css");

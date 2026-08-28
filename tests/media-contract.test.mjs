@@ -62,14 +62,15 @@ test("V7 and V8 images recover from failed managed assets and WebP requests", as
   assert.match(loader, /formatFallbackAttempted/);
   assert.match(loader, /fallbackState\.defaultAttempted = false/);
 
-  const webpUrls = [...home.matchAll(/\/assets\/[a-z0-9-]+\.webp/g)].map(([url]) => url);
-  assert.ok(webpUrls.length > 0);
-  for (const webpUrl of new Set(webpUrls)) {
-    const pngUrl = webpUrl.replace(/\.webp$/, ".png");
-    await assert.doesNotReject(() => readFile(new URL(`public${pngUrl}`, root)));
+  const homeVersions = [home, homeV8];
+  const versionedWebpUrls = homeVersions.map((page) => [...new Set([...page.matchAll(/\/assets\/[a-z0-9-]+\.webp/g)].map(([url]) => url))]);
+  for (const webpUrls of versionedWebpUrls) {
+    assert.ok(webpUrls.length > 0);
+    for (const webpUrl of webpUrls) {
+      const pngUrl = webpUrl.replace(/\.webp$/, ".png");
+      await assert.doesNotReject(() => readFile(new URL(`public${pngUrl}`, root)));
+    }
   }
-  assert.deepEqual(
-    [...new Set([...homeV8.matchAll(/\/assets\/[a-z0-9-]+\.webp/g)].map(([url]) => url))].sort(),
-    [...new Set(webpUrls)].sort()
-  );
+  assert.deepEqual(versionedWebpUrls[1].sort(), versionedWebpUrls[0].sort());
+  assert.ok(versionedWebpUrls[0].some((url) => url.includes("home-v7-v8-")));
 });

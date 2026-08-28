@@ -25,11 +25,13 @@ import "../styles/home-v7.css";
 
 const discordUrl = "https://discord.gg/tC2bktRWWj";
 const surveyUrl = "https://www.surveymonkey.com/r/harbornavi";
-const heroImage = "/assets/home-v6-memory-hero-id.webp";
-const heroSocialImage = "/assets/home-v6-memory-hero-id.png";
+const heroImage = "/assets/home-v7-v8-memory-hero-id.webp";
+const heroSocialImage = "/assets/home-v7-v8-memory-hero-id.png";
 const heroCarouselSlides = [
   {
-    url: "/assets/home-v6-pilot-families-v1.png",
+    url: "/assets/home-v7-v8-pilot-families-id.webp",
+    width: 1802,
+    height: 873,
     alt: "A family trying HarborNavi together during an early pilot experience.",
     eyebrow: "HarborNavi Pilot Program",
     title: "Join the First 5 Pilot Families",
@@ -39,13 +41,17 @@ const heroCarouselSlides = [
     href: "/pilot-families"
   },
   {
-    url: "/assets/home-v6-memory-hero-id.webp",
+    url: "/assets/home-v7-v8-memory-hero-id.webp",
+    width: 1536,
+    height: 1024,
     alt: "A family sharing a small moment at home while HarborNavi keeps the memory private.",
     eyebrow: "Keep what matters",
     title: "The moments that make home, remembered."
   },
   {
-    url: "/assets/home-v6-movie-night-id.webp",
+    url: "/assets/home-v7-v8-movie-night-id.webp",
+    width: 1536,
+    height: 1024,
     alt: "A movie night moment captured as part of a private home timeline.",
     eyebrow: "Private by design",
     title: "Your home memories stay close to home."
@@ -201,7 +207,7 @@ const structuredData = JSON.stringify({
           <div class="hero-carousel-track" data-carousel-slides>
             {heroCarouselSlides.map((slide, index) => (
               <article class="hero-carousel-slide" data-carousel-slide aria-hidden={index === 0 ? "false" : "true"} hidden={index !== 0}>
-                <img src={slide.url} alt={slide.alt} width="1536" height="1024" loading={index === 0 ? "eager" : "lazy"} decoding="async" data-media-slot={index === 0 ? "home-carousel-pilot" : index === 1 ? "home-carousel-memory" : "home-carousel-movie"} />
+                <img src={slide.url} alt={slide.alt} width={slide.width} height={slide.height} loading={index === 0 ? "eager" : "lazy"} decoding="async" data-media-slot={index === 0 ? "home-carousel-pilot" : index === 1 ? "home-carousel-memory" : "home-carousel-movie"} />
                 {slide.href ? (
                   <a class="hero-carousel-link" href={slide.href} aria-label={`${slide.title}. ${slide.cta}`}>
                     <div class="hero-carousel-overlay">
@@ -262,7 +268,7 @@ const structuredData = JSON.stringify({
 
         <section id="memory" class="memory-story" aria-labelledby="memory-title" data-scenario-event="scenario_family_memory">
           <figure class="memory-visual">
-            <img src="/assets/home-v6-family-moment-id.webp" alt="A child's small achievement becoming an easy-to-find family memory" width="1536" height="1024" loading="lazy" data-media-slot="home-memory-moment" />
+            <img src="/assets/home-v7-v8-family-moment-id.webp" alt="A child's small achievement becoming an easy-to-find family memory" width="1536" height="1024" loading="lazy" data-media-slot="home-memory-moment" />
           </figure>
           <div class="memory-copy">
             <p class="eyebrow">The life already happening at home</p>
@@ -288,7 +294,7 @@ const structuredData = JSON.stringify({
             </div>
           </div>
           <figure>
-            <img src="/assets/home-v6-homecoming-briefing-id.webp" alt="A family member coming home to a dog, with HarborNavi ready to share the short version of the day" width="1536" height="1024" loading="lazy" data-media-slot="home-briefing" />
+            <img src="/assets/home-v7-v8-homecoming-briefing-id.webp" alt="A family member coming home to a dog, with HarborNavi ready to share the short version of the day" width="1536" height="1024" loading="lazy" data-media-slot="home-briefing" />
           </figure>
         </section>
 
@@ -326,7 +332,7 @@ const structuredData = JSON.stringify({
           </article>
 
           <article class="proof-story movie-story" data-scenario-event="scenario_natural_language_action">
-            <figure><img src="/assets/home-v6-movie-night-id.webp" alt="A movie-night request coordinating lighting, television, and climate devices" width="1536" height="1024" loading="lazy" data-media-slot="home-movie-night" /></figure>
+            <figure><img src="/assets/home-v7-v8-movie-night-id.webp" alt="A movie-night request coordinating lighting, television, and climate devices" width="1536" height="1024" loading="lazy" data-media-slot="home-movie-night" /></figure>
             <div class="proof-copy">
               <p class="eyebrow">Memory makes language useful</p>
               <h2>&quot;Movie night&quot; should be enough.</h2>
@@ -346,7 +352,7 @@ const structuredData = JSON.stringify({
               <h2>Sensitive changes still wait for you.</h2>
               <p>Planned fingerprint confirmation keeps member, permission, and pairing changes at the box. Everyday questions stay easy.</p>
             </div>
-            <figure><img src="/assets/home-v6-trust-boundary-id.webp" alt="Local fingerprint confirmation on HarborNavi for a sensitive household access change" width="1536" height="1024" loading="lazy" data-media-slot="home-trust-boundary" /></figure>
+            <figure><img src="/assets/home-v7-v8-trust-boundary-id.webp" alt="Local fingerprint confirmation on HarborNavi above its front infrared window" width="1536" height="1024" loading="lazy" data-media-slot="home-trust-boundary" /></figure>
           </aside>
         </section>
 
@@ -402,7 +408,7 @@ const structuredData = JSON.stringify({
             <p>A dedicated box gives memory, local intelligence, device links, and trust boundaries one stable home.</p>
           </div>
           <div class="hardware-body">
-            <figure class="hardware-visual"><img src="/assets/home-v6-hardware-id.webp" alt="HarborNavi local home hardware with a glossy black top, fingerprint control, and purple status light" width="1536" height="1024" loading="lazy" data-media-slot="home-hardware" /></figure>
+            <figure class="hardware-visual"><img src="/assets/home-v7-v8-hardware-id.webp" alt="HarborNavi local home hardware with a forged-carbon-fiber top, fingerprint control, front infrared window, and purple status light" width="1536" height="1024" loading="lazy" data-media-slot="home-hardware" /></figure>
             <div class="hardware-grid">
               {hardwareValues.map(([title, body], index) => <article><span>{String(index + 1).padStart(2, "0")}</span><h3>{title}</h3><p>{body}</p></article>)}
             </div>
@@ -415,6 +421,7 @@ const structuredData = JSON.stringify({
               <div><dt>Storage</dt><dd>128GB eMMC planned base; two M.2 slots for optional SSDs that extend HarborNavi-managed retention</dd></div>
               <div><dt>Network and display</dt><dd>Dual 2.5GbE and HDMI output</dd></div>
               <div><dt>Device links</dt><dd>Home Assistant, selected camera paths, planned Zigbee, and planned IR</dd></div>
+              <div><dt>Enclosure</dt><dd>11 &times; 8.5 &times; 4.5 cm; forged-carbon-fiber top, black-nickel logo, fingerprint ring, and front infrared window</dd></div>
               <div><dt>Trust hardware</dt><dd>Planned fingerprint confirmation and embedded secure element</dd></div>
             </dl>
           </details>
