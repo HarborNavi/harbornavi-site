@@ -1,5 +1,5 @@
 ---
-const containerId = import.meta.env.PUBLIC_GOOGLE_TAG_MANAGER_ID?.trim() ?? "";
+const containerId = import.meta.env.PUBLIC_GOOGLE_TAG_MANAGER_ID?.trim() || "GTM-MXJJ9BXG";
 const enabled = /^GTM-[A-Z0-9]+$/.test(containerId);
 const consentCookieName = "harbornavi_marketing_consent";
 ---

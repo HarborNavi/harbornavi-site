@@ -26,7 +26,7 @@ import "../styles/home-v7.css";
 
 const discordUrl = "https://discord.gg/tC2bktRWWj";
 const surveyUrl = "https://www.surveymonkey.com/r/harbornavi";
-const gtmContainerId = import.meta.env.PUBLIC_GOOGLE_TAG_MANAGER_ID?.trim() ?? "";
+const gtmContainerId = import.meta.env.PUBLIC_GOOGLE_TAG_MANAGER_ID?.trim() || "GTM-MXJJ9BXG";
 const marketingConsentEnabled = /^GTM-[A-Z0-9]+$/.test(gtmContainerId);
 const heroImage = "/assets/home-v7-v8-memory-hero-id.webp";
 const heroSocialImage = "/assets/home-v7-v8-memory-hero-id.png";

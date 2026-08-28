@@ -56,6 +56,7 @@ test("Home V8 routes Reddit events through GTM without exposing form data", asyn
   ]);
 
   assert.match(gtm, /import\.meta\.env\.PUBLIC_GOOGLE_TAG_MANAGER_ID/);
+  assert.match(gtm, /GTM-MXJJ9BXG/);
   assert.match(gtm, /\^GTM-\[A-Z0-9\]\+\$/);
   assert.match(gtm, /https:\/\/www\.googletagmanager\.com\/gtm\.js/);
   assert.doesNotMatch(gtm, /ns\.html|<noscript>/);
@@ -68,6 +69,7 @@ test("Home V8 routes Reddit events through GTM without exposing form data", asyn
   assert.doesNotMatch(gtm, /email|zip|device_summary|application_answers/i);
 
   assert.match(consent, /data-marketing-consent-decline/);
+  assert.match(consent, /GTM-MXJJ9BXG/);
   assert.match(consent, /data-marketing-consent-allow/);
   assert.match(consent, /role="switch"/);
   assert.match(consent, /Max-Age=\$\{preferenceLifetimeSeconds\}/);
@@ -76,6 +78,7 @@ test("Home V8 routes Reddit events through GTM without exposing form data", asyn
   assert.match(consent, /window\.harborSetMarketingConsent\?\.\(granted\)/);
 
   assert.match(homeV8, /import GoogleTagManager from /);
+  assert.match(homeV8, /GTM-MXJJ9BXG/);
   assert.match(homeV8, /import MarketingConsent from /);
   assert.match(homeV8, /<GoogleTagManager \/>/);
   assert.match(homeV8, /<MarketingConsent \/>/);
