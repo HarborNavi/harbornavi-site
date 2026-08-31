@@ -369,6 +369,14 @@ test("home-v8 explains the match-on-chip and eSE security chain without overstat
   assert.match(styles, /\.ese-certification-level/);
 });
 
+test("home-v9 keeps security steps neutral, user messages aligned, and hero media unaccented", async () => {
+  const styles = await source("src/styles/home-v9.css");
+
+  assert.doesNotMatch(styles, /\.home-v9-page \.hero-visual\s*\{[^}]*border-bottom:/s);
+  assert.match(styles, /\.home-v9-page \.conversation \.from-user\s*\{[^}]*text-align: right;/s);
+  assert.match(styles, /\.home-v9-page \.fingerprint-sequence li\.match-on-chip-step\s*\{[^}]*margin-left: 0;[^}]*padding-left: 0;[^}]*border-left: 0;[^}]*background: transparent;/s);
+});
+
 test("waitlist API activates submissions without confirmation email delivery", async () => {
   const api = await source("api/waitlist.ts");
   const waitlist = await source("src/server/waitlist.ts");

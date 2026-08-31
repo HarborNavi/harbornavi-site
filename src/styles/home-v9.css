@@ -133,7 +133,6 @@ body.home-v9-page {
   background: #15151e;
   box-shadow: 0 24px 70px rgba(0, 0, 0, 0.36);
 }
-.home-v9-page .hero-visual { border-bottom: 3px solid #6d5bd0; }
 .home-v9-page .waitlist-benefit { color: #9b85f5; }
 .home-v9-page .email-form {
   border-color: #343445;
@@ -234,6 +233,7 @@ body.home-v9-page {
   border-color: #4b416e;
   background: #211d37;
   color: #ececf3;
+  text-align: right;
 }
 .home-v9-page .conversation strong {
   border-color: #2a2a38;
@@ -250,8 +250,10 @@ body.home-v9-page {
 .home-v9-page .fingerprint-sequence li,
 .home-v9-page .fingerprint-technical-sequence { border-color: #2a2a38; }
 .home-v9-page .fingerprint-sequence li.match-on-chip-step {
-  border-left-color: #8b73ee;
-  background: #1b1829;
+  margin-left: 0;
+  padding-left: 0;
+  border-left: 0;
+  background: transparent;
 }
 .home-v9-page .fingerprint-sequence li > span {
   border-color: #4b416e;
