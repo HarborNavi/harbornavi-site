@@ -6,25 +6,30 @@ import "../styles/site-header-v7.css";
 interface Props {
   ctaHref?: string;
   ctaLabel?: string;
+  homeHref?: string;
 }
 
-const { ctaHref = "/pilot-families", ctaLabel = "Join the Pilot Program" } = Astro.props;
+const {
+  ctaHref = "/pilot-families",
+  ctaLabel = "Join the Pilot Program",
+  homeHref = "/home-v9"
+} = Astro.props;
 ---
 
 <div class="site-header-v7-bar">
   <header class="site-header-v7">
-    <a class="site-header-v7-brand" href="/home-v8" aria-label="HarborNavi home">
+    <a class="site-header-v7-brand" href={homeHref} aria-label="HarborNavi home">
       <span class="site-header-v7-mark" aria-hidden="true">
         <img src="/harbornavi-logo-mark.png" alt="" width="42" height="23" data-media-slot="site-header-logo" />
       </span>
       <span class="site-header-v7-brand-name">HarborNavi</span>
     </a>
     <nav id="site-header-v7-navigation" class="site-header-v7-nav" aria-label="Page sections">
-      <a href="/home-v8#intelligence">Intelligence</a>
-      <a href="/home-v8#how-it-works">How it works</a>
-      <a href="/home-v8#compatibility">Compatibility</a>
-      <a href="/home-v8#hardware">Hardware</a>
-      <a href="/home-v8#compare">Compare</a>
+      <a href={`${homeHref}#intelligence`}>Intelligence</a>
+      <a href={`${homeHref}#how-it-works`}>How it works</a>
+      <a href={`${homeHref}#compatibility`}>Compatibility</a>
+      <a href={`${homeHref}#hardware`}>Hardware</a>
+      <a href={`${homeHref}#compare`}>Compare</a>
       <a href="/about-harbor">About Harbor</a>
     </nav>
     <a class="site-header-v7-cta" href={ctaHref} data-track="waitlist_start">{ctaLabel}</a>

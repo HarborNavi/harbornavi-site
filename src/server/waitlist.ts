@@ -668,7 +668,7 @@ export async function listRetryableWaitlistIntegrations(limit = 50) {
         )
       )
       or (
-        (coalesce(route, '') not in ('home-v6', 'home-v7', 'home-v8') or metadata->>'consent_confirmed_at' is not null)
+        (coalesce(route, '') not in ('home-v6', 'home-v7', 'home-v8', 'home-v9') or metadata->>'consent_confirmed_at' is not null)
         and coalesce((metadata->>'operator_notification_attempt_count')::int, 0) < 10
         and (
           metadata->>'operator_notification_status' in ('pending', 'failed')
@@ -688,7 +688,7 @@ export async function purgeExpiredUnconfirmedWaitlistLeads(retentionDays = 30) {
   const db = sql();
   const rows = await db`
     delete from waitlist_leads
-    where route in ('home-v6', 'home-v7', 'home-v8')
+    where route in ('home-v6', 'home-v7', 'home-v8', 'home-v9')
       and founder_reservation_status = 'none'
       and metadata->>'consent_confirmed_at' is null
       and nullif(metadata->>'consent_requested_at', '')::timestamptz < now() - (${retentionDays} * interval '1 day')

@@ -1,11 +1,11 @@
 # HarborNavi Waitlist Backend
 
-Status: V6 production baseline plus isolated V7 pilot campaign
+Status: V9 production baseline with retained V6 through V8 versions
 
 ## Shape
 
-- Public pages: `/home-v6`, `/home-v7`, `/pilot-families`, `/15-homes`, `/15-homes/thanks`, `/privacy`, plus retained comparison routes
-- Entry redirects: `/` and `/home` permanently redirect to `/home-v6`
+- Public pages: `/home-v6`, `/home-v7`, `/home-v8`, `/home-v9`, `/pilot-families`, `/15-homes`, `/15-homes/thanks`, `/privacy`, plus retained comparison routes
+- Entry redirects: `/` and `/home` permanently redirect to `/home-v9`
 - Archived pages: `/home-v4` and `/home-v5` are `noindex` references with inactive forms
 - Submit API: `/api/waitlist`
 - Pilot application API: `/api/pilot-application`
@@ -80,7 +80,7 @@ RESEND_KICKSTARTER_TOPIC_NAME
 `RESEND_KICKSTARTER_TOPIC_ID` is empty, the retry worker finds or creates a Topic named
 `HarborNavi Kickstarter Updates` in Production and `HarborNavi Preview Kickstarter Updates` outside Production.
 The Topic must use `default_subscription=opt_out`; submitted contacts are explicitly synced as `opt_in`. The optional
-name override is useful for isolated test resources. There is no V6 Road Topic dependency.
+name override is useful for isolated test resources. There is no separate Road Topic dependency.
 
 Public, build-time campaign configuration:
 
@@ -150,14 +150,14 @@ The v4 migration adds:
 ## Waitlist Flow
 
 `/api/waitlist` validates email, ignores honeypot submissions, upserts the lead by email, and increments
-`submission_count`. Only normalized `route=home-v6` or `route=home-v7` starts marketing consent. V4, V5, and unknown routes have scope
+`submission_count`. Only normalized routes from `home-v6` through `home-v9` start marketing consent. V4, V5, and unknown routes have scope
 `none` and cannot enter the marketing Topic.
 
-For V6 and V7, the server writes its own route-specific consent metadata after the primary save; it never accepts these values from
+For V6 through V9, the server writes its own route-specific consent metadata after the primary save; it never accepts these values from
 the browser:
 
 - `consent_scope=kickstarter_updates`
-- `consent_version=home_v6_2026_07` or `home_v7_2026_07`
+- `consent_version=home_v6_2026_07`, `home_v7_2026_07`, `home_v8_2026_08`, or `home_v9_2026_08`
 - `consent_requested_at=<server ISO timestamp>`
 - `consent_confirmed_at=<same server ISO timestamp>`
 - `consent_status=confirmed`
@@ -183,8 +183,8 @@ Hobby-plan-compatible fallback. A lead remains in Neon until a deletion request 
 The site synchronizes consent and topic membership; it deliberately does not auto-send marketing mail. Campaign sends
 remain a reviewed operator action in Resend Broadcasts:
 
-1. Use the single V6 Kickstarter Topic resolved by the application. Its optional ID override is
-   `RESEND_KICKSTARTER_TOPIC_ID`; do not attach the V6 audience to a Road Topic.
+1. Use the single Kickstarter Topic resolved by the application. Its optional ID override is
+   `RESEND_KICKSTARTER_TOPIC_ID`; do not attach the waitlist audience to a Road Topic.
 2. Draft every Kickstarter marketing send as a Broadcast and associate it with that Topic.
 3. Include Resend's unsubscribe footer or `{{{RESEND_UNSUBSCRIBE_URL}}}`. Never send campaign marketing through the
    transactional Email API to bypass a global or Topic-level unsubscribe.
@@ -198,12 +198,12 @@ its Broadcast editor/API handles reviewed drafts, tests and sends. See
 <https://resend.com/docs/dashboard/topics/introduction> and
 <https://resend.com/docs/dashboard/broadcasts/introduction>.
 
-`/api/waitlist/profile` is a retained legacy endpoint for optional lightweight profile fields. It is not called by V6,
+`/api/waitlist/profile` is a retained legacy endpoint for optional lightweight profile fields. It is not called by the current landing pages,
 does not send Resend email, and does not increment `submission_count`.
 
-The current `/home-v6` and `/home-v7` forms collect email only. A successful submission joins the waitlist immediately
+The `/home-v6` through `/home-v9` forms collect email only. A successful submission joins the waitlist immediately
 and does not require an email confirmation. They do not call the profile, price, or reservation APIs. V4 and V5
-are archived, no-index pages with inactive forms that direct visitors to V6.
+are archived, no-index pages with inactive forms that direct visitors to V9.
 
 The `/15-homes` application opens on the configured external provider. Its answers are not written to
 `waitlist_leads` or `analytics_events`. The provider should redirect successful submissions to `/15-homes/thanks` and
@@ -295,11 +295,11 @@ export SMOKE_EMAIL='replace-with-an-inbox-you-control'
 
 curl -X POST "$SITE_ORIGIN/api/events" \
   -H "content-type: application/json" \
-  -d '{"event_name":"page_view","route":"home-v6","utm_source":"smoke","utm_campaign":"analytics_smoke","properties":{"smoke":true}}'
+  -d '{"event_name":"page_view","route":"home-v9","utm_source":"smoke","utm_campaign":"analytics_smoke","properties":{"smoke":true}}'
 
 curl -X POST "$SITE_ORIGIN/api/waitlist" \
   -H "content-type: application/json" \
-  -d "{\"email\":\"$SMOKE_EMAIL\",\"route\":\"home-v6\",\"form_location\":\"smoke\",\"utm_source\":\"smoke\",\"utm_campaign\":\"analytics_smoke\"}"
+  -d "{\"email\":\"$SMOKE_EMAIL\",\"route\":\"home-v9\",\"form_location\":\"smoke\",\"utm_source\":\"smoke\",\"utm_campaign\":\"analytics_smoke\"}"
 ```
 
 Confirm that the POST returns `subscription_status=confirmed` and `confirmation_email_required=false`, without an exact

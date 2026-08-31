@@ -12,17 +12,20 @@ import {
   waitlistRouteForConsentVersion
 } from "../src/server/waitlist-consent.ts";
 
-test("home-v6, home-v7, and home-v8 receive the Kickstarter consent scope", () => {
-  assert.equal(activeWaitlistRoute, "home-v6");
-  assert.equal(activeWaitlistConsentVersion, "home_v6_2026_07");
+test("home-v6 through home-v9 receive the Kickstarter consent scope", () => {
+  assert.equal(activeWaitlistRoute, "home-v9");
+  assert.equal(activeWaitlistConsentVersion, "home_v9_2026_08");
   assert.equal(normalizeWaitlistRoute("  HOME-V6  "), "home-v6");
   assert.equal(contactConsentScopeForRoute("home-v6"), "kickstarter_updates");
   assert.equal(contactConsentScopeForRoute("home-v7"), "kickstarter_updates");
   assert.equal(contactConsentScopeForRoute("home-v8"), "kickstarter_updates");
+  assert.equal(contactConsentScopeForRoute("home-v9"), "kickstarter_updates");
   assert.equal(waitlistConsentVersionForRoute("home-v7"), "home_v7_2026_07");
   assert.equal(waitlistConsentVersionForRoute("home-v8"), "home_v8_2026_08");
+  assert.equal(waitlistConsentVersionForRoute("home-v9"), "home_v9_2026_08");
   assert.equal(waitlistRouteForConsentVersion("home_v7_2026_07"), "home-v7");
   assert.equal(waitlistRouteForConsentVersion("home_v8_2026_08"), "home-v8");
+  assert.equal(waitlistRouteForConsentVersion("home_v9_2026_08"), "home-v9");
   assert.equal(contactConsentScopeForRoute("home-v5"), "none");
   assert.equal(contactConsentScopeForRoute("home-v4"), "none");
   assert.equal(contactConsentScopeForRoute("home-v2"), "none");
@@ -48,6 +51,13 @@ test("launch-page consent becomes active at submission time", () => {
   assert.deepEqual(serverConsentMetadata("home-v8", now), {
     consent_scope: "kickstarter_updates",
     consent_version: "home_v8_2026_08",
+    consent_requested_at: "2026-07-15T00:00:00.000Z",
+    consent_confirmed_at: "2026-07-15T00:00:00.000Z",
+    consent_status: "confirmed"
+  });
+  assert.deepEqual(serverConsentMetadata("home-v9", now), {
+    consent_scope: "kickstarter_updates",
+    consent_version: "home_v9_2026_08",
     consent_requested_at: "2026-07-15T00:00:00.000Z",
     consent_confirmed_at: "2026-07-15T00:00:00.000Z",
     consent_status: "confirmed"

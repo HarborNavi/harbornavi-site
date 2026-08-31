@@ -6,10 +6,11 @@ This project is intentionally separate from the HarborNavi product coordination 
 
 ## Routes
 
-- `/` and `/home`: permanent redirects to the current `/home-v6` landing page.
-- `/home-v6`: current HarborNavi pre-launch page with immediate waitlist enrollment.
+- `/` and `/home`: permanent redirects to the current `/home-v9` landing page.
+- `/home-v6`: retained HarborNavi pre-launch version with immediate waitlist enrollment.
 - `/home-v7`: isolated Home Memory campaign version with the three-position hero carousel and Pilot Families entry point.
-- `/home-v8`: local-first household intelligence narrative with the same waitlist and Pilot Families entry points.
+- `/home-v8`: prior local-first household intelligence version with the same waitlist and Pilot Families entry points.
+- `/home-v9`: current black-and-purple HarborNavi landing page with immediate waitlist enrollment.
 - `/home-v2`: earlier HarborNavi early-access page retained for comparison.
 - `/home-v3`: five-question product narrative retained for comparison.
 - `/home-v4`: archived Kickstarter concept, marked `noindex`; its form is inactive.
@@ -48,9 +49,9 @@ npm run build
 Use `npm run preview` after `npm run build` when checking production-style routing locally.
 Astro dev serves `/package/` correctly, but bare `/package` can collide with `package.json` in dev mode. Production preview and static output serve `/package` correctly.
 
-## Reddit Pixel through Google Tag Manager (Home V8)
+## Reddit Pixel through Google Tag Manager (Home V8 and V9)
 
-Home V8 loads GTM container `GTM-MXJJ9BXG`, configured as the public production default in `.env.production`, only when the visitor explicitly allows marketing cookies. A deployment environment variable named `PUBLIC_GOOGLE_TAG_MANAGER_ID` can override that public default. The Reddit Pixel ID stays in GTM and must not be added to the site source. The necessary `harbornavi_marketing_consent` preference cookie stores `granted` or `denied` for up to 180 days; no GTM request or Reddit event occurs before `granted` consent.
+Home V8 and V9 load GTM container `GTM-MXJJ9BXG`, configured as the public production default in `.env.production`, only when the visitor explicitly allows marketing cookies. A deployment environment variable named `PUBLIC_GOOGLE_TAG_MANAGER_ID` can override that public default. The Reddit Pixel ID stays in GTM and must not be added to the site source. The necessary `harbornavi_marketing_consent` preference cookie stores `granted` or `denied` for up to 180 days; no GTM request or Reddit event occurs before `granted` consent.
 
 Configure these tags in the GTM web container using the official Reddit Pixel template and the same Pixel ID from Reddit Ads Events Manager:
 
@@ -59,25 +60,25 @@ Configure these tags in the GTM web container using the official Reddit Pixel te
 | `Reddit - Page Visit - Home V8` | `Page Visit` | Custom Event | `reddit_page_visit` |
 | `Reddit - Sign Up - Home V8` | `Sign Up` | Custom Event | `reddit_sign_up` |
 
-The page-visit event fires after V8 records its first-party page view. The sign-up event fires only after `/api/waitlist` successfully saves the address, not on a button click or failed submission. Neither event sends form fields or application answers to the GTM data layer.
+The page-visit event fires after V8 or V9 records its first-party page view. The sign-up event fires only after `/api/waitlist` successfully saves the address, not on a button click or failed submission. Neither event sends form fields or application answers to the GTM data layer.
 
-Use GTM Preview to confirm that no container request occurs after Decline, then allow marketing cookies and confirm both custom events. Publish the container and verify `PageVisit` and `SignUp` in Reddit Events Manager and Reddit Pixel Helper. Do not add a second `All Pages` Reddit Page Visit tag, because that would duplicate V8 page visits. `PUBLIC_REDDIT_PIXEL_ID` is the separate direct-pixel path for the other public pages and should remain empty when Reddit tracking is intended to run only through V8's GTM container. The direct-pixel component also honors the same consent cookie and stays off without `granted` consent.
+Use GTM Preview to confirm that no container request occurs after Decline, then allow marketing cookies and confirm both custom events. Publish the container and verify `PageVisit` and `SignUp` in Reddit Events Manager and Reddit Pixel Helper. Do not add a second `All Pages` Reddit Page Visit tag, because that would duplicate V8 and V9 page visits. `PUBLIC_REDDIT_PIXEL_ID` is the separate direct-pixel path for the other public pages and should remain empty when Reddit tracking is intended to run only through the V8/V9 GTM container. The direct-pixel component also honors the same consent cookie and stays off without `granted` consent.
 
 ## Current Notes
 
 - Hero visuals are generated storyboard placeholders under `public/assets/`.
-- `/home-v6` remains the default landing page; `/home-v7` and `/home-v8` are deployed as isolated campaign versions. V4 and V5 remain available only as no-index visual history and no longer accept email.
-- A V6 or V7 form submission immediately records the normalized email and consent time in Neon. No confirmation email is required; contact sync and operator notifications are best-effort integrations that do not block enrollment.
+- `/home-v9` is the default landing page; `/home-v6`, `/home-v7`, and `/home-v8` remain available as retained versions. V4 and V5 remain available only as no-index visual history and no longer accept email.
+- A V6 through V9 form submission immediately records the normalized email and consent time in Neon. No confirmation email is required; contact sync and operator notifications are best-effort integrations that do not block enrollment.
 - Integration state is stored in `waitlist_leads.metadata`. GitHub Actions invokes `/api/cron/retry-waitlist` hourly, with a daily Vercel Cron fallback compatible with the Hobby plan. The worker retries eligible contact-sync and operator-alert failures and initializes the Kickstarter Topic when needed.
 - The public V7 counter shows only the `500+` milestone and does not request or receive an exact count. The exact total is calculated from server-only `WAITLIST_PRIVATE_BASELINE` and `WAITLIST_PRIVATE_BASELINE_STARTED_AT` values and is returned only by the authenticated admin analytics endpoint. Duplicate submissions update the existing lead without increasing the exact count.
-- The Kickstarter Topic uses `default_subscription=opt_out`, while each submitted address is explicitly synced as `opt_in`. `RESEND_KICKSTARTER_TOPIC_ID` is an optional override; the V6/V7 flow has no Road Topic dependency.
+- The Kickstarter Topic uses `default_subscription=opt_out`, while each submitted address is explicitly synced as `opt_in`. `RESEND_KICKSTARTER_TOPIC_ID` is an optional override; the waitlist flow has no Road Topic dependency.
 - Vercel Production uses the Neon `main` branch. Vercel Preview uses the permanent schema-only Neon `preview` branch, so Fiona's Preview submissions cannot write to production lead or analytics data.
 - The prior double-opt-in production flow was accepted on 2026-07-29. It was replaced on 2026-08-03 by immediate waitlist enrollment; legacy confirmation links remain supported.
 - Campaign dates and public destinations are centralized in `src/data/campaign.ts`. External Tally/application, Kickstarter, and YouTube URLs come only from `PUBLIC_*` environment variables and render a clear unavailable state while empty. The application also requires `PUBLIC_ROAD_HOMES_PRIVACY_READY=true` after its provider, retention, deletion contact, and applicant rights are published.
 - Central milestones are Kickstarter pre-launch on `2026-09-15`, the road field test on `2026-11-12..2026-12-05`, the public field report on `2026-12-12`, and the planned Kickstarter launch on `2027-01-12`.
 - The external 15 Homes application is not written to the site's waitlist or analytics tables. Its provider should redirect completed applications to `/15-homes/thanks`.
 - Resend Broadcasts, rather than the transactional Email API, are used for reviewed Kickstarter marketing sends and unsubscribe handling.
-- Compatibility model research and price-fit testing remain separate follow-up work; the existing profile and reservation APIs are retained but are not called by `/home-v6`, `/home-v7`, or `/home-v8`.
+- Compatibility model research and price-fit testing remain separate follow-up work; the existing profile and reservation APIs are retained but are not called by `/home-v6`, `/home-v7`, `/home-v8`, or `/home-v9`.
 - The `/admin666` page has Dashboard, Leads, Pilot Applications, Media, and System tabs for first-party funnel analytics, application review, and lead operations. The existing `/admin` route remains unchanged.
 - Backend setup lives in `docs/waitlist-backend.md`; database schema lives in `db/waitlist.sql` and `db/analytics.sql`.
 - Existing Neon projects should apply `db/growth-v4.sql` before deploying the v4 APIs.

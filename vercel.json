@@ -2,12 +2,12 @@
   "redirects": [
     {
       "source": "/",
-      "destination": "/home-v6",
+      "destination": "/home-v9",
       "permanent": true
     },
     {
       "source": "/home",
-      "destination": "/home-v6",
+      "destination": "/home-v9",
       "permanent": true
     }
   ],

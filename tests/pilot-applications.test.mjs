@@ -70,7 +70,7 @@ test("pilot campaign banner and form stay on the approved contract", async () =>
   assert.match(home, /href: "\/pilot-families"/);
   assert.match(home, /class="site-header-v7-cta" href="\/pilot-families">Join the Pilot Program<\/a>/);
   assert.match(home, /data-route="home-v7"/);
-  assert.match(homeV8, /data-route="home-v8"/);
+  assert.match(homeV8, /const route = isV9 \? "home-v9" : "home-v8"/);
   assert.match(home, /Join the waitlist/);
   assert.match(home, /early-bird pricing/);
   assert.match(home, /Enter your email for early-bird pricing and launch updates\./);
@@ -154,7 +154,7 @@ test("about harbor presents the approved company story without fabricated names"
   assert.match(about, /\/pilot-families#apply/);
 });
 
-test("V8 public child pages return to the active campaign navigation", async () => {
+test("public child pages use their requested home navigation target", async () => {
   const header = await source("src/components/SiteHeaderV7.astro");
   const headerStyles = await source("src/styles/site-header-v7.css");
   const home = await source("src/components/HomeV8Landing.astro");
@@ -166,8 +166,9 @@ test("V8 public child pages return to the active campaign navigation", async () 
   assert.match(home, /class="site-header-v7"/);
   assert.match(header, /class="site-header-v7"/);
   assert.match(header, /width="42" height="23"/);
-  assert.match(header, /href="\/home-v8#intelligence"/);
-  assert.match(header, /href="\/home-v8#compare"/);
+  assert.match(header, /homeHref = "\/home-v9"/);
+  assert.match(header, /\$\{homeHref\}#intelligence/);
+  assert.match(header, /\$\{homeHref\}#compare/);
   assert.match(header, /Join the Pilot Program/);
   assert.match(header, /data-header-menu/);
   assert.match(header, /aria-controls="site-header-v7-navigation"/);
@@ -183,9 +184,10 @@ test("V8 public child pages return to the active campaign navigation", async () 
   assert.match(about, /SiteHeaderV7\.astro/);
   assert.match(pilot, /SiteHeaderV7\.astro/);
   assert.match(privacy, /SiteHeaderV7\.astro/);
+  assert.match(about, /homeHref="\/home-v9"/);
   for (const page of [about, pilot, privacy]) {
-    assert.doesNotMatch(page, /href="\/home-v7"/);
-    assert.match(page, /href="\/home-v8"/);
+    assert.doesNotMatch(page, /href="\/home-v[678]"/);
+    assert.match(page, /href="\/home-v9"/);
   }
   assert.doesNotMatch(about, /note="About Harbor"/);
   assert.doesNotMatch(pilot, /Only \$\{pilotSpotCount\} spots/);

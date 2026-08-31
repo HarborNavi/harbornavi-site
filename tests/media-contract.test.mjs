@@ -5,7 +5,7 @@ import test from "node:test";
 const root = new URL("../", import.meta.url);
 const source = async (path) => readFile(new URL(path, root), "utf8");
 
-test("all V7 and V8 website images have clear upload placements", async () => {
+test("all V7, V8, and V9 website images have clear upload placements", async () => {
   const media = await source("src/server/media.ts");
   const schema = await source("db/media.sql");
   const admin = await source("src/pages/admin666.astro");
@@ -35,7 +35,7 @@ test("all V7 and V8 website images have clear upload placements", async () => {
   assert.match(admin, /Restore default/);
   assert.doesNotMatch(admin, /<option value="page">Other page media<\/option>/);
   assert.equal((placements.match(/key: "/g) || []).length, 18);
-  assert.match(placements, /pagePath: "\/home-v7 and \/home-v8 - Top carousel, slide 1"/);
+  assert.match(placements, /pagePath: "\/home-v7, \/home-v8, and \/home-v9 - Top carousel, slide 1"/);
   assert.match(placements, /pagePath: "\/pilot-families - Hero"/);
   assert.match(placements, /pagePath: "\/about-harbor#founding-story - Smart speaker privacy scenario"/);
   assert.match(placements, /pagePath: "\/about-harbor#founding-story - Package camera scenario"/);

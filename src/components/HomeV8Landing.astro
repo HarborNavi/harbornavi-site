@@ -23,6 +23,16 @@ import SiteMediaLoader from "./SiteMediaLoader.astro";
 import { pilotRewardAdvertisingCopy } from "../data/pilotProgram";
 import "../styles/site-header-v7.css";
 import "../styles/home-v7.css";
+import "../styles/home-v9.css";
+
+interface Props {
+  version?: "v8" | "v9";
+}
+
+const { version = "v8" } = Astro.props;
+const isV9 = version === "v9";
+const route = isV9 ? "home-v9" : "home-v8";
+const pageUrl = `https://harbornavi.com/${route}`;
 
 const discordUrl = "https://discord.gg/tC2bktRWWj";
 const surveyUrl = "https://www.surveymonkey.com/r/harbornavi";
@@ -152,7 +162,7 @@ const structuredData = JSON.stringify({
   category: "Local-first household intelligence",
   slogan: "A mind for the household. Finally at home.",
   description: "HarborNavi is local-first AI that understands household context, coordinates supported devices, remembers what matters, and keeps private data at home.",
-  url: "https://harbornavi.com/home-v8",
+  url: pageUrl,
   image: `https://harbornavi.com${heroSocialImage}`,
   brand: {
     "@type": "Brand",
@@ -171,12 +181,12 @@ const structuredData = JSON.stringify({
     <meta name="robots" content="index,follow" />
     <title>HarborNavi - A mind for the household</title>
     <meta name="description" content="Local-first AI that understands household context, coordinates supported devices, remembers what matters, and keeps private data at home." />
-    <link rel="canonical" href="https://harbornavi.com/home-v8" />
+    <link rel="canonical" href={pageUrl} />
     <link rel="icon" href="/favicon.png" type="image/png" sizes="512x512" data-media-slot="site-favicon" />
     <meta property="og:title" content="A mind for the household. Finally at home." />
     <meta property="og:description" content="Local-first AI that understands household context, coordinates supported devices, remembers what matters, and keeps private data at home." />
     <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://harbornavi.com/home-v8" />
+    <meta property="og:url" content={pageUrl} />
     <meta property="og:image" content={`https://harbornavi.com${heroSocialImage}`} />
     <meta name="twitter:card" content="summary_large_image" />
     <meta name="twitter:title" content="A mind for the household. Finally at home." />
@@ -184,7 +194,7 @@ const structuredData = JSON.stringify({
     <meta name="twitter:image" content={`https://harbornavi.com${heroSocialImage}`} />
     <script is:inline type="application/ld+json" set:html={structuredData}></script>
   </head>
-  <body class="home-v6-page" data-route="home-v8">
+  <body class:list={["home-v6-page", { "home-v9-page": isV9 }]} data-route={route}>
     <div class="site-shell">
       <div class="site-header-v7-bar">
         <header class="site-header-v7">
@@ -246,7 +256,8 @@ const structuredData = JSON.stringify({
           </div>
         </section>
         <section class="hero" aria-labelledby="hero-title">
-          <h1 id="hero-title">A mind for the household. Finally at home.</h1>
+          {isV9 && <p class="v9-hero-kicker"><span aria-hidden="true"></span>Local household intelligence &middot; Private by design</p>}
+          <h1 id="hero-title">A mind for the household. {isV9 ? <span>Finally at home.</span> : "Finally at home."}</h1>
           <div class="hero-copy">
             <p class="category">Sci-fi intelligence. Home-warmed care. Kept entirely at home.</p>
             <div class="hero-description">
