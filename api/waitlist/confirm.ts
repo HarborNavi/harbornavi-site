@@ -17,10 +17,11 @@ import {
 } from "../../src/server/waitlist.js";
 
 function redirectToLanding(status: string, route = activeWaitlistRoute) {
+  const landingPath = route === activeWaitlistRoute ? "/" : `/${route}`;
   return new Response(null, {
     status: 303,
     headers: {
-      location: `/${route}?confirmation=${encodeURIComponent(status)}#join`,
+      location: `${landingPath}?confirmation=${encodeURIComponent(status)}#join`,
       "cache-control": "no-store",
       "referrer-policy": "no-referrer"
     }

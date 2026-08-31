@@ -32,7 +32,7 @@ interface Props {
 const { version = "v8" } = Astro.props;
 const isV9 = version === "v9";
 const route = isV9 ? "home-v9" : "home-v8";
-const pageUrl = `https://harbornavi.com/${route}`;
+const pageUrl = isV9 ? "https://harbornavi.com" : "https://harbornavi.com/home-v8";
 
 const discordUrl = "https://discord.gg/tC2bktRWWj";
 const surveyUrl = "https://www.surveymonkey.com/r/harbornavi";

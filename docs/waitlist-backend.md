@@ -1,12 +1,12 @@
 # HarborNavi Waitlist Backend
 
-Status: V9 production baseline with retained V6 through V8 versions
+Status: Final root homepage using the V9 implementation internally
 
 ## Shape
 
-- Public pages: `/home-v6`, `/home-v7`, `/home-v8`, `/home-v9`, `/pilot-families`, `/15-homes`, `/15-homes/thanks`, `/privacy`, plus retained comparison routes
-- Entry redirects: `/` and `/home` permanently redirect to `/home-v9`
-- Archived pages: `/home-v4` and `/home-v5` are `noindex` references with inactive forms
+- Public pages: `/`, `/pilot-families`, `/15-homes`, `/15-homes/thanks`, and `/privacy`
+- Entry redirects: `/home` and `/home-v2` through `/home-v9` permanently redirect to `/`
+- Archived source pages: `/home-v2` through `/home-v9` are retained internally, while V4 and V5 forms remain inactive
 - Submit API: `/api/waitlist`
 - Pilot application API: `/api/pilot-application`
 - Legacy confirmation API: `/api/waitlist/confirm`
@@ -201,9 +201,9 @@ its Broadcast editor/API handles reviewed drafts, tests and sends. See
 `/api/waitlist/profile` is a retained legacy endpoint for optional lightweight profile fields. It is not called by the current landing pages,
 does not send Resend email, and does not increment `submission_count`.
 
-The `/home-v6` through `/home-v9` forms collect email only. A successful submission joins the waitlist immediately
-and does not require an email confirmation. They do not call the profile, price, or reservation APIs. V4 and V5
-are archived, no-index pages with inactive forms that direct visitors to V9.
+The final root homepage uses the `home-v9` internal route identifier and collects email only. A successful submission
+joins the waitlist immediately and does not require an email confirmation. It does not call the profile, price, or
+reservation APIs. V4 and V5 are archived, no-index pages with inactive forms that direct visitors to `/`.
 
 The `/15-homes` application opens on the configured external provider. Its answers are not written to
 `waitlist_leads` or `analytics_events`. The provider should redirect successful submissions to `/15-homes/thanks` and

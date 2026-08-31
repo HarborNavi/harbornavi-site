@@ -166,7 +166,7 @@ test("public child pages use their requested home navigation target", async () =
   assert.match(home, /class="site-header-v7"/);
   assert.match(header, /class="site-header-v7"/);
   assert.match(header, /width="42" height="23"/);
-  assert.match(header, /homeHref = "\/home-v9"/);
+  assert.match(header, /homeHref = "\/"/);
   assert.match(header, /\$\{homeHref\}#intelligence/);
   assert.match(header, /\$\{homeHref\}#compare/);
   assert.match(header, /Join the Pilot Program/);
@@ -184,10 +184,9 @@ test("public child pages use their requested home navigation target", async () =
   assert.match(about, /SiteHeaderV7\.astro/);
   assert.match(pilot, /SiteHeaderV7\.astro/);
   assert.match(privacy, /SiteHeaderV7\.astro/);
-  assert.match(about, /homeHref="\/home-v9"/);
   for (const page of [about, pilot, privacy]) {
     assert.doesNotMatch(page, /href="\/home-v[678]"/);
-    assert.match(page, /href="\/home-v9"/);
+    assert.match(page, /href="\/"/);
   }
   assert.doesNotMatch(about, /note="About Harbor"/);
   assert.doesNotMatch(pilot, /Only \$\{pilotSpotCount\} spots/);

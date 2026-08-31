@@ -34,14 +34,14 @@ test("campaign pages declare their canonical URLs", async () => {
   assert.match(thanksPage, /rel="canonical" href="https:\/\/harbornavi\.com\/15-homes\/thanks"/);
 });
 
-test("campaign email links target the current home-v9 join anchor", async () => {
+test("campaign email links target the final root join anchor", async () => {
   const campaignPage = await source("src/components/FifteenHomesLanding.astro");
   const thanksPage = await source("src/pages/15-homes/thanks.astro");
   const homeV9 = await source("src/components/HomeV8Landing.astro");
   const combined = `${campaignPage}\n${thanksPage}`;
   assert.match(homeV9, /id="join"/);
   assert.doesNotMatch(combined, /\/home-v[45]#(?:join|waitlist)/);
-  assert.equal((combined.match(/\/home-v9#join/g) || []).length, 3);
+  assert.equal((combined.match(/href="\/#join"/g) || []).length, 3);
 });
 
 test("application availability distinguishes missing URL from pending privacy review", async () => {
@@ -104,7 +104,7 @@ test("home-v4 and home-v5 remain no-index historical comparisons", async () => {
     assert.match(archived, /<meta name="robots" content="noindex,follow" \/>/);
     assert.equal(forms.length, 2);
     for (const form of forms) {
-      assert.match(form, /action="\/home-v9#join"/);
+      assert.match(form, /action="\/#join"/);
       assert.match(form, /method="get"/);
       assert.match(form, /type="email"[^>]*disabled/);
       assert.doesNotMatch(form, /data-early-form/);
@@ -112,24 +112,36 @@ test("home-v4 and home-v5 remain no-index historical comparisons", async () => {
   }
 });
 
-test("public roots redirect to home-v9 and archived pages stay out of the sitemap", async () => {
+test("the root renders the final homepage and public version aliases redirect back to it", async () => {
   const vercel = JSON.parse(await source("vercel.json"));
   const sitemap = await source("public/sitemap.xml");
+  const indexPage = await source("src/pages/index.astro");
+  const homePage = await source("src/pages/home.astro");
   const redirects = new Map(vercel.redirects.map((redirect) => [redirect.source, redirect]));
 
-  for (const route of ["/", "/home"]) {
+  assert.match(indexPage, /HomeV8Landing version="v9"/);
+  assert.match(homePage, /HomeV8Landing version="v9"/);
+  assert.equal(redirects.has("/"), false);
+  for (const route of [
+    "/home",
+    "/home-v2",
+    "/home-v3",
+    "/home-v4",
+    "/home-v5",
+    "/home-v6",
+    "/home-v7",
+    "/home-v8",
+    "/home-v9"
+  ]) {
     assert.deepEqual(redirects.get(route), {
       source: route,
-      destination: "/home-v9",
+      destination: "/",
       permanent: true
     });
   }
-  assert.match(sitemap, /<loc>https:\/\/harbornavi\.com\/home-v6<\/loc>/);
-  assert.match(sitemap, /<loc>https:\/\/harbornavi\.com\/home-v7<\/loc>/);
-  assert.match(sitemap, /<loc>https:\/\/harbornavi\.com\/home-v8<\/loc>/);
-  assert.match(sitemap, /<loc>https:\/\/harbornavi\.com\/home-v9<\/loc>/);
+  assert.match(sitemap, /<loc>https:\/\/harbornavi\.com\/<\/loc>/);
   assert.match(sitemap, /<loc>https:\/\/harbornavi\.com\/about-harbor<\/loc>/);
-  assert.doesNotMatch(sitemap, /<loc>https:\/\/harbornavi\.com\/home-v[45]<\/loc>/);
+  assert.doesNotMatch(sitemap, /<loc>https:\/\/harbornavi\.com\/home-v\d+<\/loc>/);
 });
 
 test("versioned home routes and admin666 retain their route contracts", async () => {
@@ -149,7 +161,7 @@ test("versioned home routes and admin666 retain their route contracts", async ()
   assert.match(homeV7, /Home is where the heart is\. And where your memories live\./);
   assert.match(homeV8Page, /HomeV8Landing/);
   assert.match(homeV8, /const route = isV9 \? "home-v9" : "home-v8"/);
-  assert.match(homeV8, /const pageUrl = `https:\/\/harbornavi\.com\/\$\{route\}`/);
+  assert.match(homeV8, /const pageUrl = isV9 \? "https:\/\/harbornavi\.com" : "https:\/\/harbornavi\.com\/home-v8"/);
   assert.match(homeV8, /Join the First 5 Pilot Families/);
   assert.match(homeV8, /A mind for the household\./);
   assert.match(homeV8, /Finally at home\./);
@@ -157,6 +169,8 @@ test("versioned home routes and admin666 retain their route contracts", async ()
   assert.doesNotMatch(homeV6, /Join the First 5 Pilot Families/);
   assert.match(admin666, /data-tab-button="pilot-applications"/);
   assert.match(admin666, /data-tab-button="media"/);
+  assert.match(admin666, /<a href="\/">Homepage<\/a>/);
+  assert.doesNotMatch(admin666, /href="\/home-v\d+"/);
   assert.doesNotMatch(admin, /data-tab-button="pilot-applications"/);
   assert.doesNotMatch(admin, /data-tab-button="media"/);
 });
@@ -180,7 +194,7 @@ test("Vercel routing stays within the Hobby function limit", async () => {
 test("privacy copy documents immediate waitlist enrollment and historical-page boundary", async () => {
   const privacy = await source("src/pages/privacy.astro");
 
-  assert.match(privacy, /<code>\/home-v9<\/code> is the current launch page/);
+  assert.match(privacy, /<code>https:\/\/harbornavi\.com<\/code> is the current launch page/);
   assert.match(privacy, /<code>\/home-v4<\/code> and <code>\/home-v5<\/code> are no-index historical comparisons/);
   assert.match(privacy, /joins the HarborNavi waitlist immediately/);
   assert.match(privacy, /does not require a confirmation link after submission/);

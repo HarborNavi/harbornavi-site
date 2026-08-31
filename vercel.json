@@ -1,13 +1,48 @@
 {
   "redirects": [
     {
-      "source": "/",
-      "destination": "/home-v9",
+      "source": "/home",
+      "destination": "/",
       "permanent": true
     },
     {
-      "source": "/home",
-      "destination": "/home-v9",
+      "source": "/home-v2",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/home-v3",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/home-v4",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/home-v5",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/home-v6",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/home-v7",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/home-v8",
+      "destination": "/",
+      "permanent": true
+    },
+    {
+      "source": "/home-v9",
+      "destination": "/",
       "permanent": true
     }
   ],
