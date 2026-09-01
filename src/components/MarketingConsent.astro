@@ -16,8 +16,8 @@ const enabled = /^GTM-[A-Z0-9]+$/.test(containerId);
         <p class="marketing-consent-eyebrow">Privacy choices</p>
         <h2 id="marketing-consent-title">Marketing cookies are optional.</h2>
         <p>
-          With your permission, Google Tag Manager loads the Reddit Pixel to measure ad performance. We do not send
-          your email address or form answers. <a href="/privacy">Privacy details</a>
+          With your permission, the Reddit and Meta Pixels measure ad performance. We do not send your email address
+          or form answers. <a href="/privacy">Privacy details</a>
         </p>
       </div>
       <div class="marketing-consent-actions">
@@ -38,7 +38,7 @@ const enabled = /^GTM-[A-Z0-9]+$/.test(containerId);
           <label for="marketing-cookie-toggle">
             <span>
               <strong>Marketing cookies</strong>
-              <small>Google Tag Manager and the Reddit Pixel for advertising measurement.</small>
+              <small>Google Tag Manager, the Reddit Pixel, and the Meta Pixel for advertising measurement.</small>
             </span>
             <span class="marketing-consent-switch">
               <input id="marketing-cookie-toggle" type="checkbox" role="switch" data-marketing-consent-toggle />
@@ -49,7 +49,7 @@ const enabled = /^GTM-[A-Z0-9]+$/.test(containerId);
 
         <p class="marketing-consent-detail">
           You can change this choice at any time. Turning it off stops future marketing events and clears known Reddit
-          cookies on this site. See our <a href="/privacy">privacy notice</a>.
+          and Meta cookies on this site. See our <a href="/privacy">privacy notice</a>.
         </p>
 
         <div class="marketing-consent-dialog-actions">
@@ -87,10 +87,21 @@ const enabled = /^GTM-[A-Z0-9]+$/.test(containerId);
           });
         }
 
+        function clearKnownMetaCookies() {
+          const secure = window.location.protocol === "https:" ? "; Secure" : "";
+          ["_fbp", "_fbc"].forEach((name) => {
+            document.cookie = `${name}=; Max-Age=0; Path=/; SameSite=Lax${secure}`;
+            document.cookie = `${name}=; Max-Age=0; Path=/; Domain=.harbornavi.com; SameSite=Lax${secure}`;
+          });
+        }
+
         function applyConsent(granted) {
           writeConsent(granted ? "granted" : "denied");
           banner.hidden = true;
-          if (!granted) clearKnownRedditCookies();
+          if (!granted) {
+            clearKnownRedditCookies();
+            clearKnownMetaCookies();
+          }
           window.harborSetMarketingConsent?.(granted);
         }
 

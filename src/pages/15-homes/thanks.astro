@@ -1,5 +1,6 @@
 ---
 import CampaignAnalytics from "../../components/CampaignAnalytics.astro";
+import MetaPixel from "../../components/MetaPixel.astro";
 import RedditPixel from "../../components/RedditPixel.astro";
 import { campaign } from "../../data/campaign";
 import "../../styles/fifteen-homes.css";
@@ -9,6 +10,7 @@ import "../../styles/fifteen-homes.css";
 <html lang="en">
   <head>
     <RedditPixel />
+    <MetaPixel />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>Application received | {campaign.name}</title>

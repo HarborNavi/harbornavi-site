@@ -43,9 +43,9 @@ npm run build
 Use `npm run preview` after `npm run build` when checking production-style routing locally.
 Astro dev serves `/package/` correctly, but bare `/package` can collide with `package.json` in dev mode. Production preview and static output serve `/package` correctly.
 
-## Reddit Pixel through Google Tag Manager (Home V8 and V9)
+## Reddit and Meta Pixels (Home V8 and V9)
 
-Home V8 and V9 load GTM container `GTM-MXJJ9BXG`, configured as the public production default in `.env.production`, only when the visitor explicitly allows marketing cookies. A deployment environment variable named `PUBLIC_GOOGLE_TAG_MANAGER_ID` can override that public default. The Reddit Pixel ID stays in GTM and must not be added to the site source. The necessary `harbornavi_marketing_consent` preference cookie stores `granted` or `denied` for up to 180 days; no GTM request or Reddit event occurs before `granted` consent.
+Home V8 and V9 load GTM container `GTM-MXJJ9BXG` and Meta Pixel `1257319255516210`, configured as public production defaults, only when the visitor explicitly allows marketing cookies. Deployment environment variables named `PUBLIC_GOOGLE_TAG_MANAGER_ID` and `PUBLIC_META_PIXEL_ID` can override those public defaults. The Reddit Pixel ID stays in GTM and must not be added to the site source. The necessary `harbornavi_marketing_consent` preference cookie stores `granted` or `denied` for up to 180 days; no GTM, Reddit, or Meta request occurs before `granted` consent.
 
 Configure these tags in the GTM web container using the official Reddit Pixel template and the same Pixel ID from Reddit Ads Events Manager:
 
@@ -54,9 +54,9 @@ Configure these tags in the GTM web container using the official Reddit Pixel te
 | `Reddit - Page Visit - Home V8` | `Page Visit` | Custom Event | `reddit_page_visit` |
 | `Reddit - Sign Up - Home V8` | `Sign Up` | Custom Event | `reddit_sign_up` |
 
-The page-visit event fires after V8 or V9 records its first-party page view. The sign-up event fires only after `/api/waitlist` successfully saves the address, not on a button click or failed submission. Neither event sends form fields or application answers to the GTM data layer.
+The Reddit page-visit event fires after V8 or V9 records its first-party page view. The Reddit sign-up event fires only after `/api/waitlist` successfully saves the address, not on a button click or failed submission. Neither event sends form fields or application answers to the GTM data layer. The direct Meta integration sends only `PageView`; it does not send waitlist fields or application answers. Its `<noscript>` fallback is intentionally omitted because that image request cannot honor the site's marketing-consent gate.
 
-Use GTM Preview to confirm that no container request occurs after Decline, then allow marketing cookies and confirm both custom events. Publish the container and verify `PageVisit` and `SignUp` in Reddit Events Manager and Reddit Pixel Helper. Do not add a second `All Pages` Reddit Page Visit tag, because that would duplicate V8 and V9 page visits. `PUBLIC_REDDIT_PIXEL_ID` is the separate direct-pixel path for the other public pages and should remain empty when Reddit tracking is intended to run only through the V8/V9 GTM container. The direct-pixel component also honors the same consent cookie and stays off without `granted` consent.
+Use GTM Preview to confirm that no container request occurs after Decline, then allow marketing cookies and confirm both custom events. Publish the container and verify `PageVisit` and `SignUp` in Reddit Events Manager and Reddit Pixel Helper. Confirm the Meta `PageView` separately in Meta Events Manager or Meta Pixel Helper. Do not add a second `All Pages` Reddit Page Visit tag or a second Meta base pixel in GTM, because either would duplicate page visits. `PUBLIC_REDDIT_PIXEL_ID` is the separate direct-pixel path for the other public pages and should remain empty when Reddit tracking is intended to run only through the V8/V9 GTM container. Both direct-pixel components honor the same consent cookie and stay off without `granted` consent.
 
 ## Current Notes
 

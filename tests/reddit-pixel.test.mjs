@@ -118,7 +118,7 @@ test("Reddit Pixel configuration and disclosure stay documented", async () => {
   assert.match(environment, /PUBLIC_GOOGLE_TAG_MANAGER_ID=""/);
   assert.match(productionEnvironment, /PUBLIC_GOOGLE_TAG_MANAGER_ID="GTM-MXJJ9BXG"/);
   assert.match(environment, /PUBLIC_REDDIT_PIXEL_ID=""/);
-  assert.match(privacy, /Reddit advertising measurement/);
+  assert.match(privacy, /Reddit and Meta advertising measurement/);
   assert.match(privacy, /Marketing tools are off unless you select Allow marketing cookies/);
   assert.match(privacy, /harbornavi_marketing_consent/);
   assert.match(privacy, /up to 180/);
@@ -127,5 +127,5 @@ test("Reddit Pixel configuration and disclosure stay documented", async () => {
   assert.match(readme, /reddit_page_visit/);
   assert.match(readme, /reddit_sign_up/);
   assert.match(readme, /GTM-MXJJ9BXG/);
-  assert.match(readme, /no GTM request or Reddit event occurs before `granted` consent/);
+  assert.match(readme, /no GTM, Reddit, or Meta request occurs before `granted` consent/);
 });

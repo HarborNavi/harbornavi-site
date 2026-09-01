@@ -1,0 +1,54 @@
+---
+const pixelId = import.meta.env.PUBLIC_META_PIXEL_ID?.trim() || "1257319255516210";
+const enabled = /^\d{5,20}$/.test(pixelId);
+const consentCookieName = "harbornavi_marketing_consent";
+---
+
+{enabled && (
+  <script is:inline define:vars={{ consentCookieName, pixelId }}>
+    (() => {
+      if (window.harborMetaPixelInstalled) return;
+      window.harborMetaPixelInstalled = true;
+
+      let marketingAllowed = document.cookie.split("; ").some((part) => part === `${consentCookieName}=granted`);
+      let initialized = false;
+
+      function initializePixel() {
+        if (!marketingAllowed || initialized) return;
+        initialized = true;
+
+        if (!window.fbq) {
+          const meta = window.fbq = function (...args) {
+            if (meta.callMethod) {
+              meta.callMethod(...args);
+            } else {
+              meta.queue.push(args);
+            }
+          };
+          if (!window._fbq) window._fbq = meta;
+          meta.push = meta;
+          meta.loaded = true;
+          meta.version = "2.0";
+          meta.queue = [];
+
+          const script = document.createElement("script");
+          script.async = true;
+          script.src = "https://connect.facebook.net/en_US/fbevents.js";
+          document.head.appendChild(script);
+        }
+
+        window.fbq("init", pixelId);
+        window.fbq("track", "PageView");
+      }
+
+      const previousMarketingConsentHandler = window.harborSetMarketingConsent;
+      window.harborSetMarketingConsent = (granted) => {
+        previousMarketingConsentHandler?.(granted);
+        marketingAllowed = Boolean(granted);
+        if (marketingAllowed) initializePixel();
+      };
+
+      initializePixel();
+    })();
+  </script>
+)}

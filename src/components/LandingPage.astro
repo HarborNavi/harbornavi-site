@@ -1,5 +1,6 @@
 ---
 import EnglishFormValidation from "./EnglishFormValidation.astro";
+import MetaPixel from "./MetaPixel.astro";
 import RedditPixel from "./RedditPixel.astro";
 import SiteHeader from "./SiteHeader.astro";
 import { landingAssets } from "../data/landingAssets";
@@ -42,6 +43,7 @@ const structuredData = JSON.stringify({
   <head>
     <EnglishFormValidation />
     <RedditPixel />
+    <MetaPixel />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <title>{page.metaTitle} | HarborNavi</title>
