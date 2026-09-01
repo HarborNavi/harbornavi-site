@@ -28,13 +28,16 @@ test("Meta base pixel waits for marketing consent and sends PageView", async () 
   assert.match(pixel, /1257319255516210/);
   assert.match(pixel, /https:\/\/connect\.facebook\.net\/en_US\/fbevents\.js/);
   assert.match(pixel, /window\.fbq\("init", pixelId\)/);
-  assert.match(pixel, /window\.fbq\("track", "PageView"\)/);
+  assert.match(pixel, /window\.fbq\("trackSingle", pixelId, eventName, parameters, \{ eventID: eventId \}\)/);
+  assert.match(pixel, /queuePixelEvent\("PageView"\)/);
+  assert.match(pixel, /meta_test/);
+  assert.match(pixel, /library-blocked/);
   assert.match(pixel, /window\.harborMetaTrack = \(eventName\) =>/);
   assert.match(pixel, /marketingAllowed = hasMarketingConsent\(\)/);
   assert.match(pixel, /if \(!marketingAllowed\) return/);
   assert.match(pixel, /early_bird_saved:\s*\{\s*name: "Lead"/);
   assert.match(pixel, /harbornavi_marketing_consent/);
-  assert.match(pixel, /if \(!marketingAllowed \|\| initialized\) return/);
+  assert.match(pixel, /if \(!marketingAllowed \|\| initialized\) \{[\s\S]*?return;/);
   assert.match(pixel, /previousMarketingConsentHandler\?\.\(granted\)/);
   assert.doesNotMatch(pixel, /<noscript|facebook\.com\/tr\?/);
   assert.doesNotMatch(pixel, /data\.get|formLocation|route|utm_|device_summary|application_answers|\bzip\b/i);
@@ -52,7 +55,7 @@ test("Meta Lead fires only after a saved waitlist response and contains no form 
   assert.ok(savedEventIndex < errorEventIndex);
   assert.match(homeV8, /window\.harborMetaTrack\?\.\(eventName\)/);
   assert.doesNotMatch(homeV8, /window\.fbq\("track", "Lead"/);
-  assert.match(pixel, /initializePixel\(\);\s*window\.fbq\("track", conversion\.name, conversion\.parameters\)/);
+  assert.match(pixel, /initializePixel\(\);\s*queuePixelEvent\(conversion\.name, conversion\.parameters\)/);
 
   const metaLeadParameters = pixel.match(/parameters: \{([\s\S]*?)\}\s*\}/);
   assert.ok(metaLeadParameters);
@@ -70,10 +73,14 @@ test("Meta queues PageView and Lead after consent without leaking form values", 
   const context = {
     document: {
       cookie: "",
-      createElement: () => ({}),
-      head: { appendChild: (script) => appendedScripts.push(script.src) }
+      documentElement: { dataset: {} },
+      createElement: () => ({ addEventListener: () => {} }),
+      getElementsByTagName: () => [{
+        parentNode: { insertBefore: (script) => appendedScripts.push(script.src) }
+      }]
     },
-    window: {}
+    URLSearchParams,
+    window: { location: { search: "" } }
   };
 
   vm.runInNewContext(
@@ -89,12 +96,18 @@ test("Meta queues PageView and Lead after consent without leaking form values", 
 
   assert.deepEqual(JSON.parse(JSON.stringify(context.window.fbq.queue)), [
     ["init", "1257319255516210"],
-    ["track", "PageView"],
-    ["track", "Lead", {
+    ["trackSingle", "1257319255516210", "PageView", {}, {
+      eventID: context.window.fbq.queue[1][4].eventID
+    }],
+    ["trackSingle", "1257319255516210", "Lead", {
       content_name: "HarborNavi Waitlist",
       content_category: "Email Signup"
+    }, {
+      eventID: context.window.fbq.queue[2][4].eventID
     }]
   ]);
+  assert.match(context.window.fbq.queue[1][4].eventID, /^harbornavi_pageview_\d+_/);
+  assert.match(context.window.fbq.queue[2][4].eventID, /^harbornavi_lead_\d+_/);
   assert.deepEqual(appendedScripts, ["https://connect.facebook.net/en_US/fbevents.js"]);
 });
 
@@ -131,5 +144,15 @@ test("Meta Pixel configuration, consent copy, and disclosure stay documented", a
   assert.match(readme, /a `Lead` event only after `\/api\/waitlist` successfully saves an address/);
   assert.match(readme, /`HarborNavi Waitlist` and `Email Signup`/);
   assert.match(readme, /no GTM, Reddit, or Meta request occurs before `granted` consent/);
+  assert.match(readme, /https:\/\/harbornavi\.com\/\?meta_test=1/);
+  assert.match(readme, /`trackSingle`/);
+  assert.match(readme, /`test_event_code` applies to server-side Conversions API payloads/);
   assert.match(readme, /noscript/);
+});
+
+test("Meta test mode reopens a prior denied consent choice without granting it", async () => {
+  const consent = await source("src/components/MarketingConsent.astro");
+  assert.match(consent, /new URLSearchParams\(window\.location\.search\)\.get\("meta_test"\) === "1"/);
+  assert.match(consent, /metaTestRequested && readConsent\(\) !== "granted"/);
+  assert.doesNotMatch(consent, /metaTestRequested[^\n]+applyConsent\(true\)/);
 });

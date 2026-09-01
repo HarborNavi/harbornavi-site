@@ -24,17 +24,41 @@ const consentCookieName = "harbornavi_marketing_consent";
         return document.cookie.split("; ").some((part) => part === `${consentCookieName}=granted`);
       }
 
+      const metaTestRequested = new URLSearchParams(window.location.search).get("meta_test") === "1";
       let marketingAllowed = hasMarketingConsent();
       let initialized = false;
 
+      function updateTestStatus(state, eventName = "", eventId = "") {
+        if (!metaTestRequested) return;
+        document.documentElement.dataset.metaPixelState = state;
+        document.documentElement.dataset.metaPixelConsent = marketingAllowed ? "granted" : "not-granted";
+        if (eventName) document.documentElement.dataset.metaPixelLastEvent = eventName;
+        if (eventId) document.documentElement.dataset.metaPixelLastEventId = eventId;
+      }
+
+      function createEventId(eventName) {
+        const randomPart = window.crypto?.randomUUID?.()
+          || Math.random().toString(36).slice(2);
+        return `harbornavi_${eventName.toLowerCase()}_${Date.now()}_${randomPart}`;
+      }
+
+      function queuePixelEvent(eventName, parameters = {}) {
+        const eventId = createEventId(eventName);
+        window.fbq("trackSingle", pixelId, eventName, parameters, { eventID: eventId });
+        updateTestStatus("event-queued", eventName, eventId);
+      }
+
       function initializePixel() {
-        if (!marketingAllowed || initialized) return;
+        if (!marketingAllowed || initialized) {
+          if (!marketingAllowed) updateTestStatus("waiting-for-consent");
+          return;
+        }
         initialized = true;
 
         if (!window.fbq) {
           const meta = window.fbq = function (...args) {
             if (meta.callMethod) {
-              meta.callMethod(...args);
+              meta.callMethod.apply(meta, args);
             } else {
               meta.queue.push(args);
             }
@@ -48,11 +72,14 @@ const consentCookieName = "harbornavi_marketing_consent";
           const script = document.createElement("script");
           script.async = true;
           script.src = "https://connect.facebook.net/en_US/fbevents.js";
-          document.head.appendChild(script);
+          script.addEventListener("load", () => updateTestStatus("library-loaded"));
+          script.addEventListener("error", () => updateTestStatus("library-blocked"));
+          const firstScript = document.getElementsByTagName("script")[0];
+          firstScript?.parentNode?.insertBefore(script, firstScript);
         }
 
         window.fbq("init", pixelId);
-        window.fbq("track", "PageView");
+        queuePixelEvent("PageView");
       }
 
       window.harborMetaTrack = (eventName) => {
@@ -63,16 +90,22 @@ const consentCookieName = "harbornavi_marketing_consent";
         if (!conversion) return;
 
         initializePixel();
-        window.fbq("track", conversion.name, conversion.parameters);
+        queuePixelEvent(conversion.name, conversion.parameters);
       };
 
       const previousMarketingConsentHandler = window.harborSetMarketingConsent;
       window.harborSetMarketingConsent = (granted) => {
         previousMarketingConsentHandler?.(granted);
         marketingAllowed = Boolean(granted);
-        if (marketingAllowed) initializePixel();
+        if (marketingAllowed) {
+          updateTestStatus("consent-granted");
+          initializePixel();
+        } else {
+          updateTestStatus("consent-denied");
+        }
       };
 
+      updateTestStatus(marketingAllowed ? "consent-restored" : "waiting-for-consent");
       initializePixel();
     })();
   </script>
