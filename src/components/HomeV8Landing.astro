@@ -21,7 +21,7 @@ import MarketingConsent from "./MarketingConsent.astro";
 import MetaPixel from "./MetaPixel.astro";
 import SiteHeaderMenu from "./SiteHeaderMenu.astro";
 import SiteMediaLoader from "./SiteMediaLoader.astro";
-import { pilotRewardAdvertisingCopy } from "../data/pilotProgram";
+import { pilotOfferAdvertisingCopy, pilotSpotCount } from "../data/pilotProgram";
 import "../styles/site-header-v7.css";
 import "../styles/home-v7.css";
 import "../styles/home-v9.css";
@@ -48,8 +48,8 @@ const heroCarouselSlides = [
     height: 873,
     alt: "A family trying HarborNavi together during an early pilot experience.",
     eyebrow: "HarborNavi Pilot Program",
-    title: "Join the First 5 Pilot Families",
-    description: `Be first to live with HarborNavi's local household intelligence. Two weeks at home. Yours to keep. ${pilotRewardAdvertisingCopy}`,
+    title: `Join the First ${pilotSpotCount} Pilot Families`,
+    description: `Be first to live with HarborNavi's local household intelligence. Two weeks at home. ${pilotOfferAdvertisingCopy}`,
     cta: "Join the pilot →",
     highlight: true,
     href: "/pilot-families"
@@ -231,7 +231,7 @@ const structuredData = JSON.stringify({
                   <a class="hero-carousel-link" href={slide.href} aria-label={`${slide.title}. ${slide.cta}`}>
                     <div class="hero-carousel-overlay">
                       <p>{slide.eyebrow}</p>
-                      <h2>{slide.highlight ? <>Join the <mark>First 5</mark> Pilot Families</> : slide.title}</h2>
+                      <h2>{slide.highlight ? <>Join the <mark>First {pilotSpotCount}</mark> Pilot Families</> : slide.title}</h2>
                       {slide.description && <span>{slide.description}</span>}
                       {slide.cta && <strong>{slide.cta}</strong>}
                     </div>
@@ -406,10 +406,9 @@ const structuredData = JSON.stringify({
             <p class="eyebrow">Privacy is the foundation</p>
             <h2 id="privacy-tech-title">Your home, finally fluent. Your data, finally home.</h2>
             <p class="privacy-partnership-copy">
-              <strong class="privacy-partnership-highlight">HarborNavi is integrating Mode IO.AI's dynamic privacy and AI safety technology into its local-first architecture.</strong>
+              <strong class="privacy-partnership-highlight">HarborNavi's dynamic privacy and AI safety technology is built into its local-first architecture.</strong>
               <span>Sensitive context can be reviewed before an optional external model receives a request, while private household context remains on HarborNavi.</span>
             </p>
-            <a href="https://modeio.ai/ai-governance" target="_blank" rel="noreferrer">Explore Mode IO.AI privacy technology <span aria-hidden="true">&nearr;</span></a>
           </div>
           <div class="privacy-context-model" aria-label="Dynamic privacy context model">
             <p class="privacy-model-title"><ShieldCheck size={18} strokeWidth={1.8} aria-hidden="true" />Dynamic privacy decision</p>
@@ -428,12 +427,6 @@ const structuredData = JSON.stringify({
               <li><span class="privacy-step-mark"><Microscope size={20} strokeWidth={1.8} aria-hidden="true" /><small>03</small></span><div><strong>Apply research to family privacy</strong><p>HarborNavi's privacy work draws on an R&amp;D team background from the Hong Kong University of Science and Technology and enterprise AI governance.</p></div></li>
             </ol>
           </div>
-          <div class="privacy-proof-grid" aria-label="Mode IO.AI privacy capability highlights">
-            <article><strong><b>95%+</b><em>Risk Identification Accuracy</em></strong><span>False-positive rate below 5%</span></article>
-            <article><strong>7+ years</strong><span>Experience across AI safety, privacy compliance, and legal engineering</span></article>
-            <article><strong>Millions-scale</strong><span>Agent commands, behaviors, and security-scenario data</span></article>
-          </div>
-          <p class="privacy-benchmark-note">Figures summarize Mode IO.AI internal benchmarks, team experience, and accumulated security-scenario data. Deployment results may vary.</p>
         </section>
 
         <section id="compatibility" class="compatibility-section" aria-labelledby="compat-title">
@@ -642,6 +635,7 @@ const structuredData = JSON.stringify({
 
       window.harborTrack = function harborTrack(eventName, properties) {
         window.harborRedditTrack?.(eventName);
+        window.harborMetaTrack?.(eventName);
         window.harborEvents = window.harborEvents || [];
         window.harborEvents.push({
           eventName,
@@ -887,15 +881,6 @@ const structuredData = JSON.stringify({
               route,
               form_location: formLocation
             });
-            if (
-              document.cookie.split("; ").some((part) => part === "harbornavi_marketing_consent=granted") &&
-              typeof window.fbq === "function"
-            ) {
-              window.fbq("track", "Lead", {
-                content_name: "HarborNavi Waitlist",
-                content_category: "Email Signup"
-              });
-            }
             form.reset();
             setSuccessModalState("joined");
             openSuccessModal();

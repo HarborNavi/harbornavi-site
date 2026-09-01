@@ -157,16 +157,16 @@ test("versioned home routes and admin666 retain their route contracts", async ()
   assert.match(homeV7Page, /HomeV7Landing/);
   assert.match(homeV7, /https:\/\/harbornavi\.com\/home-v7/);
   assert.match(homeV7, /data-route="home-v7"/);
-  assert.match(homeV7, /Join the First 5 Pilot Families/);
+  assert.match(homeV7, /Join the First \$\{pilotSpotCount\} Pilot Families/);
   assert.match(homeV7, /Home is where the heart is\. And where your memories live\./);
   assert.match(homeV8Page, /HomeV8Landing/);
   assert.match(homeV8, /const route = isV9 \? "home-v9" : "home-v8"/);
   assert.match(homeV8, /const pageUrl = isV9 \? "https:\/\/harbornavi\.com" : "https:\/\/harbornavi\.com\/home-v8"/);
-  assert.match(homeV8, /Join the First 5 Pilot Families/);
+  assert.match(homeV8, /Join the First \$\{pilotSpotCount\} Pilot Families/);
   assert.match(homeV8, /A mind for the household\./);
   assert.match(homeV8, /Finally at home\./);
   assert.match(homeV9Page, /HomeV8Landing version="v9"/);
-  assert.doesNotMatch(homeV6, /Join the First 5 Pilot Families/);
+  assert.doesNotMatch(homeV6, /Join the First (5|10|\$\{pilotSpotCount\}) Pilot Families/);
   assert.match(admin666, /data-tab-button="pilot-applications"/);
   assert.match(admin666, /data-tab-button="media"/);
   assert.match(admin666, /<a href="\/">Homepage<\/a>/);
@@ -290,18 +290,14 @@ test("home-v7 and home-v8 expose only a waitlist milestone and qualified privacy
   assert.match(admin666, /data-private-waitlist-people/);
   assert.match(admin, /"Unavailable"/);
   assert.match(admin666, /"Unavailable"/);
-  assert.match(homeV7, /class="privacy-partnership-highlight"/);
-  assert.match(homeV7, /Mode IO\.AI's dynamic privacy and AI safety technology/);
-  assert.match(homeV7, /Hong Kong University of Science and Technology/);
-  assert.match(homeV7, /95%\+/);
-  assert.match(homeV7, /Risk Identification Accuracy/);
-  assert.match(homeV7, /False-positive rate below 5%/);
-  assert.match(homeV7, /7\+ years/);
-  assert.match(homeV7, /privacy compliance, and legal engineering/);
-  assert.match(homeV7, /Millions-scale/);
-  assert.match(homeV7, /security-scenario data/);
-  assert.match(homeV7, /internal benchmarks, team experience/);
-  assert.doesNotMatch(homeV7, /world(?:'s|’s) first/i);
+  for (const home of [homeV7, homeV8]) {
+    assert.match(home, /class="privacy-partnership-highlight"/);
+    assert.match(home, /HarborNavi's dynamic privacy and AI safety technology is built into its local-first architecture/);
+    assert.match(home, /Hong Kong University of Science and Technology/);
+    assert.doesNotMatch(home, /Mode IO|Mode\.AI|modeio\.ai/i);
+    assert.doesNotMatch(home, /95%\+|Risk Identification Accuracy|False-positive rate below 5%|Millions-scale|internal benchmarks/i);
+    assert.doesNotMatch(home, /world(?:'s|’s) first/i);
+  }
 });
 
 test("home-v8 leads with household intelligence, then proves local privacy", async () => {

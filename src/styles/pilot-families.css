@@ -348,7 +348,7 @@
   display: grid;
   grid-template-columns: minmax(0, 0.9fr) minmax(0, 1.1fr);
   gap: 80px;
-  padding: 96px max(32px, calc((100% - 1280px) / 2));
+  padding: 96px clamp(32px, 4vw, 64px);
   border-top: 1px solid var(--pilot-line);
   border-bottom: 1px solid var(--pilot-line);
   background: var(--pilot-surface);

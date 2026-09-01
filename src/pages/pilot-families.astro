@@ -9,6 +9,7 @@ import {
   pilotApplicationDeadlineLabel,
   pilotApplicationDeadlineShortLabel,
   pilotDisclosureExample,
+  pilotOfferAdvertisingCopy,
   pilotRewardAdvertisingCopy,
   pilotSpotCount
 } from "../data/pilotProgram";
@@ -25,8 +26,8 @@ import "../styles/pilot-families.css";
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#0c0c12" />
-    <title>First 5 Pilot Families | HarborNavi</title>
-    <meta name="description" content={`Apply for HarborNavi's two-week Pilot Families program. Selected families receive a new device and lifetime subscription-free access. ${pilotRewardAdvertisingCopy}`} />
+    <title>First {pilotSpotCount} Pilot Families | HarborNavi</title>
+    <meta name="description" content={`Apply for HarborNavi's two-week Pilot Families program. ${pilotOfferAdvertisingCopy} Lifetime subscription-free access is included for the pilot device.`} />
     <link rel="icon" href="/favicon.png" type="image/png" sizes="512x512" data-media-slot="site-favicon" />
     <link rel="canonical" href="https://harbornavi.com/pilot-families" />
   </head>
@@ -39,8 +40,8 @@ import "../styles/pilot-families.css";
         <div class="pilot-hero-copy">
           <p class="eyebrow">HarborNavi Pilot Program</p>
           <p class="pilot-spots"><span aria-hidden="true"></span> Only {pilotSpotCount} pilot spots</p>
-          <h1 id="pilot-title">Join the First 5 Pilot Families</h1>
-          <p>Pilot your home with HarborNavi. Two weeks. Yours to keep. {pilotRewardAdvertisingCopy}</p>
+          <h1 id="pilot-title">Join the First {pilotSpotCount} Pilot Families</h1>
+          <p>Pilot your home with HarborNavi. Two weeks. {pilotOfferAdvertisingCopy}</p>
           <a class="pilot-primary" href="#apply">Apply to Join <span aria-hidden="true">→</span></a>
         </div>
       </section>
@@ -55,7 +56,7 @@ import "../styles/pilot-families.css";
           <div class="pilot-urgency-copy">
             <p class="eyebrow">Application window</p>
             <h2 id="pilot-deadline-title">Applications close {pilotApplicationDeadlineShortLabel}.</h2>
-            <p>Five families will be selected for the first two-week home pilot. Apply before the deadline to be considered.</p>
+            <p>{pilotSpotCount} families will be selected for the first two-week home pilot. Apply before the deadline to be considered.</p>
             <time datetime={pilotApplicationDeadline}>{pilotApplicationDeadlineLabel}</time>
           </div>
           <div class="pilot-countdown" role="timer" aria-label={`Time remaining until ${pilotApplicationDeadlineLabel}`}>
@@ -70,7 +71,7 @@ import "../styles/pilot-families.css";
 
       <section class="pilot-intro section-shell" aria-labelledby="pilot-intro-title">
         <div>
-          <p class="eyebrow">Five homes. Real feedback.</p>
+          <p class="eyebrow">{pilotSpotCount} homes. Real feedback.</p>
           <h2 id="pilot-intro-title">Help us build HarborNavi for real family life.</h2>
         </div>
         <p>Use HarborNavi with your current smart-home setup for two weeks, then tell us what worked and what should change.</p>

@@ -6,6 +6,8 @@ import { validatePilotApplication } from "../src/server/pilot-validation.ts";
 import {
   arePilotApplicationsOpen,
   pilotApplicationDeadline,
+  pilotOfferAdvertisingCopy,
+  pilotSpotCount,
   pilotRewardAdvertisingCopy
 } from "../src/data/pilotProgram.ts";
 
@@ -58,15 +60,18 @@ test("pilot campaign banner and form stay on the approved contract", async () =>
   const adminHealth = await source("api/admin/health.ts");
   const pilotApplications = await source("src/server/pilot-applications.ts");
   const vercel = JSON.parse(await source("vercel.json"));
-  assert.match(home, /Join the First 5 Pilot Families/);
-  assert.match(homeV8, /Join the First 5 Pilot Families/);
-  assert.equal(pilotRewardAdvertisingCopy, "Earn up to $500 after completing the agreed milestones.");
-  assert.match(home, /pilotRewardAdvertisingCopy/);
-  assert.match(homeV8, /pilotRewardAdvertisingCopy/);
+  assert.equal(pilotSpotCount, 10);
+  assert.equal(pilotOfferAdvertisingCopy, "Yours to keep plus $300.");
+  assert.equal(pilotRewardAdvertisingCopy, "Receive $300 after completing the agreed milestones.");
+  assert.match(home, /Join the First \$\{pilotSpotCount\} Pilot Families/);
+  assert.match(homeV8, /Join the First \$\{pilotSpotCount\} Pilot Families/);
+  assert.match(home, /pilotOfferAdvertisingCopy/);
+  assert.match(homeV8, /pilotOfferAdvertisingCopy/);
+  assert.match(page, /pilotOfferAdvertisingCopy/);
   assert.match(page, /pilotRewardAdvertisingCopy/);
-  assert.doesNotMatch(home, /Earn up to \$500\./);
-  assert.doesNotMatch(homeV8, /Earn up to \$500\./);
-  assert.doesNotMatch(page, /\+\$500|\$500 completion bonus|\$500 bonus terms/);
+  for (const publicSource of [home, homeV8, page]) {
+    assert.doesNotMatch(publicSource, /First 5|Five families|Five homes|up to \$500|\+\$500|\$500 completion bonus|\$500 bonus terms/i);
+  }
   assert.match(home, /href: "\/pilot-families"/);
   assert.match(home, /class="site-header-v7-cta" href="\/pilot-families">Join the Pilot Program<\/a>/);
   assert.match(home, /data-route="home-v7"/);
@@ -103,6 +108,8 @@ test("pilot campaign banner and form stay on the approved contract", async () =>
   assert.match(page, /about 30 minutes/);
   assert.match(page, /<SiteHeader ctaHref="#apply" \/>/);
   assert.match(page, /Only \{pilotSpotCount\} pilot spots/);
+  assert.match(page, /\{pilotSpotCount\} families will be selected/);
+  assert.match(page, /\{pilotSpotCount\} homes\. Real feedback\./);
   assert.match(page, /data-pilot-countdown/);
   assert.match(page, /Applications close \{pilotApplicationDeadlineShortLabel\}/);
   assert.match(page, /data-countdown-days/);
@@ -202,6 +209,8 @@ test("pilot families uses the final black and purple visual system", async () =>
   }
   assert.match(styles, /\.pilot-page \.site-header-v7-bar/);
   assert.match(styles, /\.pilot-spots span \{[^}]*background: #8b73ee;[^}]*box-shadow:/s);
+  assert.match(styles, /\.pilot-privacy \{[^}]*padding: 96px clamp\(32px, 4vw, 64px\);/s);
+  assert.doesNotMatch(styles, /\.pilot-privacy \{[^}]*padding: 96px max\(/s);
   assert.match(styles, /\.pilot-application form \{[^}]*background: var\(--pilot-surface\);/s);
   assert.doesNotMatch(styles, /#fbfafc|#ff6b5e|#eef9f6/);
 });

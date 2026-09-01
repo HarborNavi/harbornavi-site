@@ -1,6 +1,7 @@
 import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
+import vm from "node:vm";
 
 const source = (path) => readFile(new URL(`../${path}`, import.meta.url), "utf8");
 
@@ -28,37 +29,73 @@ test("Meta base pixel waits for marketing consent and sends PageView", async () 
   assert.match(pixel, /https:\/\/connect\.facebook\.net\/en_US\/fbevents\.js/);
   assert.match(pixel, /window\.fbq\("init", pixelId\)/);
   assert.match(pixel, /window\.fbq\("track", "PageView"\)/);
+  assert.match(pixel, /window\.harborMetaTrack = \(eventName\) =>/);
+  assert.match(pixel, /marketingAllowed = hasMarketingConsent\(\)/);
+  assert.match(pixel, /if \(!marketingAllowed\) return/);
+  assert.match(pixel, /early_bird_saved:\s*\{\s*name: "Lead"/);
   assert.match(pixel, /harbornavi_marketing_consent/);
   assert.match(pixel, /if \(!marketingAllowed \|\| initialized\) return/);
   assert.match(pixel, /previousMarketingConsentHandler\?\.\(granted\)/);
   assert.doesNotMatch(pixel, /<noscript|facebook\.com\/tr\?/);
-  assert.doesNotMatch(pixel, /email|zip|device_summary|application_answers/i);
+  assert.doesNotMatch(pixel, /data\.get|formLocation|route|utm_|device_summary|application_answers|\bzip\b/i);
 });
 
 test("Meta Lead fires only after a saved waitlist response and contains no form data", async () => {
+  const pixel = await source("src/components/MetaPixel.astro");
   const homeV8 = await source("src/components/HomeV8Landing.astro");
   const responseGuardIndex = homeV8.indexOf("if (!response.ok)");
   const savedEventIndex = homeV8.indexOf('window.harborTrack("early_bird_saved"');
-  const metaLeadIndex = homeV8.indexOf('window.fbq("track", "Lead"');
   const errorEventIndex = homeV8.indexOf('window.harborTrack("early_bird_error"');
 
   assert.ok(responseGuardIndex >= 0);
   assert.ok(responseGuardIndex < savedEventIndex);
-  assert.ok(savedEventIndex < metaLeadIndex);
-  assert.ok(metaLeadIndex < errorEventIndex);
-  assert.match(homeV8, /harbornavi_marketing_consent=granted/);
-  assert.match(homeV8, /typeof window\.fbq === "function"/);
+  assert.ok(savedEventIndex < errorEventIndex);
+  assert.match(homeV8, /window\.harborMetaTrack\?\.\(eventName\)/);
+  assert.doesNotMatch(homeV8, /window\.fbq\("track", "Lead"/);
+  assert.match(pixel, /initializePixel\(\);\s*window\.fbq\("track", conversion\.name, conversion\.parameters\)/);
 
-  const metaLeadCall = homeV8.match(/window\.fbq\("track", "Lead", \{([\s\S]*?)\}\);/);
-  assert.ok(metaLeadCall);
-  assert.match(metaLeadCall[1], /content_name: "HarborNavi Waitlist"/);
-  assert.match(metaLeadCall[1], /content_category: "Email Signup"/);
-  assert.equal(
-    metaLeadCall[1].replace(/\s+/g, " ").trim(),
-    'content_name: "HarborNavi Waitlist", content_category: "Email Signup"'
+  const metaLeadParameters = pixel.match(/parameters: \{([\s\S]*?)\}\s*\}/);
+  assert.ok(metaLeadParameters);
+  assert.match(metaLeadParameters[1], /content_name: "HarborNavi Waitlist"/);
+  assert.match(metaLeadParameters[1], /content_category: "Email Signup"/);
+  assert.doesNotMatch(metaLeadParameters[1], /formLocation|route|data\.get|utm_|application|device|\bzip\b/i);
+});
+
+test("Meta queues PageView and Lead after consent without leaking form values", async () => {
+  const pixel = await source("src/components/MetaPixel.astro");
+  const inlineScript = pixel.match(/<script is:inline define:vars=\{\{ consentCookieName, pixelId \}\}>([\s\S]*?)<\/script>/)?.[1];
+  assert.ok(inlineScript);
+
+  const appendedScripts = [];
+  const context = {
+    document: {
+      cookie: "",
+      createElement: () => ({}),
+      head: { appendChild: (script) => appendedScripts.push(script.src) }
+    },
+    window: {}
+  };
+
+  vm.runInNewContext(
+    `const consentCookieName = "harbornavi_marketing_consent"; const pixelId = "1257319255516210"; ${inlineScript}`,
+    context
   );
-  assert.doesNotMatch(metaLeadCall[1], /formLocation|route|data\.get|utm|application|device|zip/i);
-  assert.equal((homeV8.match(/window\.fbq\("track", "Lead"/g) || []).length, 1);
+
+  assert.equal(context.window.fbq, undefined);
+  context.document.cookie = "harbornavi_marketing_consent=granted";
+  context.window.harborSetMarketingConsent(true);
+  context.window.harborMetaTrack("early_bird_error");
+  context.window.harborMetaTrack("early_bird_saved");
+
+  assert.deepEqual(JSON.parse(JSON.stringify(context.window.fbq.queue)), [
+    ["init", "1257319255516210"],
+    ["track", "PageView"],
+    ["track", "Lead", {
+      content_name: "HarborNavi Waitlist",
+      content_category: "Email Signup"
+    }]
+  ]);
+  assert.deepEqual(appendedScripts, ["https://connect.facebook.net/en_US/fbevents.js"]);
 });
 
 test("all public documents install Meta Pixel while admin documents do not", async () => {

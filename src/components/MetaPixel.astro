@@ -10,7 +10,21 @@ const consentCookieName = "harbornavi_marketing_consent";
       if (window.harborMetaPixelInstalled) return;
       window.harborMetaPixelInstalled = true;
 
-      let marketingAllowed = document.cookie.split("; ").some((part) => part === `${consentCookieName}=granted`);
+      const conversionEvents = {
+        early_bird_saved: {
+          name: "Lead",
+          parameters: {
+            content_name: "HarborNavi Waitlist",
+            content_category: "Email Signup"
+          }
+        }
+      };
+
+      function hasMarketingConsent() {
+        return document.cookie.split("; ").some((part) => part === `${consentCookieName}=granted`);
+      }
+
+      let marketingAllowed = hasMarketingConsent();
       let initialized = false;
 
       function initializePixel() {
@@ -40,6 +54,17 @@ const consentCookieName = "harbornavi_marketing_consent";
         window.fbq("init", pixelId);
         window.fbq("track", "PageView");
       }
+
+      window.harborMetaTrack = (eventName) => {
+        marketingAllowed = hasMarketingConsent();
+        if (!marketingAllowed) return;
+
+        const conversion = conversionEvents[eventName];
+        if (!conversion) return;
+
+        initializePixel();
+        window.fbq("track", conversion.name, conversion.parameters);
+      };
 
       const previousMarketingConsentHandler = window.harborSetMarketingConsent;
       window.harborSetMarketingConsent = (granted) => {
