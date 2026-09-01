@@ -191,3 +191,17 @@ test("public child pages use their requested home navigation target", async () =
   assert.doesNotMatch(about, /note="About Harbor"/);
   assert.doesNotMatch(pilot, /Only \$\{pilotSpotCount\} spots/);
 });
+
+test("pilot families uses the final black and purple visual system", async () => {
+  const page = await source("src/pages/pilot-families.astro");
+  const styles = await source("src/styles/pilot-families.css");
+
+  assert.match(page, /<meta name="theme-color" content="#0c0c12" \/>/);
+  for (const color of ["#0c0c12", "#15151e", "#1e1e2a", "#6d5bd0", "#9b85f5", "#e9c9a8", "#ececf3", "#9b9bac", "#2a2a38"]) {
+    assert.match(styles, new RegExp(color));
+  }
+  assert.match(styles, /\.pilot-page \.site-header-v7-bar/);
+  assert.match(styles, /\.pilot-spots span \{[^}]*background: #8b73ee;[^}]*box-shadow:/s);
+  assert.match(styles, /\.pilot-application form \{[^}]*background: var\(--pilot-surface\);/s);
+  assert.doesNotMatch(styles, /#fbfafc|#ff6b5e|#eef9f6/);
+});
