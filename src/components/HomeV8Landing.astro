@@ -887,6 +887,15 @@ const structuredData = JSON.stringify({
               route,
               form_location: formLocation
             });
+            if (
+              document.cookie.split("; ").some((part) => part === "harbornavi_marketing_consent=granted") &&
+              typeof window.fbq === "function"
+            ) {
+              window.fbq("track", "Lead", {
+                content_name: "HarborNavi Waitlist",
+                content_category: "Email Signup"
+              });
+            }
             form.reset();
             setSuccessModalState("joined");
             openSuccessModal();
