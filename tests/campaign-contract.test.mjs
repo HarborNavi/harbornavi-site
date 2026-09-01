@@ -144,6 +144,24 @@ test("the root renders the final homepage and public version aliases redirect ba
   assert.doesNotMatch(sitemap, /<loc>https:\/\/harbornavi\.com\/home-v\d+<\/loc>/);
 });
 
+test("current home banners invite visitors to the Harbor Inn Discord community", async () => {
+  const homeVersions = await Promise.all([
+    source("src/components/HomeV7Landing.astro"),
+    source("src/components/HomeV8Landing.astro")
+  ]);
+
+  for (const home of homeVersions) {
+    assert.match(home, /const discordUrl = "https:\/\/discord\.com\/invite\/tC2bktRWWj"/);
+    assert.match(home, /eyebrow: "Harbor Inn \| Discord Community"/);
+    assert.match(home, /title: "Join Harbor Inn\."/);
+    assert.match(home, /cta: "Join the optional Discord discussion →"/);
+    assert.match(home, /href: discordUrl/);
+    assert.match(home, /harbor-inn-discord-lockup-v1\.webp/);
+    assert.match(home, /data-discord-link=\{slide\.isDiscord \? true : undefined\}/);
+    assert.match(home, /window\.harborTrack\("discord_click", \{ route \}\)/);
+  }
+});
+
 test("versioned home routes and admin666 retain their route contracts", async () => {
   const homeV6 = await source("src/components/HomeV6Landing.astro");
   const homeV7Page = await source("src/pages/home-v7.astro");

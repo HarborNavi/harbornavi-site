@@ -35,7 +35,7 @@ const isV9 = version === "v9";
 const route = isV9 ? "home-v9" : "home-v8";
 const pageUrl = isV9 ? "https://harbornavi.com" : "https://harbornavi.com/home-v8";
 
-const discordUrl = "https://discord.gg/tC2bktRWWj";
+const discordUrl = "https://discord.com/invite/tC2bktRWWj";
 const surveyUrl = "https://www.surveymonkey.com/r/harbornavi";
 const gtmContainerId = import.meta.env.PUBLIC_GOOGLE_TAG_MANAGER_ID?.trim() || "GTM-MXJJ9BXG";
 const marketingConsentEnabled = /^GTM-[A-Z0-9]+$/.test(gtmContainerId);
@@ -55,12 +55,16 @@ const heroCarouselSlides = [
     href: "/pilot-families"
   },
   {
-    url: "/assets/home-v7-v8-memory-hero-id.webp",
-    width: 1536,
-    height: 1024,
-    alt: "A family at home while HarborNavi connects household context locally.",
-    eyebrow: "A mind for the household",
-    title: "Your home, finally fluent."
+    url: "/assets/harbor-inn-discord-banner-v2.webp",
+    width: 1774,
+    height: 659,
+    alt: "An abstract Harbor Inn community pattern in graphite, violet, indigo, and cyan.",
+    eyebrow: "Harbor Inn | Discord Community",
+    title: "Join Harbor Inn.",
+    description: "An optional place to discuss HarborNavi, home intelligence, and what we should build next.",
+    cta: "Join the optional Discord discussion →",
+    href: discordUrl,
+    isDiscord: true
   },
   {
     url: "/assets/home-v7-v8-movie-night-id.webp",
@@ -225,10 +229,11 @@ const structuredData = JSON.stringify({
         <section class="hero-carousel" data-hero-carousel aria-label="HarborNavi highlights">
           <div class="hero-carousel-track" data-carousel-slides>
             {heroCarouselSlides.map((slide, index) => (
-              <article class="hero-carousel-slide" data-carousel-slide aria-hidden={index === 0 ? "false" : "true"} hidden={index !== 0}>
-                <img src={slide.url} alt={slide.alt} width={slide.width} height={slide.height} loading={index === 0 ? "eager" : "lazy"} decoding="async" data-media-slot={index === 0 ? "home-carousel-pilot" : index === 1 ? "home-carousel-memory" : "home-carousel-movie"} />
+              <article class="hero-carousel-slide" data-carousel-slide data-discord-slide={slide.isDiscord ? true : undefined} aria-hidden={index === 0 ? "false" : "true"} hidden={index !== 0}>
+                <img class="hero-carousel-background" src={slide.url} alt={slide.alt} width={slide.width} height={slide.height} loading={index === 0 ? "eager" : "lazy"} decoding="async" data-media-slot={index === 0 ? "home-carousel-pilot" : index === 1 ? "home-carousel-memory" : "home-carousel-movie"} />
+                {slide.isDiscord && <img class="hero-carousel-discord-lockup" src="/assets/harbor-inn-discord-lockup-v1.webp" alt="" width="594" height="220" loading="lazy" decoding="async" aria-hidden="true" />}
                 {slide.href ? (
-                  <a class="hero-carousel-link" href={slide.href} aria-label={`${slide.title}. ${slide.cta}`}>
+                  <a class="hero-carousel-link" href={slide.href} target={slide.isDiscord ? "_blank" : undefined} rel={slide.isDiscord ? "noreferrer" : undefined} data-discord-link={slide.isDiscord ? true : undefined} aria-label={`${slide.title}. ${slide.cta}`}>
                     <div class="hero-carousel-overlay">
                       <p>{slide.eyebrow}</p>
                       <h2>{slide.highlight ? <>Join the <mark>First {pilotSpotCount}</mark> Pilot Families</> : slide.title}</h2>

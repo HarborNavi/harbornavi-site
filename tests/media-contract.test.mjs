@@ -54,6 +54,9 @@ test("all V7, V8, and V9 website images have clear upload placements", async () 
     assert.doesNotMatch(activePage, oldProductAssets);
   }
   assert.match(pilot, /home-v7-v8-pilot-families-id\.webp/);
+  assert.match(home, /harbor-inn-discord-banner-v2\.webp/);
+  assert.match(homeV8, /harbor-inn-discord-banner-v2\.webp/);
+  assert.match(placements, /Banner 2 - Harbor Inn Discord community/);
   assert.match(about, /home-v7-v8-memory-hero-id\.webp/);
   assert.match(about, /home-v7-v8-hardware-id\.webp/);
   assert.match(placements, /defaultUrl: "\/assets\/home-v7-v8-hardware-id\.webp"/);

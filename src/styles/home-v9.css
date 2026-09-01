@@ -58,7 +58,7 @@ body.home-v9-page {
 }
 .home-v9-page .hero-carousel-track,
 .home-v9-page .hero-carousel-slide { min-height: 188px; }
-.home-v9-page .hero-carousel-slide img { height: 188px; }
+.home-v9-page .hero-carousel-background { height: 188px; }
 .home-v9-page .hero-carousel-slide::after {
   background: linear-gradient(90deg, rgba(12, 12, 18, 0.94), rgba(12, 12, 18, 0.56) 58%, rgba(12, 12, 18, 0.12));
 }
@@ -437,7 +437,7 @@ body.home-v9-page {
   .home-v9-page .hero-carousel { width: calc(100% - 24px); margin-top: 12px; border-radius: 6px; }
   .home-v9-page .hero-carousel-track,
   .home-v9-page .hero-carousel-slide { min-height: 232px; }
-  .home-v9-page .hero-carousel-slide img { height: 232px; }
+  .home-v9-page .hero-carousel-background { height: 232px; }
   .home-v9-page .hero-carousel-overlay { width: 92%; padding: 18px 18px 50px; }
   .home-v9-page .hero-carousel-overlay h2 { font-size: 25px; }
   .home-v9-page .hero {
