@@ -31,6 +31,7 @@ test("Meta base pixel waits for marketing consent and sends PageView", async () 
   assert.match(pixel, /window\.fbq\("track", eventName, parameters, \{ eventID: eventId \}\)/);
   assert.match(pixel, /queuePixelEvent\("PageView"\)/);
   assert.match(pixel, /meta_test/);
+  assert.match(pixel, /metaTestReferrer/);
   assert.match(pixel, /library-blocked/);
   assert.match(pixel, /window\.harborMetaTrack = \(eventName\) =>/);
   assert.match(pixel, /marketingAllowed = hasMarketingConsent\(\)/);
@@ -120,6 +121,7 @@ test("Meta Test Events URL loads only the Meta Pixel after a prior denial", asyn
   const context = {
     document: {
       cookie: "harbornavi_marketing_consent=denied",
+      referrer: "https://eventsmanager.facebook.com/",
       documentElement: { dataset: {} },
       createElement: () => ({ addEventListener: () => {} }),
       getElementsByTagName: () => [{
@@ -127,7 +129,7 @@ test("Meta Test Events URL loads only the Meta Pixel after a prior denial", asyn
       }]
     },
     URLSearchParams,
-    window: { location: { search: "?test_event_code=TEST23388" } }
+    window: { location: { search: "" } }
   };
 
   vm.runInNewContext(
@@ -189,6 +191,7 @@ test("Meta test mode recognizes Meta Test Events URLs without enabling Reddit", 
   const consent = await source("src/components/MarketingConsent.astro");
   const pixel = await source("src/components/MetaPixel.astro");
   assert.match(consent, /searchParams\.get\("test_event_code"\)/);
+  assert.match(consent, /metaTestReferrer/);
   assert.match(consent, /metaTestMode/);
   assert.match(pixel, /testEventCode/);
   assert.match(pixel, /testModeAllowed = metaTestMode/);

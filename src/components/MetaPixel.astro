@@ -26,8 +26,10 @@ const consentCookieName = "harbornavi_marketing_consent";
 
       const searchParams = new URLSearchParams(window.location.search);
       const testEventCode = searchParams.get("test_event_code") || "";
+      const metaTestReferrer = /^https:\/\/(?:eventsmanager|business)\.facebook\.com(?:\/|$)/i.test(document.referrer || "");
       const metaTestMode = searchParams.get("meta_test") === "1"
-        || /^TEST[A-Z0-9_-]{3,64}$/i.test(testEventCode);
+        || /^TEST[A-Z0-9_-]{3,64}$/i.test(testEventCode)
+        || metaTestReferrer;
       let marketingAllowed = hasMarketingConsent();
       let testModeAllowed = metaTestMode;
       let initialized = false;
