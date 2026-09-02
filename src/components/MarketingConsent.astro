@@ -67,7 +67,10 @@ const enabled = /^GTM-[A-Z0-9]+$/.test(containerId);
         const dialog = document.querySelector("[data-marketing-consent-dialog]");
         const form = document.querySelector("[data-marketing-consent-form]");
         const toggle = document.querySelector("[data-marketing-consent-toggle]");
-        const metaTestRequested = new URLSearchParams(window.location.search).get("meta_test") === "1";
+        const searchParams = new URLSearchParams(window.location.search);
+        const testEventCode = searchParams.get("test_event_code") || "";
+        const metaTestMode = searchParams.get("meta_test") === "1"
+          || /^TEST[A-Z0-9_-]{3,64}$/i.test(testEventCode);
 
         function readConsent() {
           const prefix = `${cookieName}=`;
@@ -127,7 +130,7 @@ const enabled = /^GTM-[A-Z0-9]+$/.test(containerId);
           dialog.close();
         });
 
-        if (!readConsent() || (metaTestRequested && readConsent() !== "granted")) banner.hidden = false;
+        if (!readConsent() && !metaTestMode) banner.hidden = false;
       })();
     </script>
   </>

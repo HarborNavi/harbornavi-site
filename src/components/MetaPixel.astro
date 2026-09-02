@@ -24,14 +24,22 @@ const consentCookieName = "harbornavi_marketing_consent";
         return document.cookie.split("; ").some((part) => part === `${consentCookieName}=granted`);
       }
 
-      const metaTestRequested = new URLSearchParams(window.location.search).get("meta_test") === "1";
+      const searchParams = new URLSearchParams(window.location.search);
+      const testEventCode = searchParams.get("test_event_code") || "";
+      const metaTestMode = searchParams.get("meta_test") === "1"
+        || /^TEST[A-Z0-9_-]{3,64}$/i.test(testEventCode);
       let marketingAllowed = hasMarketingConsent();
+      let testModeAllowed = metaTestMode;
       let initialized = false;
 
       function updateTestStatus(state, eventName = "", eventId = "") {
-        if (!metaTestRequested) return;
+        if (!metaTestMode) return;
         document.documentElement.dataset.metaPixelState = state;
-        document.documentElement.dataset.metaPixelConsent = marketingAllowed ? "granted" : "not-granted";
+        document.documentElement.dataset.metaPixelConsent = hasMarketingConsent()
+          ? "granted"
+          : testModeAllowed
+            ? "test-mode"
+            : "not-granted";
         if (eventName) document.documentElement.dataset.metaPixelLastEvent = eventName;
         if (eventId) document.documentElement.dataset.metaPixelLastEventId = eventId;
       }
@@ -44,12 +52,12 @@ const consentCookieName = "harbornavi_marketing_consent";
 
       function queuePixelEvent(eventName, parameters = {}) {
         const eventId = createEventId(eventName);
-        window.fbq("trackSingle", pixelId, eventName, parameters, { eventID: eventId });
+        window.fbq("track", eventName, parameters, { eventID: eventId });
         updateTestStatus("event-queued", eventName, eventId);
       }
 
       function initializePixel() {
-        if (!marketingAllowed || initialized) {
+        if ((!marketingAllowed && !testModeAllowed) || initialized) {
           if (!marketingAllowed) updateTestStatus("waiting-for-consent");
           return;
         }
@@ -84,7 +92,7 @@ const consentCookieName = "harbornavi_marketing_consent";
 
       window.harborMetaTrack = (eventName) => {
         marketingAllowed = hasMarketingConsent();
-        if (!marketingAllowed) return;
+        if (!marketingAllowed && !testModeAllowed) return;
 
         const conversion = conversionEvents[eventName];
         if (!conversion) return;
@@ -98,9 +106,11 @@ const consentCookieName = "harbornavi_marketing_consent";
         previousMarketingConsentHandler?.(granted);
         marketingAllowed = Boolean(granted);
         if (marketingAllowed) {
+          testModeAllowed = true;
           updateTestStatus("consent-granted");
           initializePixel();
         } else {
+          testModeAllowed = false;
           updateTestStatus("consent-denied");
         }
       };
