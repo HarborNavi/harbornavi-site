@@ -517,8 +517,101 @@
   color: var(--pilot-muted);
 }
 .pilot-page .site-footer a { color: var(--pilot-copy); }
+.pilot-page .site-footer button {
+  padding: 0;
+  border: 0;
+  border-bottom: 1px solid currentColor;
+  background: transparent;
+  color: var(--pilot-copy);
+  cursor: pointer;
+}
 .pilot-page .site-footer a:hover,
-.pilot-page .site-footer a:focus-visible { color: var(--pilot-purple-bright); }
+.pilot-page .site-footer a:focus-visible,
+.pilot-page .site-footer button:hover,
+.pilot-page .site-footer button:focus-visible { color: var(--pilot-purple-bright); }
+
+.pilot-page .marketing-consent-banner[hidden] { display: none; }
+.pilot-page .marketing-consent-banner {
+  position: fixed;
+  z-index: 110;
+  right: 16px;
+  bottom: 16px;
+  left: 16px;
+  width: min(1040px, calc(100% - 32px));
+  margin: 0 auto;
+  display: grid;
+  grid-template-columns: minmax(0, 1fr) auto;
+  align-items: center;
+  gap: 28px;
+  padding: 20px 22px;
+  border: 1px solid #343445;
+  border-radius: 6px;
+  background: var(--pilot-surface);
+  color: var(--pilot-text);
+  box-shadow: 0 18px 60px rgba(0, 0, 0, 0.52);
+}
+.pilot-page .marketing-consent-copy { display: grid; gap: 6px; }
+.pilot-page .marketing-consent-copy p,
+.pilot-page .marketing-consent-form p { margin: 0; }
+.pilot-page .marketing-consent-eyebrow {
+  color: var(--pilot-purple-bright);
+  font-size: 11px;
+  font-weight: 800;
+  text-transform: uppercase;
+}
+.pilot-page .marketing-consent-copy h2,
+.pilot-page .marketing-consent-dialog h2 { margin: 0; font-size: 20px; line-height: 1.2; }
+.pilot-page .marketing-consent-copy > p:last-child,
+.pilot-page .marketing-consent-form header > p:last-child,
+.pilot-page .marketing-consent-detail { color: var(--pilot-copy); font-size: 13px; line-height: 1.55; }
+.pilot-page .marketing-consent-copy a,
+.pilot-page .marketing-consent-detail a { color: var(--pilot-purple-bright); font-weight: 700; }
+.pilot-page .marketing-consent-actions { display: grid; grid-template-columns: repeat(2, minmax(150px, 1fr)); gap: 10px; }
+.pilot-page .marketing-consent-dialog-actions { display: flex; align-items: center; justify-content: flex-end; gap: 10px; }
+.pilot-page .marketing-consent-actions button,
+.pilot-page .marketing-consent-dialog-actions button {
+  min-height: 42px;
+  padding: 0 16px;
+  border-radius: 5px;
+  font-size: 13px;
+  font-weight: 750;
+  cursor: pointer;
+}
+.pilot-page .marketing-consent-decline,
+.pilot-page .marketing-consent-dialog-actions > button:first-child {
+  border: 1px solid #444454;
+  background: var(--pilot-elevated);
+  color: var(--pilot-text);
+}
+.pilot-page .marketing-consent-allow,
+.pilot-page .marketing-consent-save { border: 1px solid var(--pilot-purple); background: var(--pilot-purple); color: #fff; }
+.pilot-page .marketing-consent-actions button:hover,
+.pilot-page .marketing-consent-dialog-actions button:hover { filter: brightness(1.08); }
+.pilot-page .marketing-consent-dialog {
+  width: min(560px, calc(100% - 32px));
+  max-height: calc(100dvh - 32px);
+  padding: 0;
+  border: 1px solid #343445;
+  border-radius: 7px;
+  background: var(--pilot-surface);
+  color: var(--pilot-text);
+  box-shadow: 0 28px 90px rgba(0, 0, 0, 0.6);
+}
+.pilot-page .marketing-consent-dialog::backdrop { background: rgba(5, 5, 9, 0.72); }
+.pilot-page .marketing-consent-form { display: grid; gap: 22px; padding: 28px; }
+.pilot-page .marketing-consent-form header { display: grid; gap: 8px; }
+.pilot-page .marketing-consent-option { padding: 18px 0; border-top: 1px solid #343445; border-bottom: 1px solid #343445; }
+.pilot-page .marketing-consent-option > label { display: flex; align-items: center; justify-content: space-between; gap: 22px; cursor: pointer; }
+.pilot-page .marketing-consent-option label > span:first-child { display: grid; gap: 5px; }
+.pilot-page .marketing-consent-option strong { font-size: 15px; }
+.pilot-page .marketing-consent-option small { color: var(--pilot-copy); font-size: 12px; line-height: 1.45; }
+.pilot-page .marketing-consent-switch { position: relative; flex: 0 0 auto; width: 46px; height: 26px; }
+.pilot-page .marketing-consent-switch input { position: absolute; inset: 0; width: 100%; height: 100%; margin: 0; opacity: 0; cursor: pointer; }
+.pilot-page .marketing-consent-switch > span { display: block; width: 46px; height: 26px; border: 1px solid #5a5a6a; border-radius: 13px; background: var(--pilot-elevated); }
+.pilot-page .marketing-consent-switch > span::after { content: ""; display: block; width: 20px; height: 20px; margin: 2px; border-radius: 50%; background: #fff; box-shadow: 0 1px 4px rgba(0, 0, 0, 0.3); transition: transform 160ms ease; }
+.pilot-page .marketing-consent-switch input:checked + span { border-color: var(--pilot-purple); background: var(--pilot-purple); }
+.pilot-page .marketing-consent-switch input:checked + span::after { transform: translateX(20px); }
+.pilot-page .marketing-consent-switch input:focus-visible + span { outline: 3px solid rgba(155, 133, 245, 0.3); outline-offset: 3px; }
 
 @media (max-width: 1040px) {
   .pilot-hero { min-height: min(600px, calc(100svh - 118px)); }
@@ -599,6 +692,19 @@
   .pilot-faq summary { font-size: 16px; }
   .pilot-application form { grid-template-columns: 1fr; padding: 20px; }
   .pilot-application form > * { grid-column: 1; }
+  .pilot-page .marketing-consent-banner {
+    right: 10px;
+    bottom: 10px;
+    left: 10px;
+    width: calc(100% - 20px);
+    grid-template-columns: 1fr;
+    gap: 16px;
+    padding: 18px;
+  }
+  .pilot-page .marketing-consent-actions { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .pilot-page .marketing-consent-actions button { min-width: 0; padding: 0 10px; }
+  .pilot-page .marketing-consent-form { padding: 22px 18px; }
+  .pilot-page .marketing-consent-dialog-actions { display: grid; grid-template-columns: 1fr 1fr; }
 }
 
 @media (max-width: 420px) {

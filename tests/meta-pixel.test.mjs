@@ -77,6 +77,9 @@ test("Meta Pilot Lead fires only after a saved application and contains no appli
   assert.ok(responseGuardIndex < savedEventIndex);
   assert.ok(savedEventIndex < errorEventIndex);
   assert.match(pilot, /window\.harborMetaTrack\?\.\(eventName\)/);
+  assert.match(pilot, /import MarketingConsent from /);
+  assert.match(pilot, /<MarketingConsent \/>/);
+  assert.match(pilot, /data-cookie-settings-open/);
   assert.doesNotMatch(pilot, /window\.fbq\("track", "Lead"/);
   assert.match(pixel, /pilot_apply_saved:\s*\{[\s\S]*?content_name: "HarborNavi Pilot Program"[\s\S]*?content_category: "Pilot Application"/);
   assert.doesNotMatch(pixel, /pilot_apply_saved:\s*\{[\s\S]*?parameters:\s*\{[^}]*?\b(?:email|zip|device|interest|referral|utm_)\w*\s*:/i);

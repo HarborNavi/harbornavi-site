@@ -1,5 +1,6 @@
 ---
 import EnglishFormValidation from "../components/EnglishFormValidation.astro";
+import MarketingConsent from "../components/MarketingConsent.astro";
 import MetaPixel from "../components/MetaPixel.astro";
 import RedditPixel from "../components/RedditPixel.astro";
 import SiteHeader from "../components/SiteHeaderV7.astro";
@@ -241,8 +242,9 @@ import "../styles/pilot-families.css";
         </form>
       </section>
     </main>
-    <footer class="site-footer"><span>HarborNavi</span><a href="/">Home</a><a href="/about-harbor">About Harbor</a><a href="/privacy">Privacy</a></footer>
+    <footer class="site-footer"><span>HarborNavi</span><a href="/">Home</a><a href="/about-harbor">About Harbor</a><a href="/privacy">Privacy</a><button type="button" data-cookie-settings-open>Cookie settings</button></footer>
 
+    <MarketingConsent />
     <SiteMediaLoader />
     <script is:inline>
       const route = document.body.dataset.route || "pilot-families";
