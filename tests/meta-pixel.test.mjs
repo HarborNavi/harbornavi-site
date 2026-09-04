@@ -37,6 +37,7 @@ test("Meta base pixel waits for marketing consent and sends PageView", async () 
   assert.match(pixel, /marketingAllowed = hasMarketingConsent\(\)/);
   assert.match(pixel, /if \(!marketingAllowed && !testModeAllowed\) return/);
   assert.match(pixel, /early_bird_saved:\s*\{\s*name: "Lead"/);
+  assert.match(pixel, /pilot_apply_saved:\s*\{\s*name: "Lead"/);
   assert.match(pixel, /harbornavi_marketing_consent/);
   assert.match(pixel, /if \(\(!marketingAllowed && !testModeAllowed\) \|\| initialized\) \{[\s\S]*?return;/);
   assert.match(pixel, /previousMarketingConsentHandler\?\.\(granted\)/);
@@ -63,6 +64,22 @@ test("Meta Lead fires only after a saved waitlist response and contains no form 
   assert.match(metaLeadParameters[1], /content_name: "HarborNavi Waitlist"/);
   assert.match(metaLeadParameters[1], /content_category: "Email Signup"/);
   assert.doesNotMatch(metaLeadParameters[1], /formLocation|route|data\.get|utm_|application|device|\bzip\b/i);
+});
+
+test("Meta Pilot Lead fires only after a saved application and contains no application data", async () => {
+  const pixel = await source("src/components/MetaPixel.astro");
+  const pilot = await source("src/pages/pilot-families.astro");
+  const responseGuardIndex = pilot.indexOf("if (!response.ok)");
+  const savedEventIndex = pilot.indexOf('window.harborTrack("pilot_apply_saved"');
+  const errorEventIndex = pilot.indexOf('window.harborTrack("pilot_apply_error"');
+
+  assert.ok(responseGuardIndex >= 0);
+  assert.ok(responseGuardIndex < savedEventIndex);
+  assert.ok(savedEventIndex < errorEventIndex);
+  assert.match(pilot, /window\.harborMetaTrack\?\.\(eventName\)/);
+  assert.doesNotMatch(pilot, /window\.fbq\("track", "Lead"/);
+  assert.match(pixel, /pilot_apply_saved:\s*\{[\s\S]*?content_name: "HarborNavi Pilot Program"[\s\S]*?content_category: "Pilot Application"/);
+  assert.doesNotMatch(pixel, /pilot_apply_saved:\s*\{[\s\S]*?parameters:\s*\{[^}]*?\b(?:email|zip|device|interest|referral|utm_)\w*\s*:/i);
 });
 
 test("Meta queues PageView and Lead after consent without leaking form values", async () => {
@@ -94,6 +111,7 @@ test("Meta queues PageView and Lead after consent without leaking form values", 
   context.window.harborSetMarketingConsent(true);
   context.window.harborMetaTrack("early_bird_error");
   context.window.harborMetaTrack("early_bird_saved");
+  context.window.harborMetaTrack("pilot_apply_saved");
 
   assert.deepEqual(JSON.parse(JSON.stringify(context.window.fbq.queue)), [
     ["init", "1257319255516210"],
@@ -105,10 +123,17 @@ test("Meta queues PageView and Lead after consent without leaking form values", 
       content_category: "Email Signup"
     }, {
       eventID: context.window.fbq.queue[2][3].eventID
+    }],
+    ["track", "Lead", {
+      content_name: "HarborNavi Pilot Program",
+      content_category: "Pilot Application"
+    }, {
+      eventID: context.window.fbq.queue[3][3].eventID
     }]
   ]);
   assert.match(context.window.fbq.queue[1][3].eventID, /^harbornavi_pageview_\d+_/);
   assert.match(context.window.fbq.queue[2][3].eventID, /^harbornavi_lead_\d+_/);
+  assert.match(context.window.fbq.queue[3][3].eventID, /^harbornavi_lead_\d+_/);
   assert.deepEqual(appendedScripts, ["https://connect.facebook.net/en_US/fbevents.js"]);
 });
 
@@ -176,10 +201,12 @@ test("Meta Pixel configuration, consent copy, and disclosure stay documented", a
   assert.match(consent, /"_fbp", "_fbc"/);
   assert.match(privacy, /Reddit and Meta advertising measurement/);
   assert.match(privacy, /sends a PageView event/);
-  assert.match(privacy, /A sign-up event is sent to Reddit and Meta only after a waitlist submission is saved/);
+  assert.match(privacy, /A sign-up conversion is sent to Reddit and Meta only after a waitlist submission\s+is saved/);
+  assert.match(privacy, /A Lead conversion is sent only after a Pilot Families application is saved/);
   assert.match(privacy, /not passed to\s+Reddit or Meta/);
-  assert.match(readme, /a `Lead` event only after `\/api\/waitlist` successfully saves an address/);
+  assert.match(readme, /a `Lead` event after `\/api\/waitlist` successfully saves an address or `\/api\/pilot-application` successfully saves a Pilot Families application/);
   assert.match(readme, /`HarborNavi Waitlist` and `Email Signup`/);
+  assert.match(readme, /`HarborNavi Pilot Program` and `Pilot Application`/);
   assert.match(readme, /no GTM, Reddit, or Meta request occurs before `granted` consent/);
   assert.match(readme, /https:\/\/harbornavi\.com\/\?meta_test=1/);
   assert.match(readme, /`track`/);

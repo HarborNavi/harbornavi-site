@@ -301,6 +301,7 @@ import "../styles/pilot-families.css";
 
       window.harborTrack = function harborTrack(eventName, properties) {
         window.harborRedditTrack?.(eventName);
+        window.harborMetaTrack?.(eventName);
         const body = JSON.stringify(analyticsPayload(eventName, properties || {}));
         if (navigator.sendBeacon) {
           const queued = navigator.sendBeacon("/api/events", new Blob([body], { type: "application/json" }));
