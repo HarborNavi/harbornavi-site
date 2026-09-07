@@ -124,7 +124,7 @@ const mediaPageGroups = Array.from(
                   <th>Referral</th>
                   <th>Attribution</th>
                   <th>Status</th>
-                  <th>Submitted</th>
+                  <th>Submitted (Pacific)</th>
                 </tr>
               </thead>
               <tbody data-pilot-applications-body>
@@ -437,7 +437,7 @@ const mediaPageGroups = Array.from(
                   <th>Email</th>
                   <th>Route</th>
                   <th>Source</th>
-                  <th>Submitted</th>
+                  <th>Submitted (Pacific)</th>
                   <th>Email service</th>
                   <th>Interest</th>
                   <th>Camera setup</th>
@@ -568,6 +568,7 @@ const mediaPageGroups = Array.from(
     <SiteMediaLoader />
     <script is:inline>
       const tokenKey = "harbornavi_admin_token";
+      const adminTimeZone = "America/Los_Angeles";
       let leads = [];
       let analytics = null;
       let media = [];
@@ -649,12 +650,55 @@ const mediaPageGroups = Array.from(
 
       function formatDate(value) {
         if (!value) return "";
-        return new Intl.DateTimeFormat(undefined, {
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return "";
+        return new Intl.DateTimeFormat("en-US", {
+          timeZone: adminTimeZone,
+          year: "numeric",
           month: "short",
           day: "numeric",
           hour: "2-digit",
-          minute: "2-digit"
-        }).format(new Date(value));
+          minute: "2-digit",
+          timeZoneName: "short"
+        }).format(date);
+      }
+
+      function pacificDateParts(value, includeTime = false) {
+        if (!value) return null;
+        const date = new Date(value);
+        if (Number.isNaN(date.getTime())) return null;
+        const options = {
+          timeZone: adminTimeZone,
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit"
+        };
+        if (includeTime) {
+          Object.assign(options, {
+            hour: "2-digit",
+            minute: "2-digit",
+            second: "2-digit",
+            hourCycle: "h23",
+            timeZoneName: "short"
+          });
+        }
+        return Object.fromEntries(
+          new Intl.DateTimeFormat("en-US", options)
+            .formatToParts(date)
+            .filter((part) => part.type !== "literal")
+            .map((part) => [part.type, part.value])
+        );
+      }
+
+      function formatPacificCsvDate(value) {
+        const parts = pacificDateParts(value, true);
+        if (!parts) return "";
+        return `${parts.year}-${parts.month}-${parts.day} ${parts.hour}:${parts.minute}:${parts.second} ${parts.timeZoneName}`;
+      }
+
+      function currentPacificDate() {
+        const parts = pacificDateParts(new Date());
+        return parts ? `${parts.year}-${parts.month}-${parts.day}` : new Date().toISOString().slice(0, 10);
       }
 
       function leadSource(lead) {
@@ -1324,7 +1368,9 @@ const mediaPageGroups = Array.from(
           "status",
           "submission_count",
           "created_at",
+          "created_at_pacific",
           "profile_completed_at",
+          "profile_completed_at_pacific",
           "notes"
         ];
         const rows = filteredLeads().map((lead) => [
@@ -1344,7 +1390,9 @@ const mediaPageGroups = Array.from(
           lead.status || "",
           lead.submission_count || 1,
           lead.created_at || "",
+          formatPacificCsvDate(lead.created_at),
           lead.profile_completed_at || "",
+          formatPacificCsvDate(lead.profile_completed_at),
           lead.notes || ""
         ]);
         const csv = [headers, ...rows]
@@ -1353,7 +1401,7 @@ const mediaPageGroups = Array.from(
         const url = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
         const link = Object.assign(document.createElement("a"), {
           href: url,
-          download: `harbornavi-waitlist-${new Date().toISOString().slice(0, 10)}.csv`
+          download: `harbornavi-waitlist-${currentPacificDate()}.csv`
         });
         link.click();
         URL.revokeObjectURL(url);
@@ -1385,12 +1433,7 @@ const mediaPageGroups = Array.from(
           .map((row) => row.map((value) => `"${String(value).replaceAll('"', '""')}"`).join(","))
           .join("\n");
         const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
-        const exportDate = new Intl.DateTimeFormat("en-CA", {
-          timeZone: timezone,
-          year: "numeric",
-          month: "2-digit",
-          day: "2-digit"
-        }).format(new Date());
+        const exportDate = currentPacificDate();
         const rangeLabel = rangeSelect.value === "all" ? "all-time" : `${rangeSelect.value}-days`;
         const link = Object.assign(document.createElement("a"), {
           href: url,
@@ -1420,16 +1463,22 @@ const mediaPageGroups = Array.from(
           "utm_term",
           "status",
           "created_at",
-          "updated_at"
+          "created_at_pacific",
+          "updated_at",
+          "updated_at_pacific"
         ];
-        const rows = filteredPilotApplications().map((application) => headers.map((header) => application[header] || ""));
+        const rows = filteredPilotApplications().map((application) => headers.map((header) => {
+          if (header === "created_at_pacific") return formatPacificCsvDate(application.created_at);
+          if (header === "updated_at_pacific") return formatPacificCsvDate(application.updated_at);
+          return application[header] || "";
+        }));
         const csv = [headers, ...rows]
           .map((row) => row.map((value) => `"${String(value).replaceAll('"', '""')}"`).join(","))
           .join("\n");
         const url = URL.createObjectURL(new Blob([csv], { type: "text/csv" }));
         const link = Object.assign(document.createElement("a"), {
           href: url,
-          download: `harbornavi-pilot-applications-${new Date().toISOString().slice(0, 10)}.csv`
+          download: `harbornavi-pilot-applications-${currentPacificDate()}.csv`
         });
         link.click();
         URL.revokeObjectURL(url);

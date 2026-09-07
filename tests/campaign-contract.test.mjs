@@ -193,6 +193,20 @@ test("versioned home routes and admin666 retain their route contracts", async ()
   assert.doesNotMatch(admin, /data-tab-button="media"/);
 });
 
+test("admin lead and Pilot timestamps use Pacific time without replacing raw UTC exports", async () => {
+  const admin666 = await source("src/pages/admin666.astro");
+
+  assert.match(admin666, /const adminTimeZone = "America\/Los_Angeles"/);
+  assert.match(admin666, /timeZone: adminTimeZone/);
+  assert.match(admin666, /timeZoneName: "short"/);
+  assert.equal((admin666.match(/<th>Submitted \(Pacific\)<\/th>/g) || []).length, 2);
+  assert.match(admin666, /"created_at",\s*"created_at_pacific"/);
+  assert.match(admin666, /"profile_completed_at",\s*"profile_completed_at_pacific"/);
+  assert.match(admin666, /"updated_at",\s*"updated_at_pacific"/);
+  assert.match(admin666, /formatPacificCsvDate\(lead\.created_at\)/);
+  assert.match(admin666, /formatPacificCsvDate\(application\.created_at\)/);
+});
+
 test("Vercel routing stays within the Hobby function limit", async () => {
   const vercel = JSON.parse(await source("vercel.json"));
   const apiFunctions = (await filesUnder("api/")).filter((path) => /\.[cm]?[jt]s$/.test(path));
