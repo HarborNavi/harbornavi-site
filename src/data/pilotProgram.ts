@@ -1,5 +1,5 @@
-export const pilotApplicationDeadline = "2026-09-15T23:59:59-07:00";
-export const pilotApplicationDeadlineLabel = "September 15, 2026 at 11:59 PM PT";
+export const pilotApplicationDeadline = "2026-09-16T00:00:00-07:00";
+export const pilotApplicationDeadlineLabel = "September 15, 2026 at 24:00 PDT";
 export const pilotApplicationDeadlineShortLabel = "September 15, 2026";
 export const pilotSpotCount = 10;
 export const pilotOfferAdvertisingCopy = "Yours to keep plus $300.";

@@ -6,6 +6,7 @@ import { validatePilotApplication } from "../src/server/pilot-validation.ts";
 import {
   arePilotApplicationsOpen,
   pilotApplicationDeadline,
+  pilotApplicationDeadlineLabel,
   pilotOfferAdvertisingCopy,
   pilotSpotCount,
   pilotRewardAdvertisingCopy
@@ -44,8 +45,9 @@ test("pilot application validates the six required answers", () => {
 test("pilot application deadline is shared by the page and API", async () => {
   const page = await source("src/pages/pilot-families.astro");
   const api = await source("api/waitlist.ts");
-  assert.equal(pilotApplicationDeadline, "2026-09-15T23:59:59-07:00");
-  assert.equal(arePilotApplicationsOpen(Date.parse("2026-09-15T23:59:58-07:00")), true);
+  assert.equal(pilotApplicationDeadline, "2026-09-16T00:00:00-07:00");
+  assert.equal(pilotApplicationDeadlineLabel, "September 15, 2026 at 24:00 PDT");
+  assert.equal(arePilotApplicationsOpen(Date.parse("2026-09-15T23:59:59.999-07:00")), true);
   assert.equal(arePilotApplicationsOpen(Date.parse("2026-09-16T00:00:00-07:00")), false);
   assert.match(page, /pilotApplicationDeadline/);
   assert.match(api, /arePilotApplicationsOpen/);
