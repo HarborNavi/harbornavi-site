@@ -172,7 +172,7 @@ export async function getAnalyticsDashboard(range: unknown) {
       count(*) filter (where event_name in ('early_bird_saved', 'waitlist_saved'))::int as saved_leads
     from analytics_events
     where (${days}::int = 0 or created_at >= (
-      ((now() at time zone ${ANALYTICS_TIME_ZONE})::date - (${days}::int - 1))
+      (((now() at time zone ${ANALYTICS_TIME_ZONE})::date - (${days}::int - 1))::timestamp without time zone)
       at time zone ${ANALYTICS_TIME_ZONE}
     ))
   `) as unknown as Array<{
@@ -194,7 +194,7 @@ export async function getAnalyticsDashboard(range: unknown) {
       from analytics_events
       where
         (${days}::int = 0 or created_at >= (
-          ((now() at time zone ${ANALYTICS_TIME_ZONE})::date - (${days}::int - 1))
+          (((now() at time zone ${ANALYTICS_TIME_ZONE})::date - (${days}::int - 1))::timestamp without time zone)
           at time zone ${ANALYTICS_TIME_ZONE}
         ))
         and (
@@ -225,7 +225,7 @@ export async function getAnalyticsDashboard(range: unknown) {
       count(*) filter (where event_name = 'pilot_apply_saved')::int as saved_applications
     from analytics_events
     where (${days}::int = 0 or created_at >= (
-      ((now() at time zone ${ANALYTICS_TIME_ZONE})::date - (${days}::int - 1))
+      (((now() at time zone ${ANALYTICS_TIME_ZONE})::date - (${days}::int - 1))::timestamp without time zone)
       at time zone ${ANALYTICS_TIME_ZONE}
     ))
   `) as unknown as Array<{
@@ -243,7 +243,7 @@ export async function getAnalyticsDashboard(range: unknown) {
       count(*) filter (where event_name = 'reservation_start')::int as reservation_starts
     from analytics_events
     where (${days}::int = 0 or created_at >= (
-      ((now() at time zone ${ANALYTICS_TIME_ZONE})::date - (${days}::int - 1))
+      (((now() at time zone ${ANALYTICS_TIME_ZONE})::date - (${days}::int - 1))::timestamp without time zone)
       at time zone ${ANALYTICS_TIME_ZONE}
     ))
   `) as unknown as Array<{
@@ -270,7 +270,7 @@ export async function getAnalyticsDashboard(range: unknown) {
     from analytics_events
     where
       (${days}::int = 0 or created_at >= (
-        ((now() at time zone ${ANALYTICS_TIME_ZONE})::date - (${days}::int - 1))
+        (((now() at time zone ${ANALYTICS_TIME_ZONE})::date - (${days}::int - 1))::timestamp without time zone)
         at time zone ${ANALYTICS_TIME_ZONE}
       ))
       and (
@@ -296,7 +296,7 @@ export async function getAnalyticsDashboard(range: unknown) {
     from analytics_events
     where
       (${days}::int = 0 or created_at >= (
-        ((now() at time zone ${ANALYTICS_TIME_ZONE})::date - (${days}::int - 1))
+        (((now() at time zone ${ANALYTICS_TIME_ZONE})::date - (${days}::int - 1))::timestamp without time zone)
         at time zone ${ANALYTICS_TIME_ZONE}
       ))
       and route = 'pilot-families'
@@ -312,7 +312,7 @@ export async function getAnalyticsDashboard(range: unknown) {
       count(*)::int as count
     from analytics_events
     where (${days}::int = 0 or created_at >= (
-      ((now() at time zone ${ANALYTICS_TIME_ZONE})::date - (${days}::int - 1))
+      (((now() at time zone ${ANALYTICS_TIME_ZONE})::date - (${days}::int - 1))::timestamp without time zone)
       at time zone ${ANALYTICS_TIME_ZONE}
     ))
     group by event_name
@@ -326,7 +326,7 @@ export async function getAnalyticsDashboard(range: unknown) {
       count(*)::int as count
     from waitlist_leads
     where (${days}::int = 0 or created_at >= (
-      ((now() at time zone ${ANALYTICS_TIME_ZONE})::date - (${days}::int - 1))
+      (((now() at time zone ${ANALYTICS_TIME_ZONE})::date - (${days}::int - 1))::timestamp without time zone)
       at time zone ${ANALYTICS_TIME_ZONE}
     ))
     group by primary_interest
@@ -341,7 +341,7 @@ export async function getAnalyticsDashboard(range: unknown) {
       count(*) filter (where founder_reservation_status in ('paid', 'refund_pending', 'refunded'))::int as founder_reservations
     from waitlist_leads
     where (${days}::int = 0 or created_at >= (
-      ((now() at time zone ${ANALYTICS_TIME_ZONE})::date - (${days}::int - 1))
+      (((now() at time zone ${ANALYTICS_TIME_ZONE})::date - (${days}::int - 1))::timestamp without time zone)
       at time zone ${ANALYTICS_TIME_ZONE}
     ))
   `) as unknown as Array<{
@@ -356,7 +356,7 @@ export async function getAnalyticsDashboard(range: unknown) {
       count(*)::int as count
     from waitlist_leads
     where (${days}::int = 0 or created_at >= (
-      ((now() at time zone ${ANALYTICS_TIME_ZONE})::date - (${days}::int - 1))
+      (((now() at time zone ${ANALYTICS_TIME_ZONE})::date - (${days}::int - 1))::timestamp without time zone)
       at time zone ${ANALYTICS_TIME_ZONE}
     ))
     group by camera_connection
@@ -369,7 +369,7 @@ export async function getAnalyticsDashboard(range: unknown) {
     from waitlist_leads
     cross join lateral unnest(coalesce(camera_brands, array[]::text[])) as brand
     where (${days}::int = 0 or created_at >= (
-      ((now() at time zone ${ANALYTICS_TIME_ZONE})::date - (${days}::int - 1))
+      (((now() at time zone ${ANALYTICS_TIME_ZONE})::date - (${days}::int - 1))::timestamp without time zone)
       at time zone ${ANALYTICS_TIME_ZONE}
     ))
     group by brand
@@ -383,7 +383,7 @@ export async function getAnalyticsDashboard(range: unknown) {
       count(*)::int as count
     from waitlist_leads
     where (${days}::int = 0 or created_at >= (
-      ((now() at time zone ${ANALYTICS_TIME_ZONE})::date - (${days}::int - 1))
+      (((now() at time zone ${ANALYTICS_TIME_ZONE})::date - (${days}::int - 1))::timestamp without time zone)
       at time zone ${ANALYTICS_TIME_ZONE}
     ))
     group by price_intent
@@ -396,7 +396,7 @@ export async function getAnalyticsDashboard(range: unknown) {
       count(*)::int as count
     from waitlist_leads
     where (${days}::int = 0 or created_at >= (
-      ((now() at time zone ${ANALYTICS_TIME_ZONE})::date - (${days}::int - 1))
+      (((now() at time zone ${ANALYTICS_TIME_ZONE})::date - (${days}::int - 1))::timestamp without time zone)
       at time zone ${ANALYTICS_TIME_ZONE}
     ))
     group by founder_reservation_status

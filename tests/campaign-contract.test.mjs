@@ -258,7 +258,7 @@ test("analytics separates Waitlist and Pilot funnels and deduplicates visitors",
   assert.match(analytics, /pilotSummary\.saved_applications \/ pilotSummary\.unique_visitors/);
   assert.match(analytics, /ANALYTICS_TIME_ZONE = "America\/Los_Angeles"/);
   assert.match(analytics, /created_at at time zone \$\{ANALYTICS_TIME_ZONE\}/);
-  assert.match(analytics, /\(now\(\) at time zone \$\{ANALYTICS_TIME_ZONE\}\)::date - \(\$\{days\}::int - 1\)/);
+  assert.match(analytics, /\(now\(\) at time zone \$\{ANALYTICS_TIME_ZONE\}\)::date - \(\$\{days\}::int - 1\)\)::timestamp without time zone/);
   assert.match(analytics, /with waitlist_events as \([\s\S]*as local_date[\s\S]*group by local_date/);
   assert.match(analytics, /daily_waitlist: addConversionRate\(dailyWaitlistRows, "saved_leads"\)/);
   assert.match(admin666, /data-daily-waitlist-body/);
