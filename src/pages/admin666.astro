@@ -2,6 +2,7 @@
 import EnglishFormValidation from "../components/EnglishFormValidation.astro";
 import SiteMediaLoader from "../components/SiteMediaLoader.astro";
 import { siteMediaPlacements } from "../data/siteMedia";
+import { Download } from "@lucide/astro";
 import "../styles/admin666.css";
 
 const mediaPageGroups = Array.from(
@@ -225,6 +226,26 @@ const mediaPageGroups = Array.from(
               <article><span>Form submits</span><strong data-waitlist-form-submits>0</strong></article>
               <article><span>Saved leads</span><strong data-waitlist-saved-leads>0</strong></article>
               <article><span>Visitor conversion</span><strong data-waitlist-conversion>0%</strong></article>
+            </div>
+            <div class="admin-panel daily-analytics-panel">
+              <div class="daily-analytics-heading">
+                <div>
+                  <h3>Daily waitlist performance</h3>
+                  <p>Dates and selected ranges start at midnight in America/Los_Angeles time (PDT/PST). Pilot activity is excluded.</p>
+                </div>
+                <button type="button" data-export-daily-analytics disabled>
+                  <Download size={16} strokeWidth={2} aria-hidden="true" />
+                  Export daily CSV
+                </button>
+              </div>
+              <div class="lead-table-wrap">
+                <table class="compact-table daily-analytics-table">
+                  <thead>
+                    <tr><th>Date (Pacific)</th><th>Visitors</th><th>Page views</th><th>Starts</th><th>Submits</th><th>Saved</th><th>Conversion</th></tr>
+                  </thead>
+                  <tbody data-daily-waitlist-body><tr><td colspan="7">No daily analytics loaded yet.</td></tr></tbody>
+                </table>
+              </div>
             </div>
             <div class="admin-panel">
               <h3>Waitlist by route and source</h3>
@@ -570,6 +591,7 @@ const mediaPageGroups = Array.from(
       const leadsBody = document.querySelector("[data-leads-body]");
       const rowTemplate = document.querySelector("[data-lead-row-template]");
       const rangeSelect = document.querySelector("[data-range]");
+      const dailyAnalyticsExportButton = document.querySelector("[data-export-daily-analytics]");
       const statusFilter = document.querySelector("[data-filter-status]");
       const interestFilter = document.querySelector("[data-filter-interest]");
       const brandFilter = document.querySelector("[data-filter-brand]");
@@ -899,6 +921,14 @@ const mediaPageGroups = Array.from(
         document.querySelector("[data-waitlist-form-submits]").textContent = String(waitlistSummary.form_submits || 0);
         document.querySelector("[data-waitlist-saved-leads]").textContent = String(waitlistSummary.saved_leads || 0);
         document.querySelector("[data-waitlist-conversion]").textContent = `${waitlistSummary.conversion_rate || 0}%`;
+        const dailyWaitlist = analytics?.daily_waitlist || [];
+        renderRows(
+          document.querySelector("[data-daily-waitlist-body]"),
+          dailyWaitlist,
+          ["date", "unique_visitors", "page_views", "form_starts", "form_submits", "saved_leads", "conversion_rate"],
+          "No daily waitlist data in this range."
+        );
+        dailyAnalyticsExportButton.disabled = dailyWaitlist.length === 0;
         document.querySelector("[data-pilot-funnel-unique-visitors]").textContent = String(pilotSummary.unique_visitors || 0);
         document.querySelector("[data-pilot-funnel-page-views]").textContent = String(pilotSummary.page_views || 0);
         document.querySelector("[data-pilot-funnel-form-starts]").textContent = String(pilotSummary.form_starts || 0);
@@ -1329,6 +1359,47 @@ const mediaPageGroups = Array.from(
         URL.revokeObjectURL(url);
       }
 
+      function exportDailyAnalyticsCsv() {
+        const headers = [
+          "date_pacific",
+          "timezone",
+          "unique_visitors",
+          "page_views",
+          "form_starts",
+          "form_submits",
+          "saved_leads",
+          "conversion_rate_percent"
+        ];
+        const timezone = analytics?.analytics_timezone || "America/Los_Angeles";
+        const rows = (analytics?.daily_waitlist || []).map((day) => [
+          day.date,
+          timezone,
+          day.unique_visitors || 0,
+          day.page_views || 0,
+          day.form_starts || 0,
+          day.form_submits || 0,
+          day.saved_leads || 0,
+          day.conversion_rate || 0
+        ]);
+        const csv = [headers, ...rows]
+          .map((row) => row.map((value) => `"${String(value).replaceAll('"', '""')}"`).join(","))
+          .join("\n");
+        const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+        const exportDate = new Intl.DateTimeFormat("en-CA", {
+          timeZone: timezone,
+          year: "numeric",
+          month: "2-digit",
+          day: "2-digit"
+        }).format(new Date());
+        const rangeLabel = rangeSelect.value === "all" ? "all-time" : `${rangeSelect.value}-days`;
+        const link = Object.assign(document.createElement("a"), {
+          href: url,
+          download: `harbornavi-daily-page-views-pacific-${rangeLabel}-${exportDate}.csv`
+        });
+        link.click();
+        URL.revokeObjectURL(url);
+      }
+
       function exportPilotApplicationsCsv() {
         const headers = [
           "name",
@@ -1398,6 +1469,7 @@ const mediaPageGroups = Array.from(
       document.querySelector("[data-refresh-health]").addEventListener("click", loadAdminHealth);
       document.querySelector("[data-refresh]").addEventListener("click", loadLeads);
       document.querySelector("[data-export]").addEventListener("click", exportCsv);
+      dailyAnalyticsExportButton.addEventListener("click", exportDailyAnalyticsCsv);
       document.querySelector("[data-refresh-pilot-applications]").addEventListener("click", loadPilotApplications);
       document.querySelector("[data-export-pilot-applications]").addEventListener("click", exportPilotApplicationsCsv);
       [statusFilter, interestFilter, brandFilter, connectionFilter, priceFilter, reservationFilter].forEach((filter) =>

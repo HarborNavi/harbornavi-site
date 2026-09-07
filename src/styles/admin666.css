@@ -286,6 +286,49 @@ textarea {
   font-size: 1rem;
 }
 
+.daily-analytics-panel {
+  overflow: hidden;
+}
+
+.daily-analytics-heading {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  padding: 16px 18px;
+  border-bottom: 1px solid var(--line);
+}
+
+.daily-analytics-heading h3 {
+  padding: 0;
+}
+
+.daily-analytics-heading p {
+  margin: 5px 0 0;
+  color: var(--muted);
+  font-size: 0.8rem;
+  line-height: 1.45;
+}
+
+.daily-analytics-heading button {
+  min-height: 40px;
+  display: inline-flex;
+  flex: 0 0 auto;
+  align-items: center;
+  justify-content: center;
+  gap: 8px;
+  border: 1px solid var(--accent);
+  background: var(--accent);
+  color: #fff;
+  padding: 0 14px;
+  cursor: pointer;
+  font-weight: 760;
+}
+
+.daily-analytics-table {
+  min-width: 760px;
+}
+
 .analytics-funnel {
   display: grid;
   gap: 14px;
@@ -565,6 +608,15 @@ td small {
   .analytics-funnel-heading {
     display: grid;
     gap: 8px;
+  }
+
+  .daily-analytics-heading {
+    align-items: stretch;
+    flex-direction: column;
+  }
+
+  .daily-analytics-heading button {
+    width: 100%;
   }
 
   .lead-actions select,

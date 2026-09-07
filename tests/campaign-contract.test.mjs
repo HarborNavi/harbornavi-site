@@ -247,6 +247,7 @@ test("analytics separates Waitlist and Pilot funnels and deduplicates visitors",
   const analytics = await source("src/server/analytics.ts");
   const eventsApi = await source("api/events.ts");
   const schema = await source("db/analytics.sql");
+  const admin666 = await source("src/pages/admin666.astro");
 
   assert.match(analytics, /count\(distinct coalesce\(nullif\(visitor_id/);
   assert.match(analytics, /waitlist_summary/);
@@ -255,6 +256,15 @@ test("analytics separates Waitlist and Pilot funnels and deduplicates visitors",
   assert.match(analytics, /pilot_funnel/);
   assert.match(analytics, /waitlistSummary\.saved_leads \/ waitlistSummary\.unique_visitors/);
   assert.match(analytics, /pilotSummary\.saved_applications \/ pilotSummary\.unique_visitors/);
+  assert.match(analytics, /ANALYTICS_TIME_ZONE = "America\/Los_Angeles"/);
+  assert.match(analytics, /created_at at time zone \$\{ANALYTICS_TIME_ZONE\}/);
+  assert.match(analytics, /\(now\(\) at time zone \$\{ANALYTICS_TIME_ZONE\}\)::date - \(\$\{days\}::int - 1\)/);
+  assert.match(analytics, /with waitlist_events as \([\s\S]*as local_date[\s\S]*group by local_date/);
+  assert.match(analytics, /daily_waitlist: addConversionRate\(dailyWaitlistRows, "saved_leads"\)/);
+  assert.match(admin666, /data-daily-waitlist-body/);
+  assert.match(admin666, /data-export-daily-analytics/);
+  assert.match(admin666, /harbornavi-daily-page-views-pacific/);
+  assert.match(admin666, /"date_pacific"[\s\S]*"timezone"[\s\S]*"page_views"/);
   assert.match(eventsApi, /resolveVisitorId\(request\)/);
   assert.match(eventsApi, /set-cookie/);
   assert.match(schema, /add column if not exists visitor_id text/);

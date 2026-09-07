@@ -24,6 +24,8 @@ interface AnalyticsPayload {
   properties?: unknown;
 }
 
+const ANALYTICS_TIME_ZONE = "America/Los_Angeles";
+
 let analyticsTableReady: Promise<void> | null = null;
 
 async function initializeAnalyticsTable() {
@@ -169,7 +171,10 @@ export async function getAnalyticsDashboard(range: unknown) {
       count(*) filter (where event_name in ('early_bird_submit', 'waitlist_submit'))::int as form_submits,
       count(*) filter (where event_name in ('early_bird_saved', 'waitlist_saved'))::int as saved_leads
     from analytics_events
-    where (${days}::int = 0 or created_at >= now() - (${days}::int * interval '1 day'))
+    where (${days}::int = 0 or created_at >= (
+      ((now() at time zone ${ANALYTICS_TIME_ZONE})::date - (${days}::int - 1))
+      at time zone ${ANALYTICS_TIME_ZONE}
+    ))
   `) as unknown as Array<{
     unique_visitors: number;
     page_views: number;
@@ -177,6 +182,38 @@ export async function getAnalyticsDashboard(range: unknown) {
     form_submits: number;
     saved_leads: number;
   }>;
+
+  const dailyWaitlistRows = (await db`
+    with waitlist_events as (
+      select
+        id,
+        event_name,
+        session_id,
+        visitor_id,
+        (created_at at time zone ${ANALYTICS_TIME_ZONE})::date as local_date
+      from analytics_events
+      where
+        (${days}::int = 0 or created_at >= (
+          ((now() at time zone ${ANALYTICS_TIME_ZONE})::date - (${days}::int - 1))
+          at time zone ${ANALYTICS_TIME_ZONE}
+        ))
+        and (
+          event_name in ('early_bird_start', 'waitlist_start', 'early_bird_submit', 'waitlist_submit', 'early_bird_saved', 'waitlist_saved')
+          or (event_name in ('page_view', 'page_view_home_v2') and coalesce(route, '') <> 'pilot-families')
+        )
+    )
+    select
+      to_char(local_date, 'YYYY-MM-DD') as date,
+      count(distinct coalesce(nullif(visitor_id, ''), nullif(session_id, ''), id::text))
+        filter (where event_name in ('page_view', 'page_view_home_v2'))::int as unique_visitors,
+      count(*) filter (where event_name in ('page_view', 'page_view_home_v2'))::int as page_views,
+      count(*) filter (where event_name in ('early_bird_start', 'waitlist_start'))::int as form_starts,
+      count(*) filter (where event_name in ('early_bird_submit', 'waitlist_submit'))::int as form_submits,
+      count(*) filter (where event_name in ('early_bird_saved', 'waitlist_saved'))::int as saved_leads
+    from waitlist_events
+    group by local_date
+    order by date desc
+  `) as unknown as Array<Record<string, unknown>>;
 
   const pilotSummaryRows = (await db`
     select
@@ -187,7 +224,10 @@ export async function getAnalyticsDashboard(range: unknown) {
       count(*) filter (where event_name = 'pilot_apply_submit')::int as form_submits,
       count(*) filter (where event_name = 'pilot_apply_saved')::int as saved_applications
     from analytics_events
-    where (${days}::int = 0 or created_at >= now() - (${days}::int * interval '1 day'))
+    where (${days}::int = 0 or created_at >= (
+      ((now() at time zone ${ANALYTICS_TIME_ZONE})::date - (${days}::int - 1))
+      at time zone ${ANALYTICS_TIME_ZONE}
+    ))
   `) as unknown as Array<{
     unique_visitors: number;
     page_views: number;
@@ -202,7 +242,10 @@ export async function getAnalyticsDashboard(range: unknown) {
       count(*) filter (where event_name = 'compatibility_check_complete')::int as compatibility_completes,
       count(*) filter (where event_name = 'reservation_start')::int as reservation_starts
     from analytics_events
-    where (${days}::int = 0 or created_at >= now() - (${days}::int * interval '1 day'))
+    where (${days}::int = 0 or created_at >= (
+      ((now() at time zone ${ANALYTICS_TIME_ZONE})::date - (${days}::int - 1))
+      at time zone ${ANALYTICS_TIME_ZONE}
+    ))
   `) as unknown as Array<{
     page_views: number;
     form_starts: number;
@@ -226,7 +269,10 @@ export async function getAnalyticsDashboard(range: unknown) {
       count(*) filter (where event_name in ('early_bird_saved', 'waitlist_saved'))::int as saved_leads
     from analytics_events
     where
-      (${days}::int = 0 or created_at >= now() - (${days}::int * interval '1 day'))
+      (${days}::int = 0 or created_at >= (
+        ((now() at time zone ${ANALYTICS_TIME_ZONE})::date - (${days}::int - 1))
+        at time zone ${ANALYTICS_TIME_ZONE}
+      ))
       and (
         event_name in ('early_bird_start', 'waitlist_start', 'early_bird_submit', 'waitlist_submit', 'early_bird_saved', 'waitlist_saved')
         or (event_name in ('page_view', 'page_view_home_v2') and coalesce(route, '') <> 'pilot-families')
@@ -249,7 +295,10 @@ export async function getAnalyticsDashboard(range: unknown) {
       count(*) filter (where event_name = 'pilot_apply_saved')::int as saved_applications
     from analytics_events
     where
-      (${days}::int = 0 or created_at >= now() - (${days}::int * interval '1 day'))
+      (${days}::int = 0 or created_at >= (
+        ((now() at time zone ${ANALYTICS_TIME_ZONE})::date - (${days}::int - 1))
+        at time zone ${ANALYTICS_TIME_ZONE}
+      ))
       and route = 'pilot-families'
       and event_name in ('page_view', 'page_view_home_v2', 'pilot_apply_start', 'pilot_apply_submit', 'pilot_apply_saved')
     group by route, source, campaign
@@ -262,7 +311,10 @@ export async function getAnalyticsDashboard(range: unknown) {
       event_name,
       count(*)::int as count
     from analytics_events
-    where (${days}::int = 0 or created_at >= now() - (${days}::int * interval '1 day'))
+    where (${days}::int = 0 or created_at >= (
+      ((now() at time zone ${ANALYTICS_TIME_ZONE})::date - (${days}::int - 1))
+      at time zone ${ANALYTICS_TIME_ZONE}
+    ))
     group by event_name
     order by count desc, event_name asc
     limit 50
@@ -273,7 +325,10 @@ export async function getAnalyticsDashboard(range: unknown) {
       coalesce(nullif(primary_interest, ''), 'unknown') as primary_interest,
       count(*)::int as count
     from waitlist_leads
-    where (${days}::int = 0 or created_at >= now() - (${days}::int * interval '1 day'))
+    where (${days}::int = 0 or created_at >= (
+      ((now() at time zone ${ANALYTICS_TIME_ZONE})::date - (${days}::int - 1))
+      at time zone ${ANALYTICS_TIME_ZONE}
+    ))
     group by primary_interest
     order by count desc, primary_interest asc
     limit 30
@@ -285,7 +340,10 @@ export async function getAnalyticsDashboard(range: unknown) {
       count(*) filter (where price_intent in ('definitely', 'probably'))::int as positive_price_profiles,
       count(*) filter (where founder_reservation_status in ('paid', 'refund_pending', 'refunded'))::int as founder_reservations
     from waitlist_leads
-    where (${days}::int = 0 or created_at >= now() - (${days}::int * interval '1 day'))
+    where (${days}::int = 0 or created_at >= (
+      ((now() at time zone ${ANALYTICS_TIME_ZONE})::date - (${days}::int - 1))
+      at time zone ${ANALYTICS_TIME_ZONE}
+    ))
   `) as unknown as Array<{
     price_profiles: number;
     positive_price_profiles: number;
@@ -297,7 +355,10 @@ export async function getAnalyticsDashboard(range: unknown) {
       coalesce(nullif(camera_connection, ''), 'unknown') as camera_connection,
       count(*)::int as count
     from waitlist_leads
-    where (${days}::int = 0 or created_at >= now() - (${days}::int * interval '1 day'))
+    where (${days}::int = 0 or created_at >= (
+      ((now() at time zone ${ANALYTICS_TIME_ZONE})::date - (${days}::int - 1))
+      at time zone ${ANALYTICS_TIME_ZONE}
+    ))
     group by camera_connection
     order by count desc, camera_connection asc
     limit 20
@@ -307,7 +368,10 @@ export async function getAnalyticsDashboard(range: unknown) {
     select brand as camera_brand, count(*)::int as count
     from waitlist_leads
     cross join lateral unnest(coalesce(camera_brands, array[]::text[])) as brand
-    where (${days}::int = 0 or created_at >= now() - (${days}::int * interval '1 day'))
+    where (${days}::int = 0 or created_at >= (
+      ((now() at time zone ${ANALYTICS_TIME_ZONE})::date - (${days}::int - 1))
+      at time zone ${ANALYTICS_TIME_ZONE}
+    ))
     group by brand
     order by count desc, brand asc
     limit 30
@@ -318,7 +382,10 @@ export async function getAnalyticsDashboard(range: unknown) {
       coalesce(nullif(price_intent, ''), 'unknown') as price_intent,
       count(*)::int as count
     from waitlist_leads
-    where (${days}::int = 0 or created_at >= now() - (${days}::int * interval '1 day'))
+    where (${days}::int = 0 or created_at >= (
+      ((now() at time zone ${ANALYTICS_TIME_ZONE})::date - (${days}::int - 1))
+      at time zone ${ANALYTICS_TIME_ZONE}
+    ))
     group by price_intent
     order by count desc, price_intent asc
   `) as unknown as Array<Record<string, unknown>>;
@@ -328,7 +395,10 @@ export async function getAnalyticsDashboard(range: unknown) {
       coalesce(nullif(founder_reservation_status, ''), 'none') as reservation_status,
       count(*)::int as count
     from waitlist_leads
-    where (${days}::int = 0 or created_at >= now() - (${days}::int * interval '1 day'))
+    where (${days}::int = 0 or created_at >= (
+      ((now() at time zone ${ANALYTICS_TIME_ZONE})::date - (${days}::int - 1))
+      at time zone ${ANALYTICS_TIME_ZONE}
+    ))
     group by founder_reservation_status
     order by count desc, reservation_status asc
   `) as unknown as Array<Record<string, unknown>>;
@@ -389,6 +459,8 @@ export async function getAnalyticsDashboard(range: unknown) {
       ...waitlistSummary,
       conversion_rate: waitlistConversionRate
     },
+    analytics_timezone: ANALYTICS_TIME_ZONE,
+    daily_waitlist: addConversionRate(dailyWaitlistRows, "saved_leads"),
     pilot_summary: {
       ...pilotSummary,
       conversion_rate: pilotConversionRate
