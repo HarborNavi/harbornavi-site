@@ -6,6 +6,7 @@ import { getWaitlistHealth } from "../../src/server/waitlist.js";
 import { getWaitlistConfirmationConfig } from "../../src/server/waitlist-email.js";
 import { handleMediaRequest } from "../../src/server/media.js";
 import { listPilotApplications } from "../../src/server/pilot-applications.js";
+import { listPilotSurveys } from "../../src/server/pilot-surveys.js";
 
 function configured(name: string) {
   return Boolean(getOptionalEnv(name));
@@ -28,7 +29,15 @@ export async function GET(request: Request) {
       return jsonResponse({ error: "Unable to load pilot applications" }, { status: 500 });
     }
   }
-
+  if (action === "pilot-surveys") {
+    try {
+      const surveys = await listPilotSurveys();
+      return jsonResponse({ ok: true, surveys });
+    } catch (error) {
+      console.error(error);
+      return jsonResponse({ error: "Unable to load pilot surveys" }, { status: 500 });
+    }
+  }
   const requiredEnv = {
     DATABASE_URL: configured("DATABASE_URL"),
     ADMIN_PASSWORD: configured("ADMIN_PASSWORD"),

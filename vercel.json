@@ -56,12 +56,20 @@
       "destination": "/api/admin/health?action=pilot-applications"
     },
     {
+      "source": "/api/admin/pilot-surveys",
+      "destination": "/api/admin/health?action=pilot-surveys"
+    },
+    {
       "source": "/api/waitlist/profile",
       "destination": "/api/waitlist?action=profile"
     },
     {
       "source": "/api/pilot-application",
       "destination": "/api/waitlist?action=pilot"
+    },
+    {
+      "source": "/api/pilot-survey",
+      "destination": "/api/waitlist?action=pilot-survey"
     },
     {
       "source": "/api/reservations/status",

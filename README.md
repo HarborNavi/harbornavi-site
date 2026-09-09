@@ -11,13 +11,14 @@ This project is intentionally separate from the HarborNavi product coordination 
 - V2 through V9 remain as internal source history only; V4 and V5 forms are inactive.
 - `/15-homes`: public 15 Homes Across America field-test, host-application, and viewing hub.
 - `/15-homes/thanks`: application receipt page for the external host form; receipt does not mean selection.
-- `/pilot-families`: first-five-family pilot details and application form.
+- `/pilot-families`: 10-family pilot details and initial application form.
+- `/pilotsurvey`: no-index Pilot family assessment for invited applicants, with server-side scoring.
 - `/about-harbor`: Harbor Innovations founding story, principles, prior projects, and Pilot Program entry point.
 - `/package`: package alert beta positioning.
 - `/pets`: pet highlights beta positioning.
 - `/privacy`: product waitlist and 15 Homes campaign privacy direction.
 - `/admin`: password-protected waitlist lead admin.
-- `/admin666`: isolated campaign admin with Pilot Applications and Media management.
+- `/admin666`: isolated campaign admin with Pilot Applications, Pilot Surveys, and Media management.
 - `/api/waitlist`: waitlist submission endpoint.
 - `/api/waitlist/confirm`: legacy signed email-confirmation endpoint for links already issued before immediate enrollment.
 - `/api/waitlist/profile`: optional post-submit lead profile endpoint.
@@ -28,9 +29,11 @@ This project is intentionally separate from the HarborNavi product coordination 
 - `/api/events`: first-party analytics event endpoint.
 - `/api/admin/*`: admin login, health check, analytics, and lead management endpoints.
 - `/api/admin/pilot-applications`: authenticated Pilot Families application list, routed through the existing admin health function.
+- `/api/admin/pilot-surveys`: authenticated Pilot family assessment list with original answers and server-generated scores.
 - `/api/assets`: public delivery of active website-image overrides plus authenticated admin upload, assignment, activation, and deletion.
 - `GET /api/events`: disabled with `405 Method Not Allowed`; `POST /api/events` records allowlisted campaign events.
 - `/api/pilot-application`: Pilot Families application endpoint, routed through the existing waitlist function without marketing consent.
+- `/api/pilot-survey`: Pilot family assessment endpoint, routed through the existing waitlist function without marketing consent.
 
 ## Commands
 
@@ -73,11 +76,12 @@ Use GTM Preview to confirm that no container request occurs after Decline, then 
 - The external 15 Homes application is not written to the site's waitlist or analytics tables. Its provider should redirect completed applications to `/15-homes/thanks`.
 - Resend Broadcasts, rather than the transactional Email API, are used for reviewed Kickstarter marketing sends and unsubscribe handling.
 - Compatibility model research and price-fit testing remain separate follow-up work; the existing profile and reservation APIs are retained but are not called by the final homepage.
-- The `/admin666` page has Dashboard, Leads, Pilot Applications, Media, and System tabs for first-party funnel analytics, application review, and lead operations. The existing `/admin` route remains unchanged.
+- The `/admin666` page has Dashboard, Leads, Pilot Applications, Media, System, and Pilot Surveys tabs for first-party funnel analytics, application review, survey scoring, and lead operations. The existing `/admin` route remains unchanged.
 - Backend setup lives in `docs/waitlist-backend.md`; database schema lives in `db/waitlist.sql` and `db/analytics.sql`.
 - Existing Neon projects should apply `db/growth-v4.sql` before deploying the v4 APIs.
 - First-party analytics is stored in Neon. No GA, PostHog, or Plausible integration is installed; Reddit advertising measurement is optional and configuration-gated as documented above.
 - Campaign analytics accepts `road_home_apply_click`, `road_home_form_start`, `road_home_form_complete`, `kickstarter_prelaunch_click`, `youtube_live_click`, and `youtube_replay_click`. Application answers and PII are not sent with those events.
 - The private `/admin666` Media tab uploads JPG, PNG, and GIF files to Vercel Blob and stores their metadata in `site_media`. Image controls are grouped by exact page location for site branding, Home V7, Pilot Families, and About Harbor. Uploading to a location immediately replaces its current image; restoring the default disables the override without deleting upload history. Legacy `hero-carousel` and `page` uploads can be reassigned to a specific location. Connected Vercel deployments authenticate with OIDC through `BLOB_STORE_ID`; `BLOB_READ_WRITE_TOKEN` is only an optional local or legacy fallback.
 - Pilot Families applications are stored separately in `pilot_family_applications`; submitting this form does not join the Kickstarter marketing Topic. The two new tables are initialized idempotently on first use, while `db/media.sql` and `db/pilot-families.sql` remain the explicit migration records.
+- Pilot family assessments are stored separately in `pilot_family_surveys`. Scores and summaries are calculated on the server using a versioned deterministic rubric; `db/pilot-surveys.sql` is the explicit migration record.
 - The Pilot Program recruits 10 families. Public offer copy uses `Yours to keep plus $300.`, while the detailed reward statement is `Receive $300 after completing the agreed milestones.` Any creator, selected family, or later pilot-vlog participant must clearly and conspicuously disclose cash, a provided or free device, lifetime subscription-free access, and any other material benefit. Video disclosures must appear visibly and verbally in the video itself, not only in its caption or description.

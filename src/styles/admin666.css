@@ -431,6 +431,27 @@ textarea {
 .pilot-status[data-status="selected"] { border-color: rgba(15, 118, 110, 0.34); background: #eefbf7; color: var(--success); }
 .pilot-status[data-status="not_selected"] { border-color: rgba(139, 31, 31, 0.24); background: #fff1f1; color: var(--danger); }
 
+.metric-grid.pilot-survey-metrics { grid-template-columns: repeat(4, minmax(0, 1fr)); }
+.pilot-survey-filters { display: grid; grid-template-columns: 220px minmax(300px, 1fr); gap: 10px; }
+.pilot-survey-filters input { min-height: 44px; padding: 0 12px; border: 1px solid var(--line); background: #fbfcfa; color: var(--ink); }
+.pilot-surveys-table { min-width: 2180px; }
+.pilot-surveys-table td:first-child { display: grid; gap: 5px; min-width: 220px; }
+.pilot-surveys-table td:first-child strong { font-size: 0.94rem; }
+.pilot-surveys-table td:nth-child(2) { min-width: 125px; }
+.pilot-surveys-table td:nth-child(3) { min-width: 150px; }
+.pilot-surveys-table td:nth-child(3) > span { display: block; margin-bottom: 5px; font-size: 0.8rem; font-weight: 760; }
+.pilot-surveys-table td:nth-child(4) { min-width: 330px; max-width: 410px; white-space: pre-wrap; line-height: 1.5; }
+.pilot-surveys-table td:nth-child(5) { min-width: 300px; max-width: 380px; white-space: pre-wrap; line-height: 1.5; }
+.pilot-surveys-table td:nth-child(6) { min-width: 270px; max-width: 330px; }
+.pilot-surveys-table td:nth-child(6) > strong { display: block; line-height: 1.45; }
+.pilot-surveys-table td:nth-child(7) { min-width: 250px; max-width: 310px; line-height: 1.45; }
+.pilot-survey-total { display: block; margin-bottom: 7px; font-size: 1.2rem; }
+.pilot-score-band { display: inline-flex; min-height: 27px; align-items: center; padding: 0 8px; border: 1px solid var(--line); background: #f7f8f6; color: var(--muted); font-size: 0.7rem; font-weight: 820; text-transform: capitalize; }
+.pilot-score-band[data-band="priority"] { border-color: rgba(15, 118, 110, 0.34); background: #eefbf7; color: var(--success); }
+.pilot-score-band[data-band="qualified"] { border-color: rgba(83, 45, 173, 0.28); background: #f5f2fb; color: #532dad; }
+.pilot-score-band[data-band="conditional"] { border-color: rgba(157, 102, 0, 0.28); background: #fff8e8; color: #7c5100; }
+.pilot-score-band[data-band="not_priority"] { border-color: rgba(139, 31, 31, 0.24); background: #fff1f1; color: var(--danger); }
+
 .lead-filters {
   display: grid;
   grid-template-columns: repeat(auto-fit, minmax(160px, 1fr));
@@ -573,9 +594,11 @@ td small {
   .status-grid,
   .dashboard-grid,
   .lead-filters,
-  .pilot-application-metrics,
-  .pilot-application-filters,
-  .media-placement-grid {
+    .pilot-application-metrics,
+    .pilot-application-filters,
+    .pilot-survey-metrics,
+    .pilot-survey-filters,
+    .media-placement-grid {
     grid-template-columns: 1fr;
   }
 

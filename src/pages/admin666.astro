@@ -80,6 +80,7 @@ const mediaPageGroups = Array.from(
           <button type="button" data-tab-button="pilot-applications">Pilot Applications</button>
           <button type="button" data-tab-button="media">Media</button>
           <button type="button" data-tab-button="system">System</button>
+          <button type="button" data-tab-button="pilot-surveys">Pilot Surveys</button>
         </div>
 
         <section class="tab-panel" data-tab-panel="pilot-applications" hidden>
@@ -129,6 +130,60 @@ const mediaPageGroups = Array.from(
               </thead>
               <tbody data-pilot-applications-body>
                 <tr><td colspan="8">No pilot applications loaded yet.</td></tr>
+              </tbody>
+            </table>
+          </div>
+        </section>
+
+        <section class="tab-panel" data-tab-panel="pilot-surveys" hidden>
+          <div class="leads-head">
+            <div>
+              <p class="admin-eyebrow">Pilot family assessment</p>
+              <h2>Survey responses and scores</h2>
+              <p>Review each household's answers, server-generated score breakdown, and automatic summary. Scores support selection but do not replace compatibility checks or human review.</p>
+            </div>
+            <div class="lead-actions">
+              <button type="button" data-refresh-pilot-surveys>Refresh surveys</button>
+              <button type="button" data-export-pilot-surveys>Export CSV</button>
+            </div>
+          </div>
+
+          <div class="metric-grid pilot-survey-metrics" aria-label="Pilot survey metrics">
+            <article><span>Total responses</span><strong data-survey-total>0</strong></article>
+            <article><span>Priority</span><strong data-survey-priority>0</strong></article>
+            <article><span>Qualified</span><strong data-survey-qualified>0</strong></article>
+            <article><span>Average score</span><strong data-survey-average>0</strong></article>
+          </div>
+
+          <div class="pilot-survey-filters" aria-label="Pilot survey filters">
+            <select data-survey-filter-band aria-label="Filter pilot surveys by score band">
+              <option value="">All score bands</option>
+              <option value="priority">Priority (80–100)</option>
+              <option value="qualified">Qualified (65–79)</option>
+              <option value="conditional">Conditional (50–64)</option>
+              <option value="not_priority">Not priority (0–49)</option>
+            </select>
+            <input data-survey-filter-search type="search" placeholder="Search name, email, story, scenarios, devices, or summary" />
+          </div>
+
+          <p class="admin-message" data-pilot-surveys-message hidden></p>
+          <div class="lead-table-wrap">
+            <table class="pilot-surveys-table">
+              <thead>
+                <tr>
+                  <th>Applicant</th>
+                  <th>Score</th>
+                  <th>Breakdown</th>
+                  <th>Automatic summary</th>
+                  <th>Story response</th>
+                  <th>Scenarios and devices</th>
+                  <th>Availability</th>
+                  <th>Referral</th>
+                  <th>Submitted (Pacific)</th>
+                </tr>
+              </thead>
+              <tbody data-pilot-surveys-body>
+                <tr><td colspan="9">No pilot surveys loaded yet.</td></tr>
               </tbody>
             </table>
           </div>
@@ -573,6 +628,7 @@ const mediaPageGroups = Array.from(
       let analytics = null;
       let media = [];
       let pilotApplications = [];
+      let pilotSurveys = [];
 
       const loginPanel = document.querySelector("[data-login-panel]");
       const leadsPanel = document.querySelector("[data-leads-panel]");
@@ -589,6 +645,10 @@ const mediaPageGroups = Array.from(
       const pilotApplicationsBody = document.querySelector("[data-pilot-applications-body]");
       const pilotStatusFilter = document.querySelector("[data-pilot-filter-status]");
       const pilotSearchFilter = document.querySelector("[data-pilot-filter-search]");
+      const pilotSurveysMessage = document.querySelector("[data-pilot-surveys-message]");
+      const pilotSurveysBody = document.querySelector("[data-pilot-surveys-body]");
+      const surveyBandFilter = document.querySelector("[data-survey-filter-band]");
+      const surveySearchFilter = document.querySelector("[data-survey-filter-search]");
       const leadsBody = document.querySelector("[data-leads-body]");
       const rowTemplate = document.querySelector("[data-lead-row-template]");
       const rangeSelect = document.querySelector("[data-range]");
@@ -929,6 +989,121 @@ const mediaPageGroups = Array.from(
         updatePilotApplicationMetrics();
       }
 
+      function surveyLabel(value) {
+        return String(value || "")
+          .replaceAll("_", " ")
+          .replace(/\b\w/g, (letter) => letter.toUpperCase());
+      }
+
+      function surveyList(values) {
+        return (Array.isArray(values) ? values : []).map(surveyLabel).join(", ");
+      }
+
+      function filteredPilotSurveys() {
+        const band = surveyBandFilter.value;
+        const search = surveySearchFilter.value.trim().toLowerCase();
+        return pilotSurveys.filter((survey) => {
+          if (band && survey.score_band !== band) return false;
+          if (!search) return true;
+          return [
+            survey.name,
+            survey.email,
+            survey.story_sample,
+            survey.automatic_summary,
+            survey.referral_source,
+            ...(survey.core_scenarios || []),
+            ...(survey.household_context || []),
+            ...(survey.device_categories || []),
+            ...(survey.available_windows || [])
+          ].filter(Boolean).join(" ").toLowerCase().includes(search);
+        });
+      }
+
+      function updatePilotSurveyMetrics() {
+        const visible = filteredPilotSurveys();
+        const average = visible.length
+          ? (visible.reduce((sum, survey) => sum + Number(survey.total_score || 0), 0) / visible.length).toFixed(1)
+          : "0";
+        document.querySelector("[data-survey-total]").textContent = String(visible.length);
+        document.querySelector("[data-survey-priority]").textContent = String(visible.filter((survey) => survey.score_band === "priority").length);
+        document.querySelector("[data-survey-qualified]").textContent = String(visible.filter((survey) => survey.score_band === "qualified").length);
+        document.querySelector("[data-survey-average]").textContent = average;
+      }
+
+      function renderPilotSurveys() {
+        const visible = filteredPilotSurveys();
+        pilotSurveysBody.innerHTML = "";
+        if (!visible.length) {
+          pilotSurveysBody.innerHTML = '<tr><td colspan="9">No matching pilot surveys.</td></tr>';
+          updatePilotSurveyMetrics();
+          return;
+        }
+
+        visible.forEach((survey) => {
+          const row = document.createElement("tr");
+          const applicant = document.createElement("td");
+          const name = document.createElement("strong");
+          name.textContent = survey.name;
+          const email = document.createElement("a");
+          email.href = `mailto:${survey.email}`;
+          email.textContent = survey.email;
+          applicant.append(name, email);
+
+          const score = document.createElement("td");
+          const total = document.createElement("strong");
+          total.className = "pilot-survey-total";
+          total.textContent = `${survey.total_score}/100`;
+          const band = document.createElement("span");
+          band.className = "pilot-score-band";
+          band.dataset.band = survey.score_band;
+          band.textContent = surveyLabel(survey.score_band);
+          score.append(total, band);
+
+          const breakdown = document.createElement("td");
+          [
+            `Content ${survey.content_score}/30`,
+            `Fit ${survey.scenario_score}/45`,
+            `Reliability ${survey.reliability_score}/25`
+          ].forEach((value) => {
+            const line = document.createElement("span");
+            line.textContent = value;
+            breakdown.appendChild(line);
+          });
+
+          const summary = document.createElement("td");
+          summary.textContent = survey.automatic_summary || "";
+
+          const story = document.createElement("td");
+          story.textContent = survey.story_sample || "";
+
+          const fit = document.createElement("td");
+          const scenarios = document.createElement("strong");
+          scenarios.textContent = surveyList(survey.core_scenarios) || "No core scenario";
+          const devices = document.createElement("small");
+          devices.textContent = surveyList(survey.device_categories) || "No device selected";
+          const household = document.createElement("small");
+          household.textContent = survey.household_context?.length ? `Household: ${surveyList(survey.household_context)}` : "";
+          fit.append(scenarios, devices, household);
+
+          const availability = document.createElement("td");
+          availability.textContent = surveyList(survey.available_windows);
+          const reliability = document.createElement("small");
+          reliability.textContent = `${surveyLabel(survey.scheduling_confidence)} · ${surveyLabel(survey.completion_commitment)} · ${surveyLabel(survey.past_participation_level)}`;
+          availability.appendChild(reliability);
+
+          const referral = document.createElement("td");
+          referral.textContent = surveyLabel(survey.referral_source);
+
+          const submitted = document.createElement("td");
+          submitted.textContent = formatDate(survey.created_at);
+
+          row.append(applicant, score, breakdown, summary, story, fit, availability, referral, submitted);
+          pilotSurveysBody.appendChild(row);
+        });
+
+        updatePilotSurveyMetrics();
+      }
+
       function renderRows(tbody, rows, columns, emptyMessage) {
         tbody.innerHTML = "";
         if (!rows.length) {
@@ -1162,6 +1337,18 @@ const mediaPageGroups = Array.from(
           setMessage(pilotApplicationsMessage, "");
         } catch (error) {
           setMessage(pilotApplicationsMessage, error.message, "error");
+        }
+      }
+
+      async function loadPilotSurveys() {
+        setMessage(pilotSurveysMessage, "Loading pilot surveys...");
+        try {
+          const body = await apiFetch("/api/admin/pilot-surveys");
+          pilotSurveys = body.surveys || [];
+          renderPilotSurveys();
+          setMessage(pilotSurveysMessage, "");
+        } catch (error) {
+          setMessage(pilotSurveysMessage, error.message, "error");
         }
       }
 
@@ -1484,6 +1671,71 @@ const mediaPageGroups = Array.from(
         URL.revokeObjectURL(url);
       }
 
+      function exportPilotSurveysCsv() {
+        const headers = [
+          "name",
+          "email",
+          "adult_confirmed",
+          "stable_wifi_confirmed",
+          "compatible_device_confirmed",
+          "pilot_commitment_confirmed",
+          "selection_acknowledged",
+          "on_camera_willingness",
+          "filming_ability",
+          "audience_level",
+          "story_sample",
+          "core_scenarios",
+          "household_context",
+          "device_categories",
+          "available_windows",
+          "scheduling_confidence",
+          "completion_commitment",
+          "past_participation_level",
+          "referral_source",
+          "accuracy_confirmed",
+          "review_contact_confirmed",
+          "disclosure_confirmed",
+          "no_marketing_acknowledged",
+          "content_score",
+          "scenario_score",
+          "reliability_score",
+          "total_score",
+          "score_band",
+          "score_version",
+          "automatic_summary",
+          "route",
+          "path",
+          "referrer",
+          "session_id",
+          "visitor_id",
+          "utm_source",
+          "utm_medium",
+          "utm_campaign",
+          "utm_content",
+          "utm_term",
+          "created_at",
+          "created_at_pacific",
+          "updated_at",
+          "updated_at_pacific"
+        ];
+        const rows = filteredPilotSurveys().map((survey) => headers.map((header) => {
+          if (header === "created_at_pacific") return formatPacificCsvDate(survey.created_at);
+          if (header === "updated_at_pacific") return formatPacificCsvDate(survey.updated_at);
+          const value = survey[header];
+          return Array.isArray(value) ? value.join(" | ") : value || "";
+        }));
+        const csv = [headers, ...rows]
+          .map((row) => row.map((value) => `"${String(value).replaceAll('"', '""')}"`).join(","))
+          .join("\n");
+        const url = URL.createObjectURL(new Blob([csv], { type: "text/csv;charset=utf-8" }));
+        const link = Object.assign(document.createElement("a"), {
+          href: url,
+          download: `harbornavi-pilot-surveys-${currentPacificDate()}.csv`
+        });
+        link.click();
+        URL.revokeObjectURL(url);
+      }
+
       loginForm.addEventListener("submit", async (event) => {
         event.preventDefault();
         setMessage(loginMessage, "Signing in...");
@@ -1504,7 +1756,7 @@ const mediaPageGroups = Array.from(
           loginForm.reset();
           setMessage(loginMessage, "");
           showLoggedIn(true);
-          await Promise.all([loadAnalytics(), loadAdminHealth(), loadLeads(), loadPilotApplications(), loadMedia()]);
+          await Promise.all([loadAnalytics(), loadAdminHealth(), loadLeads(), loadPilotApplications(), loadPilotSurveys(), loadMedia()]);
         } catch (error) {
           setMessage(loginMessage, error.message, "error");
         }
@@ -1521,12 +1773,16 @@ const mediaPageGroups = Array.from(
       dailyAnalyticsExportButton.addEventListener("click", exportDailyAnalyticsCsv);
       document.querySelector("[data-refresh-pilot-applications]").addEventListener("click", loadPilotApplications);
       document.querySelector("[data-export-pilot-applications]").addEventListener("click", exportPilotApplicationsCsv);
+      document.querySelector("[data-refresh-pilot-surveys]").addEventListener("click", loadPilotSurveys);
+      document.querySelector("[data-export-pilot-surveys]").addEventListener("click", exportPilotSurveysCsv);
       [statusFilter, interestFilter, brandFilter, connectionFilter, priceFilter, reservationFilter].forEach((filter) =>
         filter.addEventListener("change", renderLeads)
       );
       sourceFilter.addEventListener("input", renderLeads);
       pilotStatusFilter.addEventListener("change", renderPilotApplications);
       pilotSearchFilter.addEventListener("input", renderPilotApplications);
+      surveyBandFilter.addEventListener("change", renderPilotSurveys);
+      surveySearchFilter.addEventListener("input", renderPilotSurveys);
       mediaUploadForms.forEach((mediaUpload) => {
         mediaUpload.addEventListener("submit", async (event) => {
           event.preventDefault();
@@ -1559,12 +1815,13 @@ const mediaPageGroups = Array.from(
         analytics = null;
         media = [];
         pilotApplications = [];
+        pilotSurveys = [];
         showLoggedIn(false);
       });
 
       if (getToken()) {
         showLoggedIn(true);
-        Promise.all([loadAnalytics(), loadAdminHealth(), loadLeads(), loadPilotApplications(), loadMedia()]);
+        Promise.all([loadAnalytics(), loadAdminHealth(), loadLeads(), loadPilotApplications(), loadPilotSurveys(), loadMedia()]);
       }
     </script>
   </body>

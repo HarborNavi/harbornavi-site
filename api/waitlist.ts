@@ -18,6 +18,7 @@ import {
   waitlistIntegrationState
 } from "../src/server/waitlist.js";
 import { savePilotApplication } from "../src/server/pilot-applications.js";
+import { savePilotSurvey } from "../src/server/pilot-surveys.js";
 import {
   arePilotApplicationsOpen,
   pilotApplicationDeadlineLabel
@@ -140,9 +141,73 @@ async function postPilotApplication(request: Request) {
   }
 }
 
+async function postPilotSurvey(request: Request) {
+  let payload: Record<string, unknown>;
+  try {
+    payload = await request.json();
+  } catch {
+    return jsonResponse({ error: "Invalid JSON body" }, { status: 400 });
+  }
+  if (typeof payload.company === "string" && payload.company.trim()) return jsonResponse({ ok: true, ignored: true });
+  try {
+    const visitor = resolveVisitorId(request);
+    const result = await savePilotSurvey({
+      name: payload.name,
+      email: payload.email,
+      adult_confirmed: payload.adult_confirmed,
+      stable_wifi_confirmed: payload.stable_wifi_confirmed,
+      compatible_device_confirmed: payload.compatible_device_confirmed,
+      pilot_commitment_confirmed: payload.pilot_commitment_confirmed,
+      selection_acknowledged: payload.selection_acknowledged,
+      on_camera_willingness: payload.on_camera_willingness,
+      filming_ability: payload.filming_ability,
+      audience_level: payload.audience_level,
+      story_sample: payload.story_sample,
+      core_scenarios: payload.core_scenarios,
+      household_context: payload.household_context,
+      device_categories: payload.device_categories,
+      available_windows: payload.available_windows,
+      scheduling_confidence: payload.scheduling_confidence,
+      completion_commitment: payload.completion_commitment,
+      past_participation_level: payload.past_participation_level,
+      referral_source: payload.referral_source,
+      accuracy_confirmed: payload.accuracy_confirmed,
+      review_contact_confirmed: payload.review_contact_confirmed,
+      disclosure_confirmed: payload.disclosure_confirmed,
+      no_marketing_acknowledged: payload.no_marketing_acknowledged,
+      route: payload.route,
+      path: payload.path,
+      referrer: payload.referrer,
+      session_id: payload.session_id,
+      visitor_id: visitor.id,
+      utm_source: payload.utm_source,
+      utm_medium: payload.utm_medium,
+      utm_campaign: payload.utm_campaign,
+      utm_content: payload.utm_content,
+      utm_term: payload.utm_term,
+      metadata: {
+        user_agent: request.headers.get("user-agent") || "",
+        accept_language: request.headers.get("accept-language") || ""
+      }
+    });
+    if (!("survey" in result)) return jsonResponse({ error: result.error }, { status: 400 });
+    return jsonResponse(
+      { ok: true, survey: result.survey },
+      {
+        status: 201,
+        headers: { "set-cookie": visitorCookieHeader(visitor.id, request.url) }
+      }
+    );
+  } catch (error) {
+    console.error(error);
+    return jsonResponse({ error: "Unable to save pilot survey" }, { status: 500 });
+  }
+}
+
 export async function POST(request: Request) {
   const action = new URL(request.url).searchParams.get("action");
   if (action === "pilot") return postPilotApplication(request);
+  if (action === "pilot-survey") return postPilotSurvey(request);
   if (action === "profile") {
     return postWaitlistProfile(request);
   }
