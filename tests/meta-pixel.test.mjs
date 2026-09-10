@@ -25,7 +25,7 @@ test("Meta base pixel waits for marketing consent and sends PageView", async () 
   const pixel = await source("src/components/MetaPixel.astro");
 
   assert.match(pixel, /import\.meta\.env\.PUBLIC_META_PIXEL_ID/);
-  assert.match(pixel, /1257319255516210/);
+  assert.match(pixel, /1989293671782062/);
   assert.match(pixel, /https:\/\/connect\.facebook\.net\/en_US\/fbevents\.js/);
   assert.match(pixel, /window\.fbq\("init", pixelId\)/);
   assert.match(pixel, /window\.fbq\("track", eventName, parameters, \{ eventID: eventId \}\)/);
@@ -105,7 +105,7 @@ test("Meta queues PageView and Lead after consent without leaking form values", 
   };
 
   vm.runInNewContext(
-    `const consentCookieName = "harbornavi_marketing_consent"; const pixelId = "1257319255516210"; ${inlineScript}`,
+    `const consentCookieName = "harbornavi_marketing_consent"; const pixelId = "1989293671782062"; ${inlineScript}`,
     context
   );
 
@@ -117,7 +117,7 @@ test("Meta queues PageView and Lead after consent without leaking form values", 
   context.window.harborMetaTrack("pilot_apply_saved");
 
   assert.deepEqual(JSON.parse(JSON.stringify(context.window.fbq.queue)), [
-    ["init", "1257319255516210"],
+    ["init", "1989293671782062"],
     ["track", "PageView", {}, {
       eventID: context.window.fbq.queue[1][3].eventID
     }],
@@ -161,12 +161,12 @@ test("Meta Test Events URL loads only the Meta Pixel after a prior denial", asyn
   };
 
   vm.runInNewContext(
-    `const consentCookieName = "harbornavi_marketing_consent"; const pixelId = "1257319255516210"; ${inlineScript}`,
+    `const consentCookieName = "harbornavi_marketing_consent"; const pixelId = "1989293671782062"; ${inlineScript}`,
     context
   );
 
   assert.deepEqual(JSON.parse(JSON.stringify(context.window.fbq.queue)), [
-    ["init", "1257319255516210"],
+    ["init", "1989293671782062"],
     ["track", "PageView", {}, {
       eventID: context.window.fbq.queue[1][3].eventID
     }]
@@ -198,7 +198,7 @@ test("Meta Pixel configuration, consent copy, and disclosure stay documented", a
   ]);
 
   assert.match(environment, /PUBLIC_META_PIXEL_ID=""/);
-  assert.match(productionEnvironment, /PUBLIC_META_PIXEL_ID="1257319255516210"/);
+  assert.match(productionEnvironment, /PUBLIC_META_PIXEL_ID="1989293671782062"/);
   assert.match(consent, /Reddit and Meta Pixels/);
   assert.match(consent, /clearKnownMetaCookies/);
   assert.match(consent, /"_fbp", "_fbc"/);
