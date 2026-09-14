@@ -155,6 +155,7 @@ async function postPilotSurvey(request: Request) {
       name: payload.name,
       email: payload.email,
       adult_confirmed: payload.adult_confirmed,
+      camera_aiot_confirmed: payload.camera_aiot_confirmed,
       stable_wifi_confirmed: payload.stable_wifi_confirmed,
       compatible_device_confirmed: payload.compatible_device_confirmed,
       pilot_commitment_confirmed: payload.pilot_commitment_confirmed,

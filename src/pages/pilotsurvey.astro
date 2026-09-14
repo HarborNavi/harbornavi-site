@@ -66,8 +66,7 @@ import "../styles/pilot-survey.css";
             <legend><strong>3. Please confirm each statement.</strong> <i>Required</i></legend>
             <div class="survey-options">
               <label><input type="checkbox" name="adult_confirmed" value="yes" required /><span>I am 18 or older, and I am the adult responsible for my household's participation.</span></label>
-              <label><input type="checkbox" name="stable_wifi_confirmed" value="yes" required /><span>My home has a stable Wi-Fi connection.</span></label>
-              <label><input type="checkbox" name="compatible_device_confirmed" value="yes" required /><span>My home has at least one camera or Home Assistant device that HarborNavi can review for compatibility.</span></label>
+              <label><input type="checkbox" name="camera_aiot_confirmed" value="yes" required /><span>My home has at least one camera or AIoT device.</span></label>
               <label><input type="checkbox" name="pilot_commitment_confirmed" value="yes" required /><span>I can take part in a two-week home pilot, including guided setup, short check-ins, final feedback, and one or two short pilot vlogs. Vlogs may be shared privately with the HarborNavi team and partners; any public use would be agreed with me separately.</span></label>
               <label><input type="checkbox" name="selection_acknowledged" value="yes" required /><span>I understand that submitting this questionnaire does not guarantee selection.</span></label>
             </div>
@@ -180,8 +179,18 @@ import "../styles/pilot-survey.css";
             </div>
           </div>
 
+          <fieldset class="survey-question">
+            <legend><strong>11. How would you feel about our team visiting your home for the guided setup?</strong> <i>Required</i></legend>
+            <div class="survey-options survey-options-grid" data-visit-comfort>
+              <label><input type="radio" name="visit_comfort" value="not_comfortable" required /><span>Not comfortable</span></label>
+              <label><input type="radio" name="visit_comfort" value="hesitant" /><span>Somewhat hesitant</span></label>
+              <label><input type="radio" name="visit_comfort" value="open" /><span>Open to a visit</span></label>
+              <label><input type="radio" name="visit_comfort" value="happy" /><span>Happy to host</span></label>
+            </div>
+          </fieldset>
+
           <fieldset class="survey-question" data-required-group="available_windows">
-            <legend><strong>11. When could you usually join a live setup or feedback session?</strong> <i>Required</i></legend>
+            <legend><strong>12. When could you usually join a live setup or feedback session?</strong> <i>Required</i></legend>
             <p class="survey-help">Select all that apply. Exact dates and local times will be confirmed with you before anything is scheduled.</p>
             <div class="survey-options survey-options-grid">
               <label><input type="checkbox" name="available_windows" value="weekday_morning" /><span>Weekday morning</span></label>
@@ -196,7 +205,7 @@ import "../styles/pilot-survey.css";
           </fieldset>
 
           <fieldset class="survey-question">
-            <legend><strong>12. How confident are you about scheduling the live setup and short feedback sessions?</strong> <i>Required</i></legend>
+            <legend><strong>13. How confident are you about scheduling the live setup and short feedback sessions?</strong> <i>Required</i></legend>
             <div class="survey-options">
               <label><input type="radio" name="scheduling_confidence" value="reliable" required /><span>I can offer multiple time windows and expect to attend as scheduled</span></label>
               <label><input type="radio" name="scheduling_confidence" value="coordinate" /><span>I can participate, but the times will require coordination</span></label>
@@ -205,21 +214,11 @@ import "../styles/pilot-survey.css";
           </fieldset>
 
           <fieldset class="survey-question">
-            <legend><strong>13. Which best describes your ability to complete the pilot milestones?</strong> <i>Required</i></legend>
+            <legend><strong>14. Which best describes your ability to complete the pilot milestones?</strong> <i>Required</i></legend>
             <div class="survey-options">
               <label><input type="radio" name="completion_commitment" value="full" required /><span>I can complete guided setup, two weeks of normal use, short check-ins, final feedback, and one or two short vlogs</span></label>
               <label><input type="radio" name="completion_commitment" value="adjustment" /><span>I expect to participate, but one part may need adjustment</span></label>
               <label><input type="radio" name="completion_commitment" value="uncertain" /><span>I am not yet sure I can complete the full pilot</span></label>
-            </div>
-          </fieldset>
-
-          <fieldset class="survey-question">
-            <legend><strong>14. How would you feel about our team visiting your home for the guided setup?</strong> <i>Required</i></legend>
-            <div class="survey-options survey-options-grid" data-visit-comfort>
-              <label><input type="radio" name="visit_comfort" value="not_comfortable" required /><span>Not comfortable</span></label>
-              <label><input type="radio" name="visit_comfort" value="hesitant" /><span>Somewhat hesitant</span></label>
-              <label><input type="radio" name="visit_comfort" value="open" /><span>Open to a visit</span></label>
-              <label><input type="radio" name="visit_comfort" value="happy" /><span>Happy to host</span></label>
             </div>
           </fieldset>
 
@@ -439,7 +438,7 @@ import "../styles/pilot-survey.css";
         message.hidden = true;
         const data = new FormData(form);
         if (!validateTextFields(false)) return;
-        if (!checked("adult_confirmed") || !checked("stable_wifi_confirmed") || !checked("compatible_device_confirmed") || !checked("pilot_commitment_confirmed") || !checked("selection_acknowledged")) {
+        if (!checked("adult_confirmed") || !checked("camera_aiot_confirmed") || !checked("pilot_commitment_confirmed") || !checked("selection_acknowledged")) {
           showExit();
           return;
         }
@@ -465,8 +464,7 @@ import "../styles/pilot-survey.css";
           name: data.get("name"),
           email: data.get("email"),
           adult_confirmed: checked("adult_confirmed"),
-          stable_wifi_confirmed: checked("stable_wifi_confirmed"),
-          compatible_device_confirmed: checked("compatible_device_confirmed"),
+          camera_aiot_confirmed: checked("camera_aiot_confirmed"),
           pilot_commitment_confirmed: checked("pilot_commitment_confirmed"),
           selection_acknowledged: checked("selection_acknowledged"),
           on_camera_willingness: data.get("on_camera_willingness"),

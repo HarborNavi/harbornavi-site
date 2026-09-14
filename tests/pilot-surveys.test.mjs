@@ -12,8 +12,7 @@ function validSurvey(overrides = {}) {
     name: "Taylor Morgan",
     email: "taylor@example.com",
     adult_confirmed: true,
-    stable_wifi_confirmed: true,
-    compatible_device_confirmed: true,
+    camera_aiot_confirmed: true,
     pilot_commitment_confirmed: true,
     selection_acknowledged: true,
     on_camera_willingness: "comfortable",
@@ -100,9 +99,35 @@ test("pilot survey scoring stays deterministic for a conditional household", () 
   assert.equal(result.score.score_band, "conditional");
 });
 
+test("camera or AIoT households qualify without Wi-Fi or Home Assistant compatibility", () => {
+  const result = validatePilotSurvey(validSurvey({ device_categories: ["smart_devices"] }));
+  assert.ok("application" in result);
+  assert.equal(result.application.camera_aiot_confirmed, true);
+  assert.equal(result.application.stable_wifi_confirmed, null);
+  assert.equal(result.application.compatible_device_confirmed, null);
+  assert.ok("application" in validatePilotSurvey(validSurvey({
+    stable_wifi_confirmed: false,
+    compatible_device_confirmed: false,
+    device_categories: ["other_camera"]
+  })));
+});
+
+test("already-open legacy surveys remain supported without overriding explicit new answers", () => {
+  const legacy = validSurvey({ camera_aiot_confirmed: undefined, stable_wifi_confirmed: true, compatible_device_confirmed: true });
+  const result = validatePilotSurvey(legacy);
+  assert.ok("application" in result);
+  assert.equal(result.application.camera_aiot_confirmed, true);
+  assert.equal(result.application.stable_wifi_confirmed, true);
+  assert.equal(result.application.compatible_device_confirmed, true);
+  for (const camera_aiot_confirmed of [false, null, "true"]) {
+    assert.ok("error" in validatePilotSurvey({ ...legacy, camera_aiot_confirmed }));
+  }
+  assert.ok("error" in validatePilotSurvey(validSurvey({ camera_aiot_confirmed: undefined })));
+});
+
 test("pilot survey rejects missing confirmations and conflicting exclusive choices", () => {
-  assert.deepEqual(validatePilotSurvey(validSurvey({ stable_wifi_confirmed: false })), {
-    error: "Stable home Wi-Fi is required for this pilot."
+  assert.deepEqual(validatePilotSurvey(validSurvey({ camera_aiot_confirmed: false })), {
+    error: "Please confirm that your home has at least one camera or AIoT device."
   });
   assert.deepEqual(validatePilotSurvey(validSurvey({ core_scenarios: ["security", "none"] })), {
     error: "Choose either a HarborNavi scenario or none of these."
@@ -130,8 +155,7 @@ test("pilot survey page follows the approved 17-question contract", async () => 
     "name",
     "email",
     "adult_confirmed",
-    "stable_wifi_confirmed",
-    "compatible_device_confirmed",
+    "camera_aiot_confirmed",
     "pilot_commitment_confirmed",
     "selection_acknowledged",
     "on_camera_willingness",
@@ -161,6 +185,8 @@ test("pilot survey page follows the approved 17-question contract", async () => 
     assert.match(page, new RegExp(`name="${field}"`));
   }
   for (const removedField of [
+    "stable_wifi_confirmed",
+    "compatible_device_confirmed",
     "zip_code",
     "time_zone",
     "public_profile_details",
@@ -174,6 +200,14 @@ test("pilot survey page follows the approved 17-question contract", async () => 
   assert.match(page, /There are no right or wrong answers/);
   assert.match(page, /Select up to 2/);
   assert.match(page, /17 questions/);
+  const planning = page.slice(page.indexOf('<section class="survey-section" aria-labelledby="survey-section-reliability">'), page.indexOf('<section class="survey-section" aria-labelledby="survey-section-submit">'));
+  assert.deepEqual([...planning.matchAll(/<legend><strong>(\d+)\. ([^<]+)/g)].map((match) => [Number(match[1]), match[2]]), [
+    [11, "How would you feel about our team visiting your home for the guided setup?"],
+    [12, "When could you usually join a live setup or feedback session?"],
+    [13, "How confident are you about scheduling the live setup and short feedback sessions?"],
+    [14, "Which best describes your ability to complete the pilot milestones?"],
+    [15, "Have you completed a product review, beta test, research study, or similar structured multi-step program before?"]
+  ]);
   assert.match(page, /complete this round of questionnaire collection within one week/);
   assert.match(page, /data-survey-success aria-labelledby="survey-success-title"/);
   assert.match(page, /Please keep an eye on your inbox for selection updates and next steps/);

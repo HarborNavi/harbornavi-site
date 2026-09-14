@@ -18,8 +18,9 @@ export interface PilotSurveyInput {
   name: unknown;
   email: unknown;
   adult_confirmed: unknown;
-  stable_wifi_confirmed: unknown;
-  compatible_device_confirmed: unknown;
+  camera_aiot_confirmed?: unknown;
+  stable_wifi_confirmed?: unknown;
+  compatible_device_confirmed?: unknown;
   pilot_commitment_confirmed: unknown;
   selection_acknowledged: unknown;
   on_camera_willingness: unknown;
@@ -198,8 +199,11 @@ function normalizePilotSurvey(input: PilotSurveyInput) {
     name: text(input.name, 120),
     email: email(input.email),
     adult_confirmed: confirmed(input.adult_confirmed),
-    stable_wifi_confirmed: confirmed(input.stable_wifi_confirmed),
-    compatible_device_confirmed: confirmed(input.compatible_device_confirmed),
+    // Accept an already-open legacy form, but never override an explicit new answer.
+    camera_aiot_confirmed: confirmed(input.camera_aiot_confirmed === undefined ? input.compatible_device_confirmed : input.camera_aiot_confirmed),
+    // Keep old answers distinct from questions no longer asked.
+    stable_wifi_confirmed: typeof input.stable_wifi_confirmed === "boolean" ? input.stable_wifi_confirmed : null,
+    compatible_device_confirmed: typeof input.compatible_device_confirmed === "boolean" ? input.compatible_device_confirmed : null,
     pilot_commitment_confirmed: confirmed(input.pilot_commitment_confirmed),
     selection_acknowledged: confirmed(input.selection_acknowledged),
     on_camera_willingness: oneOf(input.on_camera_willingness, onCameraOptions),
@@ -324,8 +328,7 @@ export function validatePilotSurvey(input: PilotSurveyInput) {
   if (!application.name) return { error: "Name is required." } as const;
   if (!application.email) return { error: "A valid email is required." } as const;
   if (!application.adult_confirmed) return { error: "Please confirm that you are the adult responsible for this assessment." } as const;
-  if (!application.stable_wifi_confirmed) return { error: "Stable home Wi-Fi is required for this pilot." } as const;
-  if (!application.compatible_device_confirmed) return { error: "A camera or Home Assistant device is required for compatibility review." } as const;
+  if (!application.camera_aiot_confirmed) return { error: "Please confirm that your home has at least one camera or AIoT device." } as const;
   if (!application.pilot_commitment_confirmed) return { error: "Please confirm the two-week pilot commitment." } as const;
   if (!application.selection_acknowledged) return { error: "Please acknowledge that submitting does not guarantee selection." } as const;
   if (!application.on_camera_willingness) return { error: "Please select an on-camera preference." } as const;

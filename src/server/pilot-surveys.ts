@@ -12,8 +12,9 @@ async function initializePilotSurveyTable() {
       name text not null,
       email text not null unique,
       adult_confirmed boolean not null,
-      stable_wifi_confirmed boolean not null,
-      compatible_device_confirmed boolean not null,
+      camera_aiot_confirmed boolean,
+      stable_wifi_confirmed boolean,
+      compatible_device_confirmed boolean,
       pilot_commitment_confirmed boolean not null,
       selection_acknowledged boolean not null,
       on_camera_willingness text not null,
@@ -60,6 +61,9 @@ async function initializePilotSurveyTable() {
       constraint pilot_family_surveys_score_band_check check (score_band in ('priority', 'qualified', 'conditional', 'not_priority'))
     )
   `;
+  await db`alter table pilot_family_surveys add column if not exists camera_aiot_confirmed boolean`;
+  await db`alter table pilot_family_surveys alter column stable_wifi_confirmed drop not null`;
+  await db`alter table pilot_family_surveys alter column compatible_device_confirmed drop not null`;
   await db`alter table pilot_family_surveys add column if not exists scenario_frequency jsonb not null default '{}'::jsonb`;
   await db`alter table pilot_family_surveys add column if not exists visit_comfort text not null default 'open'`;
   await db`alter table pilot_family_surveys add column if not exists anything_else text not null default ''`;
@@ -91,7 +95,7 @@ export async function savePilotSurvey(input: PilotSurveyInput) {
   const rows = await sql()`
     insert into pilot_family_surveys (
       name, email,
-      adult_confirmed, stable_wifi_confirmed, compatible_device_confirmed,
+      adult_confirmed, camera_aiot_confirmed, stable_wifi_confirmed, compatible_device_confirmed,
       pilot_commitment_confirmed, selection_acknowledged,
       on_camera_willingness, filming_ability, audience_level, story_sample,
       core_scenarios, scenario_frequency, household_context, device_categories, available_windows,
@@ -104,7 +108,7 @@ export async function savePilotSurvey(input: PilotSurveyInput) {
       metadata
     ) values (
       ${application.name}, ${application.email},
-      ${application.adult_confirmed}, ${application.stable_wifi_confirmed}, ${application.compatible_device_confirmed},
+      ${application.adult_confirmed}, ${application.camera_aiot_confirmed}, ${application.stable_wifi_confirmed}, ${application.compatible_device_confirmed},
       ${application.pilot_commitment_confirmed}, ${application.selection_acknowledged},
       ${application.on_camera_willingness}, ${application.filming_ability}, ${application.audience_level}, ${application.story_sample},
       ${JSON.stringify(application.core_scenarios)}::jsonb,
@@ -127,8 +131,9 @@ export async function savePilotSurvey(input: PilotSurveyInput) {
     on conflict (email) do update set
       name = excluded.name,
       adult_confirmed = excluded.adult_confirmed,
-      stable_wifi_confirmed = excluded.stable_wifi_confirmed,
-      compatible_device_confirmed = excluded.compatible_device_confirmed,
+      camera_aiot_confirmed = excluded.camera_aiot_confirmed,
+      stable_wifi_confirmed = coalesce(excluded.stable_wifi_confirmed, pilot_family_surveys.stable_wifi_confirmed),
+      compatible_device_confirmed = coalesce(excluded.compatible_device_confirmed, pilot_family_surveys.compatible_device_confirmed),
       pilot_commitment_confirmed = excluded.pilot_commitment_confirmed,
       selection_acknowledged = excluded.selection_acknowledged,
       on_camera_willingness = excluded.on_camera_willingness,
@@ -180,7 +185,7 @@ export async function listPilotSurveys() {
   return sql()`
     select
       id, name, email,
-      adult_confirmed, stable_wifi_confirmed, compatible_device_confirmed,
+      adult_confirmed, camera_aiot_confirmed, stable_wifi_confirmed, compatible_device_confirmed,
       pilot_commitment_confirmed, selection_acknowledged,
       on_camera_willingness, filming_ability, audience_level, story_sample,
       core_scenarios, scenario_frequency, household_context, device_categories, available_windows,

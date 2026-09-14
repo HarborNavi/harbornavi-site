@@ -5,8 +5,9 @@ create table if not exists pilot_family_surveys (
   name text not null,
   email text not null unique,
   adult_confirmed boolean not null,
-  stable_wifi_confirmed boolean not null,
-  compatible_device_confirmed boolean not null,
+  camera_aiot_confirmed boolean,
+  stable_wifi_confirmed boolean,
+  compatible_device_confirmed boolean,
   pilot_commitment_confirmed boolean not null,
   selection_acknowledged boolean not null,
   on_camera_willingness text not null,
@@ -53,6 +54,10 @@ create table if not exists pilot_family_surveys (
   constraint pilot_family_surveys_score_band_check check (score_band in ('priority', 'qualified', 'conditional', 'not_priority'))
 );
 
+-- Retain legacy answers; new submissions no longer answer these two questions.
+alter table pilot_family_surveys add column if not exists camera_aiot_confirmed boolean;
+alter table pilot_family_surveys alter column stable_wifi_confirmed drop not null;
+alter table pilot_family_surveys alter column compatible_device_confirmed drop not null;
 alter table pilot_family_surveys add column if not exists scenario_frequency jsonb not null default '{}'::jsonb;
 alter table pilot_family_surveys add column if not exists visit_comfort text not null default 'open';
 alter table pilot_family_surveys add column if not exists anything_else text not null default '';
