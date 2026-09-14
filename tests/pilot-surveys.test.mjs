@@ -2,7 +2,7 @@ import assert from "node:assert/strict";
 import { readFile } from "node:fs/promises";
 import test from "node:test";
 
-import { pilotSurveyScoreVersion, validatePilotSurvey } from "../src/server/pilot-survey-validation.ts";
+import { pilotSurveyRubric, pilotSurveyScoreVersion, validatePilotSurvey } from "../src/server/pilot-survey-validation.ts";
 
 const root = new URL("../", import.meta.url);
 const source = async (path) => readFile(new URL(path, root), "utf8");
@@ -20,14 +20,24 @@ function validSurvey(overrides = {}) {
     filming_ability: "experienced",
     audience_level: "consistent",
     story_sample: "Last week our front camera reported a package while the door sensor and porch light each sent separate alerts. I would show the three notifications, explain why nobody knew the full situation, and compare that confusion with one calm household update that tells us what actually changed and what needs attention.",
-    core_scenarios: ["security", "automation", "privacy", "family_memory"],
+    core_scenarios: ["security", "automation"],
+    scenario_frequency: {
+      deliveries_visitors: "daily",
+      pets: "daily",
+      multiple_users: "weekly",
+      work_study_home: "daily",
+      often_away: "weekly",
+      multiple_apps_brands: "monthly",
+      other: "rarely"
+    },
     household_context: ["deliveries_visitors", "multiple_users"],
     device_categories: ["home_assistant", "rtsp_onvif_camera", "sensors"],
-    available_windows: ["weekday_evening", "weekend_morning"],
+    available_windows: ["weekday_morning", "weekday_afternoon", "weekday_evening", "weekend_morning", "weekend_afternoon", "weekend_evening", "flexible"],
     scheduling_confidence: "reliable",
     completion_commitment: "full",
     past_participation_level: "formal",
-    referral_source: "reddit",
+    visit_comfort: "happy",
+    anything_else: "The household is comfortable sharing practical feedback.",
     accuracy_confirmed: true,
     review_contact_confirmed: true,
     disclosure_confirmed: true,
@@ -37,16 +47,31 @@ function validSurvey(overrides = {}) {
 }
 
 test("pilot survey validates and produces the maximum server-side score", () => {
+  assert.equal(Object.values(pilotSurveyRubric).reduce((sum, item) => sum + item.weight, 0), 100);
   const result = validatePilotSurvey(validSurvey());
   assert.ok("application" in result);
   assert.deepEqual(result.score, {
     content_score: 30,
-    scenario_score: 45,
-    reliability_score: 25,
+    scenario_score: 35,
+    reliability_score: 35,
     total_score: 100,
     score_band: "priority",
     score_version: pilotSurveyScoreVersion,
+    item_scores: result.score.item_scores,
     automatic_summary: result.score.automatic_summary
+  });
+  assert.deepEqual(result.score.item_scores, {
+    scenario_match: 2,
+    pain_frequency: 3,
+    equipment: 2,
+    camera_comfort: 2,
+    filming: 2,
+    content_presence: 2,
+    story_quality: 3,
+    availability: 3,
+    scheduling_confidence: 2,
+    milestones: 2,
+    experience: 2
   });
   assert.match(result.score.automatic_summary, /Content:/);
   assert.match(result.score.automatic_summary, /Fit:/);
@@ -68,10 +93,10 @@ test("pilot survey scoring stays deterministic for a conditional household", () 
     past_participation_level: "comparable"
   }));
   assert.ok("application" in result);
-  assert.equal(result.score.content_score, 16);
-  assert.equal(result.score.scenario_score, 21);
-  assert.equal(result.score.reliability_score, 13);
-  assert.equal(result.score.total_score, 50);
+  assert.equal(result.score.content_score, 13.3);
+  assert.equal(result.score.scenario_score, 30);
+  assert.equal(result.score.reliability_score, 12.5);
+  assert.equal(result.score.total_score, 55.8);
   assert.equal(result.score.score_band, "conditional");
 });
 
@@ -85,9 +110,18 @@ test("pilot survey rejects missing confirmations and conflicting exclusive choic
   assert.deepEqual(validatePilotSurvey(validSurvey({ household_context: ["pets", "prefer_not_to_say"] })), {
     error: "Choose either household situations or prefer not to say."
   });
+  assert.deepEqual(validatePilotSurvey(validSurvey({ core_scenarios: ["none"] })), {
+    error: "This round is not the right match for this household."
+  });
+  assert.deepEqual(validatePilotSurvey(validSurvey({ visit_comfort: "not_comfortable" })), {
+    error: "This round is not the right match for this household."
+  });
+  assert.deepEqual(validatePilotSurvey(validSurvey({ scenario_frequency: { pets: "daily" } })), {
+    error: "Please choose a frequency for each household situation."
+  });
 });
 
-test("pilot survey page follows the approved 16-question contract", async () => {
+test("pilot survey page follows the approved 17-question contract", async () => {
   const [page, styles] = await Promise.all([
     source("src/pages/pilotsurvey.astro"),
     source("src/styles/pilot-survey.css")
@@ -105,13 +139,20 @@ test("pilot survey page follows the approved 16-question contract", async () => 
     "audience_level",
     "story_sample",
     "core_scenarios",
-    "household_context",
+    "scenario_frequency_deliveries_visitors",
+    "scenario_frequency_pets",
+    "scenario_frequency_multiple_users",
+    "scenario_frequency_work_study_home",
+    "scenario_frequency_often_away",
+    "scenario_frequency_multiple_apps_brands",
+    "scenario_frequency_other",
     "device_categories",
     "available_windows",
     "scheduling_confidence",
     "completion_commitment",
+    "visit_comfort",
     "past_participation_level",
-    "referral_source",
+    "anything_else",
     "accuracy_confirmed",
     "review_contact_confirmed",
     "disclosure_confirmed",
@@ -130,8 +171,9 @@ test("pilot survey page follows the approved 16-question contract", async () => 
   ]) {
     assert.doesNotMatch(page, new RegExp(`name="${removedField}"`));
   }
-  assert.match(page, /This questionnaire is part of our selection process/);
-  assert.match(page, /constructive, balanced, and objective feedback/);
+  assert.match(page, /There are no right or wrong answers/);
+  assert.match(page, /Select up to 2/);
+  assert.match(page, /17 questions/);
   assert.match(page, /complete this round of questionnaire collection within one week/);
   assert.match(page, /data-survey-success aria-labelledby="survey-success-title"/);
   assert.match(page, /Please keep an eye on your inbox for selection updates and next steps/);
@@ -139,6 +181,8 @@ test("pilot survey page follows the approved 16-question contract", async () => 
   assert.match(page, /<textarea name="story_sample" rows="6" required><\/textarea>/);
   assert.doesNotMatch(page, /100[–-]200 words|name="story_sample"[^>]*(?:minlength|maxlength)/);
   assert.match(page, /fetch\("\/api\/pilot-survey"/);
+  assert.doesNotMatch(page, /name="referral_source"/);
+  assert.match(page, /data-survey-exit/);
   assert.doesNotMatch(page, /total_score|content_score|scenario_score|reliability_score/);
   assert.match(page, /harbornavi-logo-mark\.png/);
   assert.match(styles, /--survey-purple: #6d3bd1/);
@@ -162,6 +206,9 @@ test("pilot survey API, admin, privacy, and migration contracts stay connected",
   assert.match(adminPage, /data-tab-button="pilot-surveys">Pilot Surveys/);
   assert.match(adminPage, /data-tab-panel="pilot-surveys"/);
   assert.match(adminPage, /Automatic summary/);
+  assert.match(adminPage, /Fit \$\{survey\.scenario_score\}\/35/);
+  assert.match(adminPage, /Reliability \$\{survey\.reliability_score\}\/35/);
+  assert.match(adminPage, /"item_scores"/);
   assert.match(adminPage, /exportPilotSurveysCsv/);
   assert.match(adminPage, /harbornavi-pilot-surveys-/);
   assert.match(privacy, /Pilot family assessment/);

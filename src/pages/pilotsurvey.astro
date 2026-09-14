@@ -1,6 +1,6 @@
 ---
 import EnglishFormValidation from "../components/EnglishFormValidation.astro";
-import { CheckCircle2, Send, X } from "@lucide/astro";
+import { CheckCircle2, Info, Send, X } from "@lucide/astro";
 import "../styles/pilot-survey.css";
 ---
 
@@ -12,8 +12,8 @@ import "../styles/pilot-survey.css";
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="robots" content="noindex,nofollow" />
     <meta name="theme-color" content="#ffffff" />
-    <title>Pilot Family Assessment | HarborNavi</title>
-    <meta name="description" content="Complete the HarborNavi Pilot Family Assessment." />
+    <title>Pilot Family Questionnaire | HarborNavi</title>
+    <meta name="description" content="Complete the HarborNavi Pilot Family Questionnaire." />
     <link rel="icon" href="/favicon.png" type="image/png" sizes="512x512" />
     <link rel="canonical" href="https://harbornavi.com/pilotsurvey" />
   </head>
@@ -28,18 +28,20 @@ import "../styles/pilot-survey.css";
 
     <main>
       <section class="survey-intro" aria-labelledby="survey-title">
-        <p class="survey-eyebrow">Pilot family assessment</p>
-        <h1 id="survey-title">Help us choose the right pilot homes.</h1>
-        <p>Thank you for signing up to be considered for the HarborNavi Pilot Program. We appreciate your willingness to welcome HarborNavi into your home and help us learn from real household use.</p>
-        <p>This questionnaire is part of our selection process. It helps us identify households whose setup, everyday scenarios, availability, and participation style are a strong fit. We are looking for open, constructive, balanced, and objective feedback about what works, what does not, and what should change. We aim to complete this round of questionnaire collection within one week. Thank you for taking the time to help us understand your household.</p>
+        <p class="survey-eyebrow">Pilot family questionnaire</p>
+        <h1 id="survey-title">Help us find the right pilot homes for this round.</h1>
+        <p>Thank you for signing up for the HarborNavi Pilot Program. We are glad you are here, and grateful that you would welcome HarborNavi into your home. Your answers help us match this round with the homes where HarborNavi can be most useful. There are no right or wrong answers; the more honest you are, the better we can match.</p>
+        <p>This questionnaire covers your home setup, your availability, and how you like to share feedback. We do not ask for your address, income, ID, payment details, camera footage, passwords, or household members' names or ages.</p>
+        <p>Please submit by Sunday, September 20, 2026, at 11:59 PM PT. We will confirm the 10 pilot families by Friday, September 25.</p>
         <div class="survey-meta" aria-label="Survey details">
-          <span>About 6–8 minutes</span>
-          <span>16 questions</span>
-          <span>Required fields are marked</span>
+          <span>Within 10 minutes</span>
+          <span>17 questions</span>
+          <span>* marks required field</span>
         </div>
+        <p class="survey-privacy-link">Questions about your data? <a href="/privacy">Read our privacy policy</a>.</p>
       </section>
 
-      <form class="survey-form" data-pilot-survey-form>
+      <form class="survey-form" data-pilot-survey-form novalidate>
         <section class="survey-section" aria-labelledby="survey-section-contact">
           <div class="survey-section-heading">
             <span>01</span>
@@ -63,70 +65,28 @@ import "../styles/pilot-survey.css";
           <fieldset class="survey-question">
             <legend><strong>3. Please confirm each statement.</strong> <i>Required</i></legend>
             <div class="survey-options">
-              <label><input type="checkbox" name="adult_confirmed" value="yes" required /><span>I am 18 or older and I am the adult responsible for this assessment.</span></label>
+              <label><input type="checkbox" name="adult_confirmed" value="yes" required /><span>I am 18 or older, and I am the adult responsible for my household's participation.</span></label>
               <label><input type="checkbox" name="stable_wifi_confirmed" value="yes" required /><span>My home has a stable Wi-Fi connection.</span></label>
-              <label><input type="checkbox" name="compatible_device_confirmed" value="yes" required /><span>My home currently uses at least one camera or Home Assistant device that HarborNavi can review for compatibility.</span></label>
-              <label><input type="checkbox" name="pilot_commitment_confirmed" value="yes" required /><span>I can take part in a two-week home pilot, including guided setup, short check-ins, final feedback, and one or two short pilot vlogs. The vlogs may be shared privately unless publication is separately agreed.</span></label>
-              <label><input type="checkbox" name="selection_acknowledged" value="yes" required /><span>I understand that submitting this assessment does not guarantee selection.</span></label>
+              <label><input type="checkbox" name="compatible_device_confirmed" value="yes" required /><span>My home has at least one camera or Home Assistant device that HarborNavi can review for compatibility.</span></label>
+              <label><input type="checkbox" name="pilot_commitment_confirmed" value="yes" required /><span>I can take part in a two-week home pilot, including guided setup, short check-ins, final feedback, and one or two short pilot vlogs. Vlogs may be shared privately with the HarborNavi team and partners; any public use would be agreed with me separately.</span></label>
+              <label><input type="checkbox" name="selection_acknowledged" value="yes" required /><span>I understand that submitting this questionnaire does not guarantee selection.</span></label>
             </div>
           </fieldset>
-        </section>
-
-        <section class="survey-section" aria-labelledby="survey-section-content">
-          <div class="survey-section-heading">
-            <span>02</span>
-            <div>
-              <p>How you communicate</p>
-              <h2 id="survey-section-content">Content production</h2>
-            </div>
-          </div>
-
-          <fieldset class="survey-question">
-            <legend><strong>4. How comfortable would an adult in your household be appearing on camera in a short pilot vlog?</strong> <i>Required</i></legend>
-            <div class="survey-options">
-              <label><input type="radio" name="on_camera_willingness" value="comfortable" required /><span>Comfortable appearing on camera</span></label>
-              <label><input type="radio" name="on_camera_willingness" value="depends" /><span>It depends on the topic or format</span></label>
-              <label><input type="radio" name="on_camera_willingness" value="off_camera" /><span>Prefer hands-only, screen recording, voiceover, or product footage</span></label>
-            </div>
-          </fieldset>
-
-          <fieldset class="survey-question">
-            <legend><strong>5. Which best describes your current filming ability?</strong> <i>Required</i></legend>
-            <div class="survey-options">
-              <label><input type="radio" name="filming_ability" value="experienced" required /><span>I have filming or editing experience and suitable recording equipment</span></label>
-              <label><input type="radio" name="filming_ability" value="phone" /><span>I can comfortably record clear, casual video with a phone</span></label>
-              <label><input type="radio" name="filming_ability" value="none" /><span>I rarely or never record video</span></label>
-            </div>
-          </fieldset>
-
-          <fieldset class="survey-question">
-            <legend><strong>6. Which best describes your public content presence?</strong> <i>Required</i></legend>
-            <div class="survey-options">
-              <label><input type="radio" name="audience_level" value="consistent" required /><span>I post original content regularly and have a consistent audience or follower base</span></label>
-              <label><input type="radio" name="audience_level" value="limited" /><span>I have one or more public accounts, but my audience or posting activity is limited</span></label>
-              <label><input type="radio" name="audience_level" value="none" /><span>I do not have a public content account</span></label>
-            </div>
-          </fieldset>
-
-          <label class="survey-field survey-question">
-            <span><strong>7. Tell us about a small, real household moment that could become a useful or engaging short video. What happened, what would you show, and why would another household care?</strong> <i>Required</i></span>
-            <textarea name="story_sample" rows="6" required></textarea>
-          </label>
         </section>
 
         <section class="survey-section" aria-labelledby="survey-section-fit">
           <div class="survey-section-heading">
-            <span>03</span>
+            <span>02</span>
             <div>
               <p>Your real home setup</p>
-              <h2 id="survey-section-fit">Home and scenario fit</h2>
+              <h2 id="survey-section-fit">Your real home setup</h2>
             </div>
           </div>
 
           <fieldset class="survey-question" data-required-group="core_scenarios">
-            <legend><strong>8. Which HarborNavi scenarios already matter in your home?</strong> <i>Required</i></legend>
+            <legend><strong>4. Which HarborNavi scenario reflects a real, current need in your home? Select up to 2.</strong> <i>Required</i></legend>
             <p class="survey-help">Select only those that reflect a real need, not a hypothetical interest.</p>
-            <div class="survey-options">
+            <div class="survey-options" data-max-selections="2">
               <label><input type="checkbox" name="core_scenarios" value="security" /><span><strong>Home security and awareness</strong><small>Deliveries, visitors, open doors or windows, unusual changes, or selected camera events</small></span></label>
               <label><input type="checkbox" name="core_scenarios" value="automation" /><span><strong>Home automation</strong><small>Home Assistant, sensors, lights, climate, media, or supported devices when routines change</small></span></label>
               <label><input type="checkbox" name="core_scenarios" value="privacy" /><span><strong>Privacy and local control</strong><small>Keeping household context local and limiting what is sent to external services</small></span></label>
@@ -137,22 +97,22 @@ import "../styles/pilot-survey.css";
           </fieldset>
 
           <fieldset class="survey-question">
-            <legend><strong>9. Which household situations are relevant to the pilot?</strong> <span>Optional</span></legend>
-            <p class="survey-help">Do not include names, ages, medical information, or detailed schedules. Family composition is not scored.</p>
-            <div class="survey-options survey-options-grid">
-              <label><input type="checkbox" name="household_context" value="deliveries_visitors" /><span>Regular deliveries or visitors</span></label>
-              <label><input type="checkbox" name="household_context" value="pets" /><span>Pets</span></label>
-              <label><input type="checkbox" name="household_context" value="multiple_users" /><span>Multiple smart-home users</span></label>
-              <label><input type="checkbox" name="household_context" value="work_study_home" /><span>Work or study from home</span></label>
-              <label><input type="checkbox" name="household_context" value="often_away" /><span>Often away during the day</span></label>
-              <label><input type="checkbox" name="household_context" value="multiple_apps_brands" /><span>Devices across several apps or brands</span></label>
-              <label><input type="checkbox" name="household_context" value="other" /><span>Another relevant situation</span></label>
-              <label><input type="checkbox" name="household_context" value="prefer_not_to_say" data-exclusive /><span>Prefer not to say</span></label>
+            <legend><strong>5. Thinking of the situation you selected first, how often does it come up in a typical week?</strong> <i>Required</i></legend>
+            <p class="survey-help">Choose one frequency for each household situation listed. This helps us understand the context without asking for detailed schedules.</p>
+            <div class="survey-frequency-table" role="group" aria-label="Household situation frequency">
+              <div class="survey-frequency-head" aria-hidden="true"><span>Household situation</span><span>Rarely</span><span>A few times a month</span><span>A few times a week</span><span>Almost daily</span></div>
+              <div class="survey-frequency-row"><span>Regular deliveries or visitors</span><label><input type="radio" name="scenario_frequency_deliveries_visitors" value="rarely" required /><span>Rarely</span></label><label><input type="radio" name="scenario_frequency_deliveries_visitors" value="monthly" /><span>A few times a month</span></label><label><input type="radio" name="scenario_frequency_deliveries_visitors" value="weekly" /><span>A few times a week</span></label><label><input type="radio" name="scenario_frequency_deliveries_visitors" value="daily" /><span>Almost daily</span></label></div>
+              <div class="survey-frequency-row"><span>Pets</span><label><input type="radio" name="scenario_frequency_pets" value="rarely" required /><span>Rarely</span></label><label><input type="radio" name="scenario_frequency_pets" value="monthly" /><span>A few times a month</span></label><label><input type="radio" name="scenario_frequency_pets" value="weekly" /><span>A few times a week</span></label><label><input type="radio" name="scenario_frequency_pets" value="daily" /><span>Almost daily</span></label></div>
+              <div class="survey-frequency-row"><span>Multiple smart-home users</span><label><input type="radio" name="scenario_frequency_multiple_users" value="rarely" required /><span>Rarely</span></label><label><input type="radio" name="scenario_frequency_multiple_users" value="monthly" /><span>A few times a month</span></label><label><input type="radio" name="scenario_frequency_multiple_users" value="weekly" /><span>A few times a week</span></label><label><input type="radio" name="scenario_frequency_multiple_users" value="daily" /><span>Almost daily</span></label></div>
+              <div class="survey-frequency-row"><span>Work or study from home</span><label><input type="radio" name="scenario_frequency_work_study_home" value="rarely" required /><span>Rarely</span></label><label><input type="radio" name="scenario_frequency_work_study_home" value="monthly" /><span>A few times a month</span></label><label><input type="radio" name="scenario_frequency_work_study_home" value="weekly" /><span>A few times a week</span></label><label><input type="radio" name="scenario_frequency_work_study_home" value="daily" /><span>Almost daily</span></label></div>
+              <div class="survey-frequency-row"><span>Often away during the day</span><label><input type="radio" name="scenario_frequency_often_away" value="rarely" required /><span>Rarely</span></label><label><input type="radio" name="scenario_frequency_often_away" value="monthly" /><span>A few times a month</span></label><label><input type="radio" name="scenario_frequency_often_away" value="weekly" /><span>A few times a week</span></label><label><input type="radio" name="scenario_frequency_often_away" value="daily" /><span>Almost daily</span></label></div>
+              <div class="survey-frequency-row"><span>Devices across several apps or brands</span><label><input type="radio" name="scenario_frequency_multiple_apps_brands" value="rarely" required /><span>Rarely</span></label><label><input type="radio" name="scenario_frequency_multiple_apps_brands" value="monthly" /><span>A few times a month</span></label><label><input type="radio" name="scenario_frequency_multiple_apps_brands" value="weekly" /><span>A few times a week</span></label><label><input type="radio" name="scenario_frequency_multiple_apps_brands" value="daily" /><span>Almost daily</span></label></div>
+              <div class="survey-frequency-row"><span>Another relevant situation</span><label><input type="radio" name="scenario_frequency_other" value="rarely" required /><span>Rarely</span></label><label><input type="radio" name="scenario_frequency_other" value="monthly" /><span>A few times a month</span></label><label><input type="radio" name="scenario_frequency_other" value="weekly" /><span>A few times a week</span></label><label><input type="radio" name="scenario_frequency_other" value="daily" /><span>Almost daily</span></label></div>
             </div>
           </fieldset>
 
           <fieldset class="survey-question" data-required-group="device_categories">
-            <legend><strong>10. What equipment or systems are currently active in your home?</strong> <i>Required</i></legend>
+            <legend><strong>6. What equipment or systems are currently active in your home? Select all that apply.</strong> <i>Required</i></legend>
             <div class="survey-options survey-options-grid">
               <label><input type="checkbox" name="device_categories" value="home_assistant" /><span>Home Assistant</span></label>
               <label><input type="checkbox" name="device_categories" value="rtsp_onvif_camera" /><span>RTSP- or ONVIF-capable camera</span></label>
@@ -168,18 +128,61 @@ import "../styles/pilot-survey.css";
           </fieldset>
         </section>
 
+        <section class="survey-section" aria-labelledby="survey-section-content">
+          <div class="survey-section-heading">
+            <span>03</span>
+            <div>
+              <p>How you'd share feedback</p>
+              <h2 id="survey-section-content">How you would share feedback</h2>
+            </div>
+          </div>
+
+          <fieldset class="survey-question">
+            <legend><strong>7. How comfortable would an adult in your household be appearing on camera in a short pilot vlog?</strong> <i>Required</i></legend>
+            <div class="survey-options">
+              <label><input type="radio" name="on_camera_willingness" value="comfortable" required /><span>Comfortable appearing on camera</span></label>
+              <label><input type="radio" name="on_camera_willingness" value="depends" /><span>It depends on the topic or format</span></label>
+              <label><input type="radio" name="on_camera_willingness" value="off_camera" /><span>Prefer hands-only, screen recording, voiceover, or product footage</span></label>
+            </div>
+          </fieldset>
+
+          <fieldset class="survey-question">
+            <legend><strong>8. Which best describes your current filming ability?</strong> <i>Required</i></legend>
+            <div class="survey-options">
+              <label><input type="radio" name="filming_ability" value="experienced" required /><span>I have filming or editing experience and suitable recording equipment</span></label>
+              <label><input type="radio" name="filming_ability" value="phone" /><span>I can comfortably record clear, casual video with a phone</span></label>
+              <label><input type="radio" name="filming_ability" value="none" /><span>I rarely or never record video</span></label>
+            </div>
+          </fieldset>
+
+          <fieldset class="survey-question">
+            <legend><strong>9. Which best describes your public content presence?</strong> <i>Required</i></legend>
+            <div class="survey-options">
+              <label><input type="radio" name="audience_level" value="consistent" required /><span>I post original content regularly and have a consistent audience</span></label>
+              <label><input type="radio" name="audience_level" value="limited" /><span>I have one or more public accounts, but my audience or activity is limited</span></label>
+              <label><input type="radio" name="audience_level" value="none" /><span>I do not have a public content account</span></label>
+            </div>
+          </fieldset>
+
+          <label class="survey-field survey-question">
+            <span><strong>10. Tell us about a small, real household moment that could become a useful or engaging short video. What happened, what would you show, and why would another household care?</strong> <i>Required</i></span>
+            <textarea name="story_sample" rows="6" required></textarea>
+            <span class="survey-help">Three or four sentences are plenty.</span>
+          </label>
+        </section>
+
         <section class="survey-section" aria-labelledby="survey-section-reliability">
           <div class="survey-section-heading">
             <span>04</span>
             <div>
-              <p>Planning for two weeks</p>
-              <h2 id="survey-section-reliability">Participation reliability</h2>
+              <p>Planning the two weeks</p>
+              <h2 id="survey-section-reliability">Planning the two weeks</h2>
             </div>
           </div>
 
           <fieldset class="survey-question" data-required-group="available_windows">
             <legend><strong>11. When could you usually join a live setup or feedback session?</strong> <i>Required</i></legend>
-            <p class="survey-help">Select all that apply. Exact dates and local times will be confirmed before participation.</p>
+            <p class="survey-help">Select all that apply. Exact dates and local times will be confirmed with you before anything is scheduled.</p>
             <div class="survey-options survey-options-grid">
               <label><input type="checkbox" name="available_windows" value="weekday_morning" /><span>Weekday morning</span></label>
               <label><input type="checkbox" name="available_windows" value="weekday_afternoon" /><span>Weekday afternoon</span></label>
@@ -193,7 +196,7 @@ import "../styles/pilot-survey.css";
           </fieldset>
 
           <fieldset class="survey-question">
-            <legend><strong>12. How confident are you that you can schedule the live setup and short feedback sessions?</strong> <i>Required</i></legend>
+            <legend><strong>12. How confident are you about scheduling the live setup and short feedback sessions?</strong> <i>Required</i></legend>
             <div class="survey-options">
               <label><input type="radio" name="scheduling_confidence" value="reliable" required /><span>I can offer multiple time windows and expect to attend as scheduled</span></label>
               <label><input type="radio" name="scheduling_confidence" value="coordinate" /><span>I can participate, but the times will require coordination</span></label>
@@ -202,7 +205,7 @@ import "../styles/pilot-survey.css";
           </fieldset>
 
           <fieldset class="survey-question">
-            <legend><strong>13. Which statement best describes your ability to complete the pilot milestones?</strong> <i>Required</i></legend>
+            <legend><strong>13. Which best describes your ability to complete the pilot milestones?</strong> <i>Required</i></legend>
             <div class="survey-options">
               <label><input type="radio" name="completion_commitment" value="full" required /><span>I can complete guided setup, two weeks of normal use, short check-ins, final feedback, and one or two short vlogs</span></label>
               <label><input type="radio" name="completion_commitment" value="adjustment" /><span>I expect to participate, but one part may need adjustment</span></label>
@@ -211,11 +214,21 @@ import "../styles/pilot-survey.css";
           </fieldset>
 
           <fieldset class="survey-question">
-            <legend><strong>14. Have you completed a product review, beta test, research study, or another structured multi-step program before?</strong> <i>Required</i></legend>
+            <legend><strong>14. How would you feel about our team visiting your home for the guided setup?</strong> <i>Required</i></legend>
+            <div class="survey-options survey-options-grid" data-visit-comfort>
+              <label><input type="radio" name="visit_comfort" value="not_comfortable" required /><span>Not comfortable</span></label>
+              <label><input type="radio" name="visit_comfort" value="hesitant" /><span>Somewhat hesitant</span></label>
+              <label><input type="radio" name="visit_comfort" value="open" /><span>Open to a visit</span></label>
+              <label><input type="radio" name="visit_comfort" value="happy" /><span>Happy to host</span></label>
+            </div>
+          </fieldset>
+
+          <fieldset class="survey-question">
+            <legend><strong>15. Have you completed a product review, beta test, research study, or similar structured multi-step program before?</strong> <i>Required</i></legend>
             <div class="survey-options">
-              <label><input type="radio" name="past_participation_level" value="formal" required /><span>Yes, I completed a product test, review, beta, research study, or similar program</span></label>
-              <label><input type="radio" name="past_participation_level" value="comparable" /><span>No formal product test, but I have completed a comparable multi-step commitment</span></label>
-              <label><input type="radio" name="past_participation_level" value="none" /><span>No previous relevant experience</span></label>
+              <label><input type="radio" name="past_participation_level" value="formal" required /><span>Yes</span></label>
+              <label><input type="radio" name="past_participation_level" value="comparable" /><span>No formal test, but I've completed a comparable multi-step commitment</span></label>
+              <label><input type="radio" name="past_participation_level" value="none" /><span>No previous experience</span></label>
             </div>
           </fieldset>
         </section>
@@ -225,41 +238,40 @@ import "../styles/pilot-survey.css";
             <span>05</span>
             <div>
               <p>One last step</p>
-              <h2 id="survey-section-submit">Source and confirmation</h2>
+              <h2 id="survey-section-submit">One last step</h2>
             </div>
           </div>
 
           <fieldset class="survey-question">
-            <legend><strong>15. How did you hear about HarborNavi?</strong> <i>Required</i></legend>
-            <div class="survey-options survey-options-grid">
-              <label><input type="radio" name="referral_source" value="search" required /><span>Search</span></label>
-              <label><input type="radio" name="referral_source" value="reddit" /><span>Reddit</span></label>
-              <label><input type="radio" name="referral_source" value="facebook_instagram" /><span>Facebook or Instagram</span></label>
-              <label><input type="radio" name="referral_source" value="youtube" /><span>YouTube</span></label>
-              <label><input type="radio" name="referral_source" value="tiktok" /><span>TikTok</span></label>
-              <label><input type="radio" name="referral_source" value="kickstarter" /><span>Kickstarter</span></label>
-              <label><input type="radio" name="referral_source" value="community_event" /><span>Smart-home community or event</span></label>
-              <label><input type="radio" name="referral_source" value="friend_family" /><span>Friend or family</span></label>
-              <label><input type="radio" name="referral_source" value="other" /><span>Other</span></label>
-            </div>
+            <legend><strong>16. Anything else you'd like us to know?</strong> <span>Optional</span></legend>
+            <textarea class="survey-field-textarea" name="anything_else" rows="4" maxlength="2000"></textarea>
+            <span class="survey-help">A sentence or two are plenty.</span>
           </fieldset>
 
           <fieldset class="survey-question">
-            <legend><strong>16. Final confirmation</strong> <i>Required</i></legend>
+            <legend><strong>17. Final confirmation</strong> <i>Required</i></legend>
             <div class="survey-options">
-              <label><input type="checkbox" name="accuracy_confirmed" value="yes" required /><span>The information in this assessment is accurate to the best of my knowledge.</span></label>
-              <label><input type="checkbox" name="review_contact_confirmed" value="yes" required /><span>I understand that HarborNavi will review compatibility and may contact me about the next selection step.</span></label>
-              <label><input type="checkbox" name="disclosure_confirmed" value="yes" required /><span>I understand that public content about a provided device, payment, lifetime subscription-free access, or another benefit must clearly disclose that relationship.</span></label>
-              <label><input type="checkbox" name="no_marketing_acknowledged" value="yes" required /><span>I understand that submitting this assessment does not subscribe me to marketing email.</span></label>
+              <label><input type="checkbox" name="accuracy_confirmed" value="yes" required /><span>The information in this questionnaire is accurate to the best of my knowledge.</span></label>
+              <label><input type="checkbox" name="review_contact_confirmed" value="yes" required /><span>I understand HarborNavi will review compatibility and may contact me about the next step.</span></label>
+              <label><input type="checkbox" name="disclosure_confirmed" value="yes" required /><span>I understand that any public content mentioning the device, the $300 payment, the free lifetime subscription, or other benefits must clearly disclose that relationship.</span></label>
+              <label><input type="checkbox" name="no_marketing_acknowledged" value="yes" required /><span>I understand submitting this questionnaire does not subscribe me to marketing emails.</span></label>
             </div>
           </fieldset>
 
           <input class="survey-honeypot" type="text" name="company" tabindex="-1" autocomplete="off" aria-hidden="true" />
-          <p class="survey-privacy-note">Please do not include a street address, household member names or ages, schedules, passwords, camera footage, or other sensitive information. See our <a href="/privacy">Privacy notice</a>.</p>
+          <p class="survey-privacy-note"><strong>One last note:</strong> Please do not include a street address, household members' names or ages, schedules, passwords, camera footage, or anything else you'd rather keep private. See our <a href="/privacy">Privacy policy</a> for details.</p>
           <p class="survey-form-message" data-survey-message aria-live="polite" hidden></p>
-          <button class="survey-submit" type="submit"><span>Submit family assessment</span><Send size={18} strokeWidth={2} aria-hidden="true" /></button>
+          <button class="survey-submit" type="submit"><span>Submit</span><Send size={18} strokeWidth={2} aria-hidden="true" /></button>
         </section>
       </form>
+
+      <section class="survey-exit" data-survey-exit hidden tabindex="-1">
+        <Info size={30} strokeWidth={1.8} aria-hidden="true" />
+        <p class="survey-eyebrow">Thank you for your honesty</p>
+        <h2>This round may not be the right match.</h2>
+        <p>We know your time is valuable. Based on your answers, we will keep you on our waitlist and contact you when our Kickstarter launches with founder pricing. No action is needed.</p>
+        <a href="/">Return to HarborNavi</a>
+      </section>
 
       <section class="survey-success" data-survey-success-summary hidden tabindex="-1">
         <CheckCircle2 size={30} strokeWidth={1.8} aria-hidden="true" />
@@ -288,12 +300,18 @@ import "../styles/pilot-survey.css";
 
     <script is:inline>
       const form = document.querySelector("[data-pilot-survey-form]");
+      const intro = document.querySelector(".survey-intro");
       const message = document.querySelector("[data-survey-message]");
       const success = document.querySelector("[data-survey-success]");
       const successSummary = document.querySelector("[data-survey-success-summary]");
+      const exit = document.querySelector("[data-survey-exit]");
       const successClose = document.querySelector("[data-survey-success-close]");
       const requiredGroups = Array.from(form?.querySelectorAll("[data-required-group]") || []);
+      const frequencyKeys = ["deliveries_visitors", "pets", "multiple_users", "work_study_home", "often_away", "multiple_apps_brands", "other"];
+      const requiredRadioNames = ["on_camera_willingness", "filming_ability", "audience_level", "scheduling_confidence", "completion_commitment", "visit_comfort", "past_participation_level"];
       const utmKeys = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"];
+
+      if (form) form.noValidate = true;
 
       function sessionId() {
         const key = "harbornavi_session_id";
@@ -313,6 +331,21 @@ import "../styles/pilot-survey.css";
         return Boolean(form.querySelector(`[name="${name}"]:checked`));
       }
 
+      function showMessage(text) {
+        message.textContent = text;
+        message.dataset.tone = "error";
+        message.hidden = false;
+      }
+
+      function showExit() {
+        form.hidden = true;
+        intro.hidden = true;
+        successSummary.hidden = true;
+        exit.hidden = false;
+        exit.focus();
+        exit.scrollIntoView({ behavior: "smooth", block: "start" });
+      }
+
       function validateGroups() {
         let firstInvalid = null;
         requiredGroups.forEach((group) => {
@@ -330,6 +363,48 @@ import "../styles/pilot-survey.css";
         return true;
       }
 
+      function validateRequiredRadios() {
+        for (const name of requiredRadioNames) {
+          if (checked(name)) continue;
+          const first = form.querySelector(`[name="${name}"]`);
+          showMessage("Please answer every required question before submitting.");
+          first?.focus();
+          first?.closest("fieldset")?.scrollIntoView({ behavior: "smooth", block: "center" });
+          return false;
+        }
+        return true;
+      }
+
+      function validateTextFields(includeStory = true) {
+        const name = form.querySelector('[name="name"]');
+        const email = form.querySelector('[name="email"]');
+        const story = form.querySelector('[name="story_sample"]');
+        if (!name.value.trim()) {
+          showMessage("Please enter your full name.");
+          name.focus();
+          return false;
+        }
+        if (!email.value.trim() || !email.checkValidity()) {
+          showMessage("Please enter a valid email address.");
+          email.focus();
+          return false;
+        }
+        if (includeStory && !story.value.trim()) {
+          showMessage("Please share a real household moment.");
+          story.focus();
+          return false;
+        }
+        return true;
+      }
+
+      function validateFrequency() {
+        const missing = frequencyKeys.find((key) => !form.querySelector(`[name="scenario_frequency_${key}"]:checked`));
+        if (!missing) return true;
+        showMessage("Please choose a frequency for each household situation.");
+        form.querySelector(`[name="scenario_frequency_${missing}"]`)?.focus();
+        return false;
+      }
+
       function makeExclusive(name) {
         const controls = Array.from(form.querySelectorAll(`[name="${name}"]`));
         controls.forEach((control) => {
@@ -345,8 +420,15 @@ import "../styles/pilot-survey.css";
       }
 
       makeExclusive("core_scenarios");
-      makeExclusive("household_context");
       requiredGroups.forEach((group) => group.addEventListener("change", validateGroups));
+      form?.querySelectorAll('[name="core_scenarios"]').forEach((control) => {
+        control.addEventListener("change", () => {
+          const selected = values("core_scenarios");
+          if (selected.length <= 2) return;
+          control.checked = false;
+          showMessage("Please select up to two real, current scenarios.");
+        });
+      });
       successClose?.addEventListener("click", () => success?.close());
       success?.addEventListener("click", (event) => {
         if (event.target === success) success.close();
@@ -355,9 +437,29 @@ import "../styles/pilot-survey.css";
 
       form?.addEventListener("submit", async (event) => {
         event.preventDefault();
-        if (!validateGroups()) return;
-        const button = form.querySelector("button[type='submit']");
+        message.hidden = true;
         const data = new FormData(form);
+        if (!validateTextFields(false)) return;
+        if (!checked("adult_confirmed") || !checked("stable_wifi_confirmed") || !checked("compatible_device_confirmed") || !checked("pilot_commitment_confirmed") || !checked("selection_acknowledged")) {
+          showExit();
+          return;
+        }
+        const scenarios = values("core_scenarios");
+        if (scenarios.includes("none")) {
+          showExit();
+          return;
+        }
+        if (!validateTextFields()) return;
+        if (!validateGroups() || scenarios.length > 2 || !validateFrequency() || !validateRequiredRadios()) return;
+        if (data.get("visit_comfort") === "not_comfortable") {
+          showExit();
+          return;
+        }
+        if (!checked("accuracy_confirmed") || !checked("review_contact_confirmed") || !checked("disclosure_confirmed") || !checked("no_marketing_acknowledged")) {
+          showMessage("Please complete every final confirmation.");
+          return;
+        }
+        const button = form.querySelector("button[type='submit']");
         const params = new URLSearchParams(window.location.search);
         const attribution = Object.fromEntries(utmKeys.map((key) => [key, params.get(key) || ""]));
         const payload = {
@@ -372,14 +474,16 @@ import "../styles/pilot-survey.css";
           filming_ability: data.get("filming_ability"),
           audience_level: data.get("audience_level"),
           story_sample: data.get("story_sample"),
-          core_scenarios: values("core_scenarios"),
-          household_context: values("household_context"),
+          core_scenarios: scenarios,
+          scenario_frequency: Object.fromEntries(frequencyKeys.map((key) => [key, data.get(`scenario_frequency_${key}`)])),
+          household_context: frequencyKeys.filter((key) => data.get(`scenario_frequency_${key}`)),
           device_categories: values("device_categories"),
           available_windows: values("available_windows"),
           scheduling_confidence: data.get("scheduling_confidence"),
           completion_commitment: data.get("completion_commitment"),
+          visit_comfort: data.get("visit_comfort"),
           past_participation_level: data.get("past_participation_level"),
-          referral_source: data.get("referral_source"),
+          anything_else: data.get("anything_else"),
           accuracy_confirmed: checked("accuracy_confirmed"),
           review_contact_confirmed: checked("review_contact_confirmed"),
           disclosure_confirmed: checked("disclosure_confirmed"),

@@ -445,6 +445,8 @@ textarea {
 .pilot-surveys-table td:nth-child(6) { min-width: 270px; max-width: 330px; }
 .pilot-surveys-table td:nth-child(6) > strong { display: block; line-height: 1.45; }
 .pilot-surveys-table td:nth-child(7) { min-width: 250px; max-width: 310px; line-height: 1.45; }
+.pilot-surveys-table td:nth-child(8) { min-width: 300px; max-width: 390px; white-space: pre-wrap; line-height: 1.45; }
+.pilot-surveys-table td:nth-child(8) > small { display: block; margin-bottom: 5px; }
 .pilot-survey-total { display: block; margin-bottom: 7px; font-size: 1.2rem; }
 .pilot-score-band { display: inline-flex; min-height: 27px; align-items: center; padding: 0 8px; border: 1px solid var(--line); background: #f7f8f6; color: var(--muted); font-size: 0.7rem; font-weight: 820; text-transform: capitalize; }
 .pilot-score-band[data-band="priority"] { border-color: rgba(15, 118, 110, 0.34); background: #eefbf7; color: var(--success); }

@@ -177,8 +177,8 @@ const mediaPageGroups = Array.from(
                   <th>Automatic summary</th>
                   <th>Story response</th>
                   <th>Scenarios and devices</th>
-                  <th>Availability</th>
-                  <th>Referral</th>
+                  <th>Visit and availability</th>
+                  <th>Additional context</th>
                   <th>Submitted (Pacific)</th>
                 </tr>
               </thead>
@@ -999,6 +999,11 @@ const mediaPageGroups = Array.from(
         return (Array.isArray(values) ? values : []).map(surveyLabel).join(", ");
       }
 
+      function surveyFrequencyList(value) {
+        if (!value || typeof value !== "object" || Array.isArray(value)) return "";
+        return Object.entries(value).map(([key, answer]) => `${surveyLabel(key)}: ${surveyLabel(answer)}`).join(", ");
+      }
+
       function filteredPilotSurveys() {
         const band = surveyBandFilter.value;
         const search = surveySearchFilter.value.trim().toLowerCase();
@@ -1010,11 +1015,14 @@ const mediaPageGroups = Array.from(
             survey.email,
             survey.story_sample,
             survey.automatic_summary,
-            survey.referral_source,
+            survey.anything_else,
+            survey.visit_comfort,
+            survey.item_scores && JSON.stringify(survey.item_scores),
             ...(survey.core_scenarios || []),
             ...(survey.household_context || []),
             ...(survey.device_categories || []),
-            ...(survey.available_windows || [])
+            ...(survey.available_windows || []),
+            surveyFrequencyList(survey.scenario_frequency)
           ].filter(Boolean).join(" ").toLowerCase().includes(search);
         });
       }
@@ -1062,8 +1070,8 @@ const mediaPageGroups = Array.from(
           const breakdown = document.createElement("td");
           [
             `Content ${survey.content_score}/30`,
-            `Fit ${survey.scenario_score}/45`,
-            `Reliability ${survey.reliability_score}/25`
+            `Fit ${survey.scenario_score}/35`,
+            `Reliability ${survey.reliability_score}/35`
           ].forEach((value) => {
             const line = document.createElement("span");
             line.textContent = value;
@@ -1086,18 +1094,22 @@ const mediaPageGroups = Array.from(
           fit.append(scenarios, devices, household);
 
           const availability = document.createElement("td");
-          availability.textContent = surveyList(survey.available_windows);
+          availability.textContent = `${surveyLabel(survey.visit_comfort)} · ${surveyList(survey.available_windows)}`;
           const reliability = document.createElement("small");
           reliability.textContent = `${surveyLabel(survey.scheduling_confidence)} · ${surveyLabel(survey.completion_commitment)} · ${surveyLabel(survey.past_participation_level)}`;
           availability.appendChild(reliability);
 
-          const referral = document.createElement("td");
-          referral.textContent = surveyLabel(survey.referral_source);
+          const context = document.createElement("td");
+          const frequency = document.createElement("small");
+          frequency.textContent = surveyFrequencyList(survey.scenario_frequency);
+          const note = document.createElement("small");
+          note.textContent = survey.anything_else ? `Note: ${survey.anything_else}` : "";
+          context.append(frequency, note);
 
           const submitted = document.createElement("td");
           submitted.textContent = formatDate(survey.created_at);
 
-          row.append(applicant, score, breakdown, summary, story, fit, availability, referral, submitted);
+          row.append(applicant, score, breakdown, summary, story, fit, availability, context, submitted);
           pilotSurveysBody.appendChild(row);
         });
 
@@ -1685,13 +1697,15 @@ const mediaPageGroups = Array.from(
           "audience_level",
           "story_sample",
           "core_scenarios",
+          "scenario_frequency",
           "household_context",
           "device_categories",
           "available_windows",
           "scheduling_confidence",
           "completion_commitment",
+          "visit_comfort",
           "past_participation_level",
-          "referral_source",
+          "anything_else",
           "accuracy_confirmed",
           "review_contact_confirmed",
           "disclosure_confirmed",
@@ -1702,6 +1716,7 @@ const mediaPageGroups = Array.from(
           "total_score",
           "score_band",
           "score_version",
+          "item_scores",
           "automatic_summary",
           "route",
           "path",
@@ -1722,6 +1737,7 @@ const mediaPageGroups = Array.from(
           if (header === "created_at_pacific") return formatPacificCsvDate(survey.created_at);
           if (header === "updated_at_pacific") return formatPacificCsvDate(survey.updated_at);
           const value = survey[header];
+          if (value && typeof value === "object" && !Array.isArray(value)) return JSON.stringify(value);
           return Array.isArray(value) ? value.join(" | ") : value || "";
         }));
         const csv = [headers, ...rows]

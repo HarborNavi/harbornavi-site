@@ -14,23 +14,27 @@ create table if not exists pilot_family_surveys (
   audience_level text not null,
   story_sample text not null,
   core_scenarios jsonb not null default '[]'::jsonb,
+  scenario_frequency jsonb not null default '{}'::jsonb,
   household_context jsonb not null default '[]'::jsonb,
   device_categories jsonb not null default '[]'::jsonb,
   available_windows jsonb not null default '[]'::jsonb,
   scheduling_confidence text not null,
   completion_commitment text not null,
+  visit_comfort text not null default 'open',
   past_participation_level text not null,
   referral_source text not null,
+  anything_else text not null default '',
   accuracy_confirmed boolean not null,
   review_contact_confirmed boolean not null,
   disclosure_confirmed boolean not null,
   no_marketing_acknowledged boolean not null,
-  content_score integer not null,
-  scenario_score integer not null,
-  reliability_score integer not null,
-  total_score integer not null,
+  content_score numeric(5,1) not null,
+  scenario_score numeric(5,1) not null,
+  reliability_score numeric(5,1) not null,
+  total_score numeric(5,1) not null,
   score_band text not null,
   score_version text not null,
+  item_scores jsonb not null default '{}'::jsonb,
   automatic_summary text not null,
   route text,
   path text,
@@ -48,6 +52,15 @@ create table if not exists pilot_family_surveys (
   constraint pilot_family_surveys_total_score_check check (total_score between 0 and 100),
   constraint pilot_family_surveys_score_band_check check (score_band in ('priority', 'qualified', 'conditional', 'not_priority'))
 );
+
+alter table pilot_family_surveys add column if not exists scenario_frequency jsonb not null default '{}'::jsonb;
+alter table pilot_family_surveys add column if not exists visit_comfort text not null default 'open';
+alter table pilot_family_surveys add column if not exists anything_else text not null default '';
+alter table pilot_family_surveys add column if not exists item_scores jsonb not null default '{}'::jsonb;
+alter table pilot_family_surveys alter column content_score type numeric(5,1) using content_score::numeric;
+alter table pilot_family_surveys alter column scenario_score type numeric(5,1) using scenario_score::numeric;
+alter table pilot_family_surveys alter column reliability_score type numeric(5,1) using reliability_score::numeric;
+alter table pilot_family_surveys alter column total_score type numeric(5,1) using total_score::numeric;
 
 create index if not exists pilot_family_surveys_score_idx on pilot_family_surveys (total_score desc, created_at desc);
 create index if not exists pilot_family_surveys_band_idx on pilot_family_surveys (score_band, created_at desc);
