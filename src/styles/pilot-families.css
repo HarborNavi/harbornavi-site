@@ -130,6 +130,8 @@
   font-weight: 760;
   line-height: 1.02;
 }
+.pilot-hero-copy[data-closed-state] h1 { white-space: nowrap; font-size: clamp(42px, 4.5vw, 64px); }
+.pilot-hero-copy[data-closed-state] > p:not(.eyebrow):not(.pilot-spots) { margin-bottom: 24px; white-space: nowrap; font-size: 16px; }
 .pilot-hero-copy > p:not(.eyebrow):not(.pilot-spots) {
   max-width: 570px;
   margin-bottom: 32px;
@@ -137,6 +139,11 @@
   font-size: 18px;
   line-height: 1.65;
 }
+.pilot-hero-waitlist { display: grid; grid-template-columns: minmax(320px, 1fr) auto; gap: 10px; width: min(100%, 760px); margin-top: 2px; }
+.pilot-hero-waitlist input { min-height: 54px; padding: 12px 14px; border: 1px solid #6d5cc7; border-radius: 5px; background: rgba(15,14,24,.84); color: #fff; }
+.pilot-hero-waitlist button { white-space: nowrap; }
+.pilot-hero-waitlist p { grid-column: 1 / -1; color: #d8d0ff; }
+@media (max-width: 700px) { .pilot-hero-waitlist { grid-template-columns: 1fr; } .pilot-hero-waitlist button { width: 100%; } }
 
 .pilot-primary {
   min-height: 50px;
@@ -459,6 +466,11 @@
   padding: 96px 0 112px;
   border-top: 1px solid var(--pilot-line);
 }
+.pilot-application[hidden] { display: none !important; }
+.pilot-spots[hidden], .pilot-hero-waitlist[hidden], .pilot-waitlist[hidden] { display: none; }
+.pilot-urgency[data-closed="true"] { background: linear-gradient(135deg, #171421, #292044); }
+.pilot-urgency[data-closed="true"] .pilot-countdown-status { display: inline-flex; width: fit-content; margin-top: 18px; padding: 9px 14px; border: 1px solid #8b73ee; border-radius: 999px; color: #e4dcff; font-weight: 760; letter-spacing: .08em; text-transform: uppercase; }
+.pilot-urgency[data-closed="true"] .pilot-countdown { opacity: .55; }
 .pilot-application-intro > p { margin-top: 22px; }
 .pilot-application form {
   display: grid;
@@ -510,6 +522,24 @@
 .pilot-form-message[data-tone="error"] { border-color: #7a4a52; background: #21181d; color: #efb5bd; }
 .pilot-application button { width: 100%; }
 .pilot-application button:disabled { cursor: wait; opacity: 0.65; }
+.pilot-waitlist { display: grid; grid-template-columns: minmax(0, 1fr) minmax(320px, .8fr); gap: 48px; padding: 80px 0 96px; border-top: 1px solid var(--pilot-line); }
+.pilot-waitlist form { display: grid; gap: 14px; align-content: center; }
+.pilot-waitlist input { min-height: 52px; padding: 12px 14px; border: 1px solid #444454; border-radius: 4px; background: var(--pilot-elevated); color: var(--pilot-text); }
+.pilot-success-modal { position: fixed; z-index: 100; inset: 0; display: grid; place-items: center; padding: 20px; }
+.pilot-success-modal[hidden] { display: none; }
+.pilot-success-backdrop { position: absolute; inset: 0; width: 100%; height: 100%; border: 0; background: rgba(14,19,17,.64); cursor: default; }
+.pilot-success-panel { position: relative; z-index: 1; width: min(520px, 100%); padding: 34px; border-radius: 8px; background: var(--pilot-surface); box-shadow: 0 28px 90px rgba(0,0,0,.3); }
+.pilot-success-panel h2 { margin-top: 10px; font-size: 30px; line-height: 1.12; }
+.pilot-success-panel > p:not(.eyebrow) { margin: 16px 0 22px; color: var(--pilot-copy); line-height: 1.6; }
+.pilot-success-invite { margin: 0 0 18px; padding-top: 18px; border-top: 1px solid var(--pilot-line); }
+.pilot-success-invite .survey-label { margin: 0 0 6px; color: var(--pilot-purple-bright); font-size: 13px; font-weight: 760; }
+.pilot-success-invite h3 { margin: 0; font-size: 19px; line-height: 1.25; }
+.pilot-success-invite > p:last-child { margin: 8px 0 0; color: var(--pilot-copy); font-size: 14px; line-height: 1.55; }
+.pilot-success-actions { display: grid; gap: 11px; }
+.pilot-success-actions a { color: var(--pilot-purple-bright); font-weight: 720; line-height: 1.45; }
+.pilot-success-actions .pilot-success-primary { padding: 13px 15px; border-radius: 5px; background: var(--pilot-purple-bright); color: #fff; text-decoration: none; }
+.pilot-success-close { position: absolute; top: 10px; right: 10px; width: 36px; height: 36px; border: 0; background: transparent; color: var(--pilot-text); font-size: 26px; cursor: pointer; }
+@media (max-width: 700px) { .pilot-waitlist { grid-template-columns: 1fr; padding: 64px 0 76px; } }
 
 .pilot-page .site-footer {
   width: min(calc(100% - 64px), 1280px);

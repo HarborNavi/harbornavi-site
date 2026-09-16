@@ -46,7 +46,7 @@ test("pilot application deadline is shared by the page and API", async () => {
   const page = await source("src/pages/pilot-families.astro");
   const api = await source("api/waitlist.ts");
   assert.equal(pilotApplicationDeadline, "2026-09-16T00:00:00-07:00");
-  assert.equal(pilotApplicationDeadlineLabel, "September 15, 2026 at 24:00 PDT");
+  assert.equal(pilotApplicationDeadlineLabel, "September 16, 2026 at 00:00 PDT");
   assert.equal(arePilotApplicationsOpen(Date.parse("2026-09-15T23:59:59.999-07:00")), true);
   assert.equal(arePilotApplicationsOpen(Date.parse("2026-09-16T00:00:00-07:00")), false);
   assert.match(page, /pilotApplicationDeadline/);
@@ -108,7 +108,7 @@ test("pilot campaign banner and form stay on the approved contract", async () =>
   assert.match(page, /What will my family need to do\?/);
   assert.match(page, /How difficult is installation\?/);
   assert.match(page, /about 30 minutes/);
-  assert.match(page, /<SiteHeader ctaHref="#apply" \/>/);
+  assert.match(page, /<SiteHeader ctaHref="#pilot-waitlist" ctaLabel="Join the waitlist" \/>/);
   assert.match(page, /Only \{pilotSpotCount\} pilot spots/);
   assert.match(page, /\{pilotSpotCount\} families will be selected/);
   assert.match(page, /\{pilotSpotCount\} homes\. Real feedback\./);

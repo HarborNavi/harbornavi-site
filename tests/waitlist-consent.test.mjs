@@ -32,6 +32,14 @@ test("home-v6 through home-v9 receive the Kickstarter consent scope", () => {
   assert.equal(contactConsentScopeForRoute("unknown"), "none");
 });
 
+test("pilot waitlist opts in without subscribing pilot applications", () => {
+  assert.equal(contactConsentScopeForRoute("pilot-waitlist"), "kickstarter_updates");
+  assert.equal(waitlistRouteForConsentVersion("pilot_waitlist_2026_09"), "pilot-waitlist");
+  assert.equal(serverConsentMetadata("pilot-waitlist").consent_status, "confirmed");
+  assert.equal(contactConsentScopeForRoute("pilot-families"), "none");
+  assert.deepEqual(serverConsentMetadata("pilot-families"), {});
+});
+
 test("launch-page consent becomes active at submission time", () => {
   const now = new Date("2026-07-15T00:00:00.000Z");
   assert.deepEqual(serverConsentMetadata("home-v6", now), {

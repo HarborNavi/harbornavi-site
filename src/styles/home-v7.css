@@ -55,6 +55,10 @@ p { margin: 0; }
 }
 .hero-carousel-track, .hero-carousel-slide { min-height: 220px; }
 .hero-carousel-slide { position: relative; isolation: isolate; }
+.hero-carousel-slide[data-pilot-slide].pilot-closed-state { background: radial-gradient(circle at 78% 20%, rgba(126,87,255,.42), transparent 42%), linear-gradient(115deg,#171221,#30214a); }
+.hero-carousel-slide[data-pilot-slide].pilot-closed-state::after { display: none; }
+.hero-carousel-slide[data-pilot-slide].pilot-closed-state .hero-carousel-background { display: none; }
+.hero-carousel-slide[data-pilot-slide].pilot-closed-state .pilot-closed-banner-copy { position: absolute; inset: 0; z-index: 2; width: min(72%, 820px); display: flex; flex-direction: column; justify-content: center; gap: 8px; padding: 24px 52px; color: #fff; box-sizing: border-box; }
 .hero-carousel-slide::after {
   content: "";
   position: absolute;
@@ -99,6 +103,25 @@ p { margin: 0; }
 .hero-carousel-arrows { display: flex; gap: 6px; }
 .hero-carousel-arrows button { width: 31px; height: 31px; border: 1px solid rgba(255, 255, 255, 0.58); border-radius: 50%; background: rgba(25, 22, 33, 0.38); color: #fff; cursor: pointer; }
 .hero-carousel-arrows button:hover, .hero-carousel-arrows button:focus-visible { background: rgba(25, 22, 33, 0.78); }
+.pilot-closed-banner {
+  min-height: 220px;
+  display: grid;
+  align-items: center;
+  padding: 28px 34px;
+  color: #fff;
+  background: radial-gradient(circle at 78% 20%, rgba(126, 87, 255, .42), transparent 42%), linear-gradient(115deg, #171221, #30214a);
+}
+.pilot-closed-banner-copy { max-width: 640px; display: grid; gap: 9px; }
+.pilot-closed-banner-copy p { color: #e8ddff; font-size: 12px; font-weight: 760; letter-spacing: .08em; text-transform: uppercase; }
+.pilot-closed-banner-copy h2 { color: #fff; font-size: clamp(25px, 3vw, 40px); line-height: 1.08; }
+.pilot-closed-banner-copy span { color: rgba(255,255,255,.86); font-size: 15px; line-height: 1.5; }
+.pilot-closed-banner-copy a { width: fit-content; margin-top: 5px; color: #fff; border-bottom: 1px solid rgba(255,255,255,.72); font-size: 14px; font-weight: 740; text-decoration: none; }
+.hero-carousel-slide[data-pilot-slide].pilot-closed-state .pilot-closed-banner-copy h2 { white-space: nowrap; font-size: clamp(25px, 2.5vw, 36px); }
+@media (max-width: 700px) {
+  .hero-carousel-slide[data-pilot-slide].pilot-closed-state { min-height: 232px; }
+  .hero-carousel-slide[data-pilot-slide].pilot-closed-state .pilot-closed-banner-copy { width: 100%; padding: 34px 28px; }
+  .hero-carousel-slide[data-pilot-slide].pilot-closed-state .pilot-closed-banner-copy h2 { white-space: normal; }
+}
 
 .hero {
   width: min(var(--max), calc(100% - 64px));

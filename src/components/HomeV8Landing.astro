@@ -21,7 +21,7 @@ import MarketingConsent from "./MarketingConsent.astro";
 import MetaPixel from "./MetaPixel.astro";
 import SiteHeaderMenu from "./SiteHeaderMenu.astro";
 import SiteMediaLoader from "./SiteMediaLoader.astro";
-import { pilotOfferAdvertisingCopy, pilotSpotCount } from "../data/pilotProgram";
+import { arePilotApplicationsOpen, pilotApplicationDeadline, pilotOfferAdvertisingCopy, pilotSpotCount } from "../data/pilotProgram";
 import "../styles/site-header-v7.css";
 import "../styles/home-v7.css";
 import "../styles/home-v9.css";
@@ -75,6 +75,7 @@ const heroCarouselSlides = [
     title: "Your data, finally home."
   }
 ];
+const pilotApplicationsOpen = arePilotApplicationsOpen();
 
 const intelligenceLayers = [
   {
@@ -200,7 +201,7 @@ const structuredData = JSON.stringify({
     <meta name="twitter:image" content={`https://harbornavi.com${heroSocialImage}`} />
     <script is:inline type="application/ld+json" set:html={structuredData}></script>
   </head>
-  <body class:list={["home-v6-page", { "home-v9-page": isV9 }]} data-route={route}>
+  <body class:list={["home-v6-page", { "home-v9-page": isV9 }]} data-route={route} data-pilot-deadline={pilotApplicationDeadline}>
     <div class="site-shell">
       <div class="site-header-v7-bar">
         <header class="site-header-v7">
@@ -216,7 +217,7 @@ const structuredData = JSON.stringify({
             <a href="#compare">Compare</a>
             <a href="/about-harbor">About Harbor</a>
           </nav>
-          <a class="site-header-v7-cta" href="/pilot-families">Join the Pilot Program</a>
+          <a class="site-header-v7-cta" href="/pilot-families" data-pilot-entry hidden={!pilotApplicationsOpen}>Join the Pilot Program</a>
           <button class="site-header-v7-menu" type="button" aria-label="Open navigation menu" aria-controls="site-header-v7-navigation" aria-expanded="false" data-header-menu>
             <span class="site-header-v7-menu-open" aria-hidden="true"><Menu size={20} strokeWidth={2} /></span>
             <span class="site-header-v7-menu-close" aria-hidden="true"><X size={20} strokeWidth={2} /></span>
@@ -229,7 +230,7 @@ const structuredData = JSON.stringify({
         <section class="hero-carousel" data-hero-carousel aria-label="HarborNavi highlights">
           <div class="hero-carousel-track" data-carousel-slides>
             {heroCarouselSlides.map((slide, index) => (
-              <article class="hero-carousel-slide" data-carousel-slide data-discord-slide={slide.isDiscord ? true : undefined} aria-hidden={index === 0 ? "false" : "true"} hidden={index !== 0}>
+              <article class="hero-carousel-slide" data-carousel-slide data-pilot-slide={slide.highlight ? true : undefined} data-discord-slide={slide.isDiscord ? true : undefined} aria-hidden={index === 0 ? "false" : "true"} hidden={index !== 0}>
                 <img class="hero-carousel-background" src={slide.url} alt={slide.alt} width={slide.width} height={slide.height} loading={index === 0 ? "eager" : "lazy"} decoding="async" data-media-slot={index === 0 ? "home-carousel-pilot" : index === 1 ? "home-carousel-memory" : "home-carousel-movie"} />
                 {slide.isDiscord && <img class="hero-carousel-discord-lockup" src="/assets/harbor-inn-discord-lockup-v1.webp" alt="" width="594" height="220" loading="lazy" decoding="async" aria-hidden="true" />}
                 {slide.href ? (
@@ -588,6 +589,29 @@ const structuredData = JSON.stringify({
     <SiteMediaLoader />
     <script is:inline>
       const route = document.body.dataset.route || "home-v8";
+      const pilotDeadline = Date.parse(document.body.dataset.pilotDeadline);
+      const isLocalV2Preview = ["127.0.0.1", "localhost", "[::1]"].includes(window.location.hostname);
+      const pilotEntry = document.querySelector("[data-pilot-entry]");
+      const pilotSlide = document.querySelector("[data-pilot-slide]");
+      const pilotClosedBanner = document.querySelector("[data-pilot-closed-banner]");
+      const pilotIsClosed = () => isLocalV2Preview || Date.now() >= pilotDeadline || new URLSearchParams(window.location.search).has("pilot-closed");
+      function updatePilotClosedState() {
+        if (!pilotIsClosed() || pilotSlide?.classList.contains("pilot-closed-state")) return;
+        pilotEntry?.remove();
+        if (pilotSlide) {
+          pilotSlide.classList.add("pilot-closed-state");
+          pilotSlide.hidden = false;
+          pilotSlide.setAttribute("aria-hidden", "false");
+          pilotSlide.innerHTML = `<div class="pilot-closed-banner-copy"><p>HarborNavi Pilot Program</p><h2>The Pilot Program has ended.</h2><span>Thank you to everyone who took part. Stay tuned for the pilot experience vlog and HarborNavi updates.</span><a href="/pilot-families">Learn about the Pilot Program <span aria-hidden="true">→</span></a></div>`;
+        }
+      }
+      updatePilotClosedState();
+      if (!pilotIsClosed()) {
+        const pilotStateTimer = window.setInterval(() => {
+          updatePilotClosedState();
+          if (pilotIsClosed()) window.clearInterval(pilotStateTimer);
+        }, 1000);
+      }
       const utmKeys = ["utm_source", "utm_medium", "utm_campaign", "utm_content", "utm_term"];
 
       function getSessionId() {
