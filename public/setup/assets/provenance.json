@@ -1,0 +1,29 @@
+{
+  "verified_on": "2026-09-14",
+  "primary_page": "https://harbornavi.com/",
+  "method": "Live home page image references and HTTP 200 asset bytes compared against the matching local official site checkout; unchanged copies reused.",
+  "local_source_checkout": "C:/Users/beanw/OpenSource/_ha-general-adaptation/site",
+  "assets": [
+    {
+      "file": "harbornavi-hardware.webp",
+      "source_url": "https://harbornavi.com/assets/home-v7-v8-hardware-id.webp",
+      "source_media_slot": "home-hardware",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 45320,
+      "sha256": "0af760fafbf49b3366c1485821a69a4c1e8b19a0bc340a21d6c6d6ebf7e10d2d",
+      "modification": "None"
+    },
+    {
+      "file": "harbornavi-touch.webp",
+      "source_url": "https://harbornavi.com/assets/home-v7-v8-trust-boundary-id.webp",
+      "source_media_slot": "home-trust-boundary",
+      "width": 1536,
+      "height": 1024,
+      "bytes": 108402,
+      "sha256": "0fdb81fb4c4f1d4eb3691930165fce9be28e535f805d8e018496fff788a4fbee",
+      "modification": "None"
+    }
+  ],
+  "usage": "Product appearance and the fingerprint-control location follow the official supplied imagery. These images do not establish firmware or hardware readiness."
+}

@@ -1,53 +1,89 @@
 <!doctype html>
 <html lang="en">
 <head>
-  <base href="/setup/">
-  <meta name="robots" content="noindex, nofollow">
   <meta charset="utf-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
-  <meta name="theme-color" content="#F7F7FB">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
   <meta name="referrer" content="no-referrer">
-  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self'; style-src 'self' 'unsafe-inline'; img-src 'self' data:; connect-src 'none'; form-action 'none'; object-src 'none'; base-uri 'self'">
-  <title>Navi · A little setup. A place to call home.</title>
-  <link rel="stylesheet" href="styles.css">
-  <script src="illustrations.js" defer></script>
-  <script src="app.js" defer></script>
+  <meta http-equiv="Content-Security-Policy" content="default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; base-uri 'none'; form-action 'none'; connect-src 'none'">
+  <title>Set up your Navi</title>
+  <link rel="stylesheet" href="setup.css">
+  <script src="ble-setup.js" defer></script>
+  <script src="setup.js" defer></script>
 </head>
-<body>
-  <div class="review-bar" aria-label="Prototype controls">
-    <span class="review-label">INTERACTIVE PROTOTYPE</span>
-    <button type="button" data-action="review">Explore scenarios</button>
-  </div>
-  <div class="prototype-layout">
-    <aside class="review-sidebar" aria-label="About this prototype">
-      <div class="review-brand">HARBOR INNOVATIONS</div>
-      <p class="eyebrow">NAVI / FIRST HELLO</p>
-      <h1>A little setup.<br>A place to<br>call home.</h1>
-      <p>From the box to your home.<br>One phone. No app needed.</p>
-      <div class="sidebar-rule"></div>
-      <p class="review-description">An English concept prototype for Navi’s first setup. Explore the journey on the right, or open this page on your phone.</p>
-      <button class="secondary" type="button" data-action="review">Explore scenarios <span aria-hidden="true">↗</span></button>
-      <p class="review-description">Wi-Fi, touch and passkey prompts are demonstrations. This prototype never connects to a real device.</p>
-      <div class="sidebar-version">01 / MOBILE CONCEPT · HARBORDOCK PALETTE</div>
-    </aside>
-    <div class="phone-and-caption">
-      <div class="phone-shell">
-        <header class="app-header">
-          <a class="wordmark" href="#" data-action="go-welcome" aria-label="Navi setup home"><span class="brand-symbol" aria-hidden="true">n</span><span>Harbor<span class="brand-light">Navi</span></span></a>
-          <span class="device-tag">A1B2C3</span>
-        </header>
-        <nav class="step-progress" aria-label="Setup progress">
-          <div class="step-caption"><button class="back-button" type="button" data-action="back" aria-label="Go back"></button><span id="step-label">A warm welcome</span><button class="help-button" type="button" data-action="help" aria-label="Setup help">?</button></div>
-          <div class="progress-track"><span id="progress-fill"></span></div>
-        </nav>
-        <main id="screen" class="screen" tabindex="-1" data-screen="welcome"></main>
-        <footer class="app-footer" id="footer"></footer>
+<body data-route="choose">
+  <main>
+    <header class="topbar">
+      <span class="brand"><span class="brand-symbol" aria-hidden="true">h</span>Harbor<span class="brand-light">Navi</span></span>
+      <span class="device-tag" id="device-label" hidden>Device <strong id="device-number"></strong></span>
+    </header>
+    <section id="choose-panel" aria-labelledby="welcome-heading">
+      <div class="hero"><img src="assets/harbornavi-hardware.webp" width="1536" height="1024" alt="HarborNavi home hub with a dark textured finish and a purple light strip"></div>
+      <p class="eyebrow">WELCOME HOME</p>
+      <h1 id="welcome-heading" tabindex="-1">Welcome to Navi.</h1>
+      <p class="lead">A little setup. A home that understands you.</p>
+      <p class="intro">Plug in Navi’s power cable and keep your phone nearby. Choose how Navi will connect to your home.</p>
+      <div class="choices" aria-label="Choose your connection">
+        <button class="choice" id="choose-wifi" type="button" data-route="wifi"><span class="choice-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M3 8a14 14 0 0 1 18 0M6 12a9 9 0 0 1 12 0M9 16a4 4 0 0 1 6 0"/><circle cx="12" cy="20" r=".6"/></svg></span><span><strong>Use Wi-Fi</strong><small>Connect without a network cable</small></span><span class="chevron" aria-hidden="true">›</span></button>
+        <button class="choice" id="choose-ethernet" type="button" data-route="ethernet"><span class="choice-icon" aria-hidden="true"><svg viewBox="0 0 24 24"><path d="M5 4h14v11h-4v4H9v-4H5zM9 4v5m3-5v5m3-5v5M12 19v3"/></svg></span><span><strong>Use Ethernet</strong><small>Connect Navi to your router with a cable</small></span><span class="chevron" aria-hidden="true">›</span></button>
       </div>
-      <p class="prototype-caption">Concept preview · Sample device A1B2C3</p>
-    </div>
-  </div>
-  <dialog id="demo-dialog" aria-labelledby="demo-title"></dialog>
-  <dialog id="review-dialog" aria-labelledby="review-title"></dialog>
-  <div id="announcement" class="sr-only" role="status" aria-live="polite"></div>
+      <p class="reassurance">No Navi app needed. Your account and home settings are created on Navi.</p>
+    </section>
+    <section id="wifi-panel" aria-labelledby="wifi-heading" hidden>
+      <button class="back" type="button" data-back><span aria-hidden="true">‹</span> Back</button>
+      <p class="eyebrow">CONNECT WITH WI-FI</p>
+      <h1 id="wifi-heading" tabindex="-1">Connect your phone to Navi.</h1>
+      <p class="lead">Navi opens a temporary Wi-Fi hotspot for its first setup. Use Bluetooth if your browser supports it, or join Navi’s hotspot.</p>
+      <section id="ble-setup" class="ble-card" aria-labelledby="ble-heading" hidden>
+        <h2 id="ble-heading">Connect with Bluetooth</h2>
+        <p>Keep your phone on your home Wi-Fi. Connect to Navi with Bluetooth, then confirm this phone on Navi.</p>
+        <button type="button" class="primary" id="ble-connect">Connect with Bluetooth</button>
+        <p id="ble-status" role="status" aria-live="polite"></p>
+        <div id="ble-network" hidden>
+          <button type="button" class="back" id="ble-scan">Refresh Wi-Fi networks</button>
+          <label for="ble-ssid">Home Wi-Fi</label><select id="ble-ssid"></select>
+          <label for="ble-password">Wi-Fi password</label><input id="ble-password" type="password" autocomplete="off" maxlength="63">
+          <button type="button" class="primary" id="ble-join">Connect Navi to Wi-Fi</button>
+        </div>
+        <button type="button" class="primary" id="ble-confirm" hidden>Confirm this home network</button>
+        <a class="primary" id="ble-continue" hidden>Continue account setup</a>
+        <button type="button" class="back" id="ble-cancel" hidden>Cancel Bluetooth setup</button>
+        <p class="small">Your Wi-Fi password travels directly to Navi. If Bluetooth is unavailable, use the hotspot steps below.</p>
+      </section>
+      <h2>Connect through Navi’s Wi-Fi hotspot</h2>
+      <p id="hotspot-fallback" role="status">Use these hotspot steps if your browser cannot connect with Bluetooth.</p>
+      <ol class="steps">
+        <li><strong>Open your phone’s Wi-Fi settings.</strong><span>Leave this page open so you can return to it.</span></li>
+        <li><strong>Join <span id="setup-ssid">the Navi setup network on your card</span>.</strong><span>If your phone asks for a password, use the one on your card.</span></li>
+        <li><strong>Stay connected, even without Internet.</strong><span>If your phone asks to switch networks or use mobile data, choose to stay on Navi’s Wi-Fi.</span></li>
+        <li><strong>Return here and continue.</strong><span>On Navi’s local page, choose your home Wi-Fi. After Navi connects, switch your phone back to your home Wi-Fi.</span></li>
+      </ol>
+      <a class="primary" id="open-wireless" href="http://harbornavi.local/ui/setup">Continue to Navi</a>
+      <p class="small secure-note">Check the device number on the next page. Account setup uses Navi’s secure local connection.</p>
+      <details><summary>Can’t see Navi’s setup Wi-Fi?</summary><p>Check the power cable and keep your phone close to Navi. If the setup network has closed, long-touch Navi’s top control to reopen it, then check your phone’s Wi-Fi list again.</p></details>
+    </section>
+    <section id="ethernet-panel" aria-labelledby="ethernet-heading" hidden>
+      <button class="back" type="button" data-back><span aria-hidden="true">‹</span> Back</button>
+      <p class="eyebrow">CONNECT WITH ETHERNET</p>
+      <h1 id="ethernet-heading" tabindex="-1">Bring Navi onto your home network.</h1>
+      <p class="lead">A cable connects Navi directly to your router. Your phone stays on your home Wi-Fi.</p>
+      <ol class="steps">
+        <li><strong>Connect Navi to your router.</strong><span>Plug an Ethernet cable into Navi and your router. Keep Navi connected to power.</span></li>
+        <li><strong>Join your main home Wi-Fi on your phone.</strong><span>Use the same router as Navi. Guest networks may keep your devices apart.</span></li>
+        <li><strong>Open Navi’s local setup.</strong><span>Check that the device number matches the label on your Navi.</span></li>
+      </ol>
+      <a class="primary" id="open-local" href="http://harbornavi.local/ui/setup">Continue to Navi</a>
+      <p class="small secure-note">Your account and home settings stay on Navi. You can choose cloud features later.</p>
+    </section>
+    <aside class="scan-note" id="scan-note"><p>Scan the QR code on your Navi for its own setup link, or use the local address on your quick start card.</p></aside>
+    <details class="connection-help"><summary>Navi didn’t open</summary><ul>
+      <li>Check Navi’s power cable and outlet.</li>
+      <li>For wireless setup, keep your phone on Navi’s temporary Wi-Fi until you choose your home network.</li>
+      <li>For Ethernet, connect your phone to your main home Wi-Fi and check that Navi’s cable reaches the same router.</li>
+      <li>Guest Wi-Fi may block local devices. Use the main home network.</li>
+      <li>If the device address is unavailable, use the local entry on your card or find Navi in your router’s connected-device list.</li>
+    </ul><p>Navi opens its secure page before asking for account details. Don’t bypass a certificate warning; check the address and retry.</p></details>
+    <footer><strong>No Internet?</strong> Use the local address printed on your quick start card. You can skip HarborCloud and WhatsApp during setup. Arlo needs its own cloud connection.</footer>
+    <noscript><p class="scan-note">JavaScript is needed to show the connection choices. You can still open the local address on your quick start card, or <a href="http://harbornavi.local/ui/setup">find Navi on your home network</a>.</p></noscript>
+  </main>
 </body>
 </html>

@@ -1,6 +1,11 @@
 {
   "redirects": [
     {
+      "source": "/setup",
+      "destination": "/setup/",
+      "permanent": true
+    },
+    {
       "source": "/home",
       "destination": "/",
       "permanent": true
@@ -90,6 +95,29 @@
     {
       "source": "/setup/",
       "destination": "/setup/index.html"
+    }
+  ],
+  "headers": [
+    {
+      "source": "/setup/(.*)",
+      "headers": [
+        {
+          "key": "Cache-Control",
+          "value": "no-store"
+        },
+        {
+          "key": "Referrer-Policy",
+          "value": "no-referrer"
+        },
+        {
+          "key": "X-Content-Type-Options",
+          "value": "nosniff"
+        },
+        {
+          "key": "Content-Security-Policy",
+          "value": "default-src 'none'; script-src 'self'; style-src 'self'; img-src 'self'; base-uri 'none'; form-action 'none'; connect-src 'none'; frame-ancestors 'none'"
+        }
+      ]
     }
   ],
   "crons": [
