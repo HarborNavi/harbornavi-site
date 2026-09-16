@@ -146,6 +146,10 @@
       const result = await client.command('get_status');
       job = result.job || job;
       if (!result.presence?.approved) {
+        approved = false;
+        get('network').hidden = true;
+        get('confirm').hidden = true;
+        get('continue').hidden = true;
         notice('Use Navi’s setup control to confirm this phone. A touch confirms your presence, not your identity.');
       } else if (!approved) {
         approved = true; await scan();

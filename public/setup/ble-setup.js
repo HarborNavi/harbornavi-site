@@ -54,20 +54,35 @@
     }
     async connect() {
       if (!this.device) this.device = await this.bluetooth.requestDevice({filters: [{services: [uuids.service]}]});
+      const device = this.device;
       const deadline = Date.now() + 20000;
-      const server = await this.io(this.device.gatt.connect(), deadline);
-      const service = await this.io(server.getPrimaryService(uuids.service), deadline);
-      const info = await this.io(service.getCharacteristic(uuids.info), deadline);
-      const data = JSON.parse(decoder.decode(await this.io(info.readValue(), deadline)));
-      if (data.version !== 1 || data.device_id !== this.identifier || data.available !== true) {
-        this.device.gatt.disconnect(); this.device = null;
-        throw new Error('BLE_DEVICE_MISMATCH_OR_CLOSED');
+      let sessionEstablished = false;
+      try {
+        const server = await this.io(device.gatt.connect(), deadline);
+        const service = await this.io(server.getPrimaryService(uuids.service), deadline);
+        const info = await this.io(service.getCharacteristic(uuids.info), deadline);
+        const data = JSON.parse(decoder.decode(await this.io(info.readValue(), deadline)));
+        if (data.version !== 1 || data.device_id !== this.identifier || data.available !== true) {
+          device.gatt.disconnect(); this.device = null;
+          throw new Error('BLE_DEVICE_MISMATCH_OR_CLOSED');
+        }
+        this.control = await this.io(service.getCharacteristic(uuids.control), deadline);
+        this.events = await this.io(service.getCharacteristic(uuids.events), deadline);
+        const result = await this.command('begin', {}, this.beginRequest);
+        this.session = result.session_id;
+        sessionEstablished = true;
+        return result;
+      } catch (error) {
+        // A failed pre-session GATT operation can leave a stale
+        // BluetoothDevice in some Chromium builds. Drop it so the next
+        // click can reopen the chooser. Once begin succeeds, keep the peer
+        // for the normal same-session reconnect path.
+        if (!sessionEstablished) {
+          try { device.gatt.disconnect(); } catch { /* already disconnected */ }
+          if (this.device === device) this.device = null;
+        }
+        throw error;
       }
-      this.control = await this.io(service.getCharacteristic(uuids.control), deadline);
-      this.events = await this.io(service.getCharacteristic(uuids.events), deadline);
-      const result = await this.command('begin', {}, this.beginRequest);
-      this.session = result.session_id;
-      return result;
     }
     async command(op, fields = {}, request = id()) {
       if (this.pending) throw new Error('BLE_BUSY');
