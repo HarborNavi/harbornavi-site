@@ -41,31 +41,46 @@
     constructor(identifier, bluetooth = navigator.bluetooth) {
       this.identifier = identifier; this.bluetooth = bluetooth; this.serial = 0;
       this.beginRequest = id(); this.pending = false; this.session = null;
+      this.generation = 0; this.cancelIO = new Set();
     }
     async io(operation, deadline) {
-      let timer;
+      let timer, cancel;
       try {
         return await Promise.race([operation, new Promise((_, reject) => {
+          cancel = () => reject(new Error('BLE_DISCONNECTED'));
+          this.cancelIO.add(cancel);
           timer = setTimeout(() => {
-            this.disconnect(); reject(new Error('BLE_RESPONSE_TIMEOUT'));
+            reject(new Error('BLE_RESPONSE_TIMEOUT')); this.disconnect();
           }, Math.max(1, deadline - Date.now()));
         })]);
-      } finally { clearTimeout(timer); }
+      } finally { clearTimeout(timer); this.cancelIO.delete(cancel); }
     }
     async connect() {
-      if (!this.device) this.device = await this.bluetooth.requestDevice({filters: [{services: [uuids.service]}]});
+      const generation = this.generation;
+      if (!this.device) {
+        const selected = await this.bluetooth.requestDevice({filters: [{services: [uuids.service]}]});
+        if (generation !== this.generation) throw new Error('BLE_DISCONNECTED');
+        this.device = selected;
+      }
       const device = this.device;
       const deadline = Date.now() + 20000;
       let sessionEstablished = false;
       try {
-        const server = await this.io(device.gatt.connect(), deadline);
+        const server = await this.io(device.gatt.connect().then(server => {
+          if (generation !== this.generation) {
+            device.gatt.disconnect(); throw new Error('BLE_DISCONNECTED');
+          }
+          return server;
+        }), deadline);
         const service = await this.io(server.getPrimaryService(uuids.service), deadline);
         const info = await this.io(service.getCharacteristic(uuids.info), deadline);
         const data = JSON.parse(decoder.decode(await this.io(info.readValue(), deadline)));
-        if (data.version !== 1 || data.device_id !== this.identifier || data.available !== true) {
+        if (data.version !== 1 || data.device_id !== this.identifier) {
           device.gatt.disconnect(); this.device = null;
-          throw new Error('BLE_DEVICE_MISMATCH_OR_CLOSED');
+          throw new Error('BLE_DEVICE_MISMATCH');
         }
+        if (data.available !== true) throw new Error(data.reason === 'PHYSICAL_INPUT_CONFIGURATION_UNAVAILABLE'
+          ? data.reason : 'BLE_SETUP_UNAVAILABLE');
         this.control = await this.io(service.getCharacteristic(uuids.control), deadline);
         this.events = await this.io(service.getCharacteristic(uuids.events), deadline);
         const result = await this.command('begin', {}, this.beginRequest);
@@ -86,26 +101,56 @@
     }
     async command(op, fields = {}, request = id()) {
       if (this.pending) throw new Error('BLE_BUSY');
+      if (!this.device?.gatt.connected) throw new Error('BLE_DISCONNECTED');
       this.pending = true;
+      const generation = this.generation;
       const identifier = this.serial = (this.serial % 65535) + 1;
       const message = {op, request_id: request, ...fields};
       if (op !== 'begin') message.session_id = this.session;
       try {
-        const deadline = Date.now() + 45000;
-        for (const frame of frames(message, identifier)) await this.io(this.control.writeValueWithResponse(frame), deadline);
+        // The peripheral ACKs writes before its bounded 44-second RPC ends.
+        // Leave room for request/response fragmentation at the minimum MTU.
+        const deadline = Date.now() + 75000;
+        for (const frame of frames(message, identifier)) {
+          if (generation !== this.generation || !this.device.gatt.connected) throw new Error('BLE_DISCONNECTED');
+          await this.io(this.control.writeValueWithResponse(frame), deadline);
+        }
         const receiver = new Receiver(identifier);
         while (Date.now() < deadline) {
-          const result = receiver.feed(await this.io(this.events.readValue(), deadline));
+          if (generation !== this.generation || !this.device.gatt.connected) throw new Error('BLE_DISCONNECTED');
+          const packet = await this.io(this.events.readValue(), deadline);
+          if (generation !== this.generation) throw new Error('BLE_DISCONNECTED');
+          if (!packet.byteLength) {
+            // Pending is an empty ATT value, not a reply or a reason to resend
+            // the command (which may already have changed the network).
+            await this.io(new Promise(resolve => setTimeout(resolve, 150)), deadline);
+            continue;
+          }
+          const result = receiver.feed(packet);
           if (result) {
-            if (!result.ok) throw new Error(result.error?.code || 'BLE_SETUP_UNAVAILABLE');
-            if (result.data.request_id !== request) throw new Error('BLE_REPLY_MISMATCH');
+            if ((result.ok ? result.data?.request_id : result.request_id) !== request) throw new Error('BLE_REPLY_MISMATCH');
+            if (!result.ok) {
+              const error = new Error(result.error?.code || 'BLE_SETUP_UNAVAILABLE');
+              error.server = true;
+              throw error;
+            }
             return result.data;
           }
         }
         throw new Error('BLE_RESPONSE_TIMEOUT');
+      } catch (error) {
+        // A malformed, replayed or transport-level response can leave stale
+        // fragments in the peripheral's event queue. Drop the link before
+        // exposing reconnect; server-side setup errors retain the session.
+        if (!error.server && generation === this.generation) this.disconnect();
+        throw error;
       } finally { this.pending = false; delete message.password; }
     }
-    disconnect() { if (this.device?.gatt.connected) this.device.gatt.disconnect(); }
+    disconnect() {
+      this.generation++;
+      for (const cancel of this.cancelIO) cancel();
+      if (this.device?.gatt.connected) this.device.gatt.disconnect();
+    }
   }
   globalThis.NaviBLE = {uuids, frames, Receiver, Client};
 })();
