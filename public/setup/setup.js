@@ -3,13 +3,20 @@
   'use strict';
   const EXPIRY_MS = 30 * 60 * 1000;
   const DISCOVERY_URL = 'http://harbornavi.local/ui/setup';
+  const ENGINEERING_AP_URL = 'http://10.42.0.1/ui/setup';
   const ROUTES = ['choose', 'wifi', 'ethernet'];
   let identifier = null;
+  let engineering = false;
   let storageKey = null;
 
   function readIdentifier() {
     const values = new URLSearchParams(location.hash.slice(1)).getAll('device');
     return values.length === 1 && /^navi_[a-f0-9]{32}$/.test(values[0]) ? values[0] : null;
+  }
+
+  function readEngineering() {
+    const values = new URLSearchParams(location.hash.slice(1)).getAll('engineering');
+    return readIdentifier() !== null && values.length === 1 && values[0] === '1';
   }
 
   function liveTimestamp(timestamp) {
@@ -49,23 +56,26 @@
     if (!ROUTES.includes(route)) return;
     const timestamp = Date.now();
     save(route, timestamp);
-    history.pushState({naviEntry: identifier, route, timestamp}, '', location.href);
+    history.pushState({naviEntry: identifier, engineering, route, timestamp}, '', location.href);
     show(route, true);
   }
   function initialize() {
     identifier = readIdentifier();
+    engineering = readEngineering();
     storageKey = identifier ? `navi.setup.entry:${identifier}` : null;
     document.querySelector('#device-label').hidden = !identifier;
     document.querySelector('#device-number').textContent = identifier ? identifier.slice(-6).toUpperCase() : '';
     document.querySelector('#setup-ssid').textContent = identifier ? `Navi-Setup-${identifier.slice(-6).toUpperCase()}` : 'the Navi setup network on your card';
     document.querySelector('#scan-note').hidden = !!identifier;
     for (const [name, route] of [['open-wireless', 'wifi'], ['open-local', 'ethernet']]) {
-      document.querySelector(`#${name}`).href = identifier
+      const production = identifier
         ? `https://${identifier.replace('_', '-')}.lan.harbornavi.com/ui/setup?connection=${route}#device=${identifier}`
         : DISCOVERY_URL;
+      document.querySelector(`#${name}`).href = identifier && engineering && route === 'wifi'
+        ? `${ENGINEERING_AP_URL}#device=${identifier}` : production;
     }
     const saved = restore();
-    history.replaceState({naviEntry: identifier, ...saved}, '', location.href);
+    history.replaceState({naviEntry: identifier, engineering, ...saved}, '', location.href);
     show(saved.route);
   }
   document.querySelectorAll('button[data-route]').forEach(button => {
@@ -75,8 +85,9 @@
     button.addEventListener('click', () => navigate('choose'));
   });
   window.addEventListener('popstate', event => {
-    if (readIdentifier() !== identifier) { initialize(); return; }
-    const route = event.state?.naviEntry === identifier && ROUTES.includes(event.state?.route)
+    if (readIdentifier() !== identifier || readEngineering() !== engineering) { initialize(); return; }
+    const route = event.state?.naviEntry === identifier && event.state?.engineering === engineering
+      && ROUTES.includes(event.state?.route)
       && liveTimestamp(event.state?.timestamp) ? event.state.route : 'choose';
     save(route, event.state?.timestamp);
     show(route, true);
