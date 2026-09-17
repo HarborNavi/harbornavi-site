@@ -89,14 +89,17 @@
 (() => {
   'use strict';
   const get = name => document.getElementById(`ble-${name}`);
-  let client, timer, job, approved = false, busy = false;
+  let client, timer, job, approved = false, busy = false, generation = 0;
   function notice(value) { get('status').textContent = value; }
   function cancelPoll() { clearTimeout(timer); timer = undefined; }
   function schedule() { cancelPoll(); timer = setTimeout(poll, 2000); }
   function reset() {
+    generation++; busy = false;
     cancelPoll(); client?.disconnect(); client = null; job = null; approved = false;
     get('password').value = '';
     for (const name of ['network', 'confirm', 'continue', 'cancel']) get(name).hidden = true;
+    for (const name of ['connect', 'join', 'scan', 'confirm', 'cancel']) get(name).disabled = false;
+    get('continue').removeAttribute('href');
     const identifiers = new URLSearchParams(location.hash.slice(1)).getAll('device');
     const identifier = identifiers.length === 1 ? identifiers[0] : null;
     get('setup').hidden = !(typeof navigator.bluetooth?.requestDevice === 'function'
@@ -106,12 +109,16 @@
   }
   async function action(work) {
     if (busy) return;
+    const current = generation;
     busy = true;
-    get('connect').disabled = get('join').disabled = get('scan').disabled = get('confirm').disabled = true;
+    get('connect').disabled = get('join').disabled = get('scan').disabled = get('confirm').disabled = get('cancel').disabled = true;
     try { await work(); }
     catch (error) {
+      if (current !== generation) return;
       const messages = {
-        BLE_DEVICE_MISMATCH_OR_CLOSED: 'This is not the Navi on your card, or initial setup is closed. Check the device and retry.',
+        BLE_DEVICE_MISMATCH: 'This is not the Navi on your card. Select the device with the matching number.',
+        BLE_SETUP_UNAVAILABLE: 'Bluetooth setup is unavailable or closed on this Navi. Use the hotspot steps below or Ethernet.',
+        PHYSICAL_INPUT_CONFIGURATION_UNAVAILABLE: 'Navi’s physical setup control is not ready for Bluetooth confirmation. Use the hotspot steps below or Ethernet.',
         PHYSICAL_CONFIRMATION_REQUIRED: 'Confirm this phone using Navi’s setup control, then continue here.',
         BLE_SESSION_BUSY: 'Another phone is setting up Navi. Finish or cancel that setup first.',
         WIFI_PASSWORD_INVALID: 'Check the Wi-Fi password. Navi currently supports passwords with 8–63 standard keyboard characters.',
@@ -123,12 +130,16 @@
       get('password').value = '';
       cancelPoll();
     } finally {
-      busy = false;
-      get('connect').disabled = get('join').disabled = get('scan').disabled = get('confirm').disabled = false;
+      if (current === generation) {
+        busy = false;
+        get('connect').disabled = get('join').disabled = get('scan').disabled = get('confirm').disabled = get('cancel').disabled = false;
+      }
     }
   }
   async function scan() {
-    const result = await client.command('scan');
+    const active = client;
+    const result = await active.command('scan');
+    if (active !== client) return;
     get('ssid').replaceChildren();
     for (const network of result.networks) {
       const option = document.createElement('option');
@@ -143,16 +154,23 @@
     if (!client) return;
     if (busy) { schedule(); return; }
     await action(async () => {
-      const result = await client.command('get_status');
-      job = result.job || job;
+      const active = client;
+      const result = await active.command('get_status');
+      if (active !== client) return;
+      job = result.job || null;
       if (!result.presence?.approved) {
         approved = false;
         get('network').hidden = true;
         get('confirm').hidden = true;
         get('continue').hidden = true;
+        get('password').value = '';
         notice('Use Navi’s setup control to confirm this phone. A touch confirms your presence, not your identity.');
+        schedule();
+        return;
       } else if (!approved) {
-        approved = true; await scan();
+        approved = true;
+        if (!job || ['idle', 'failed'].includes(job.status)) await scan();
+        if (active !== client) return;
       }
       if (job?.status === 'preparing' || job?.status === 'connecting') {
         get('network').hidden = true; notice('Navi is connecting to your home Wi-Fi…');
@@ -177,27 +195,36 @@
   get('connect').addEventListener('click', () => action(async () => {
     cancelPoll();
     if (!client) client = new NaviBLE.Client(new URLSearchParams(location.hash.slice(1)).get('device'));
+    const active = client;
     notice('Select the Navi with the device number on your card.');
-    await client.connect(); get('cancel').hidden = false; schedule();
+    await active.connect();
+    if (active !== client) return;
+    get('cancel').hidden = false; schedule();
     document.getElementById('hotspot-fallback').hidden = true;
   }));
   get('scan').addEventListener('click', () => action(scan));
   get('join').addEventListener('click', () => action(async () => {
     cancelPoll();
     const password = get('password').value; get('password').value = '';
-    const result = await client.command('connect', {ssid: get('ssid').value, password});
+    const active = client;
+    const result = await active.command('connect', {ssid: get('ssid').value, password});
+    if (active !== client) return;
     job = result.job; notice('Navi is connecting…'); schedule();
   }));
   get('confirm').addEventListener('click', () => action(async () => {
-    const result = await client.command('confirm', {job_id: job.job_id, connected_confirmed: true});
+    const active = client;
+    const result = await active.command('confirm', {job_id: job.job_id, connected_confirmed: true});
+    if (active !== client) return;
     job = result.job; schedule();
   }));
   get('cancel').addEventListener('click', () => action(async () => {
     cancelPoll();
-    await client.command('cancel', {job_id: job?.job_id || null});
+    const active = client;
+    await active.command('cancel', {job_id: job?.job_id || null});
+    if (active !== client) return;
     reset(); notice('Bluetooth setup cancelled. You can use the hotspot steps below.');
   }));
   window.addEventListener('hashchange', reset);
-  window.addEventListener('pagehide', () => { cancelPoll(); client?.disconnect(); });
+  window.addEventListener('pagehide', reset);
   reset();
 })();
