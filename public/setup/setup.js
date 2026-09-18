@@ -19,6 +19,10 @@
     return readIdentifier() !== null && values.length === 1 && values[0] === '1';
   }
 
+  function engineeringApHref() {
+    return `${ENGINEERING_AP_URL}?entry=${Date.now()}#device=${identifier}`;
+  }
+
   function liveTimestamp(timestamp) {
     return Number.isSafeInteger(timestamp) && timestamp <= Date.now() && Date.now() - timestamp < EXPIRY_MS;
   }
@@ -72,7 +76,13 @@
         ? `https://${identifier.replace('_', '-')}.lan.harbornavi.com/ui/setup?connection=${route}#device=${identifier}`
         : DISCOVERY_URL;
       document.querySelector(`#${name}`).href = identifier && engineering && route === 'wifi'
-        ? `${ENGINEERING_AP_URL}#device=${identifier}` : production;
+        ? engineeringApHref() : production;
+    }
+    document.querySelector('#return-home').hidden = !identifier;
+    if (identifier) {
+      document.querySelector('#open-home').href = engineering
+        ? `http://harbornavi-${identifier.slice(-8)}.local/ui/setup?handoff=wifi#device=${identifier}`
+        : `https://${identifier.replace('_', '-')}.lan.harbornavi.com/ui/setup?connection=wifi#device=${identifier}`;
     }
     const saved = restore();
     history.replaceState({naviEntry: identifier, engineering, ...saved}, '', location.href);
@@ -93,6 +103,9 @@
     show(route, true);
   });
   window.addEventListener('hashchange', initialize);
+  window.addEventListener('pageshow', () => {
+    if (identifier && engineering) document.querySelector('#open-wireless').href = engineeringApHref();
+  });
   initialize();
 })();
 
