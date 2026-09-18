@@ -49,8 +49,12 @@ button { font: inherit; cursor: pointer; }
 #setup-ssid { overflow-wrap: anywhere; }
 .primary { display: flex; align-items: center; justify-content: center; min-height: 52px; padding: 14px 18px; background: var(--primary); color: #fff; border: 1px solid transparent; border-radius: 13px; font-size: 14px; line-height: 1.4; font-weight: 600; text-align: center; text-decoration: none; }
 .primary:hover { background: #4f33c3; }
+.secondary { display: flex; align-items: center; justify-content: center; min-height: 52px; padding: 14px 18px; border: 1px solid #bcb2e4; border-radius: 13px; background: #fff; color: var(--primary); font-size: 14px; line-height: 1.4; font-weight: 600; text-align: center; text-decoration: none; }
+.secondary:hover { background: #f3f0fc; }
 .small { color: var(--muted); font-size: 12px; }
 .secure-note { margin: 12px 0 20px; }
+.return-home { margin: 0 0 22px; padding-top: 16px; border-top: 1px solid var(--border); }
+.return-home p { margin: 0 0 12px; color: var(--muted); font-size: 13px; }
 .scan-note { background: #eeeafe; color: #34236b; border: 1px solid #e0d9fb; border-radius: 13px; padding: 12px 14px; margin: 18px 0; font-size: 12px; }
 .scan-note p { margin: 0; }
 details { padding: 10px 0; border-top: 1px solid var(--border); font-size: 13px; }
