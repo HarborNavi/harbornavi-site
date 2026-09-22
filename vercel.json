@@ -1,5 +1,18 @@
 {
+  "$schema": "https://openapi.vercel.sh/vercel.json",
+  "trailingSlash": false,
   "redirects": [
+    {
+      "source": "/:path*",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.harbornavi.com"
+        }
+      ],
+      "destination": "https://harbornavi.com/:path*",
+      "permanent": true
+    },
     {
       "source": "/setup",
       "destination": "/setup/",

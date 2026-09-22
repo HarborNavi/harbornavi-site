@@ -50,6 +50,10 @@ test("pilot application deadline is shared by the page and API", async () => {
   assert.equal(arePilotApplicationsOpen(Date.parse("2026-09-15T23:59:59.999-07:00")), true);
   assert.equal(arePilotApplicationsOpen(Date.parse("2026-09-16T00:00:00-07:00")), false);
   assert.match(page, /pilotApplicationDeadline/);
+  assert.match(page, /const pilotApplicationsOpen = arePilotApplicationsOpen\(\);/);
+  assert.match(page, /HarborNavi Pilot Program \| Waitlist/);
+  assert.match(page, /Pilot applications for HarborNavi's first home pilot are closed/);
+  assert.match(page, /pilotApplicationsOpen && \(/);
   assert.match(api, /arePilotApplicationsOpen/);
   assert.match(api, /status: 410/);
 });

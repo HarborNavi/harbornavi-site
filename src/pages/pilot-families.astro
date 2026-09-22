@@ -6,6 +6,7 @@ import RedditPixel from "../components/RedditPixel.astro";
 import SiteHeader from "../components/SiteHeaderV7.astro";
 import SiteMediaLoader from "../components/SiteMediaLoader.astro";
 import {
+  arePilotApplicationsOpen,
   pilotApplicationDeadline,
   pilotApplicationDeadlineLabel,
   pilotApplicationDeadlineShortLabel,
@@ -16,6 +17,13 @@ import {
 } from "../data/pilotProgram";
 import "../styles/global-v7.css";
 import "../styles/pilot-families.css";
+const pilotApplicationsOpen = arePilotApplicationsOpen();
+const pilotPageTitle = pilotApplicationsOpen
+  ? `First ${pilotSpotCount} Pilot Families | HarborNavi`
+  : "HarborNavi Pilot Program | Waitlist";
+const pilotPageDescription = pilotApplicationsOpen
+  ? `Apply for HarborNavi's two-week Pilot Families program. ${pilotOfferAdvertisingCopy} Lifetime subscription-free access is included for the pilot device.`
+  : "Pilot applications for HarborNavi's first home pilot are closed. Join the waitlist for launch updates and the pilot experience vlog.";
 ---
 
 <!doctype html>
@@ -27,8 +35,8 @@ import "../styles/pilot-families.css";
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <meta name="theme-color" content="#0c0c12" />
-    <title>First {pilotSpotCount} Pilot Families | HarborNavi</title>
-    <meta name="description" content={`Apply for HarborNavi's two-week Pilot Families program. ${pilotOfferAdvertisingCopy} Lifetime subscription-free access is included for the pilot device.`} />
+    <title>{pilotPageTitle}</title>
+    <meta name="description" content={pilotPageDescription} />
     <link rel="icon" href="/favicon.png" type="image/png" sizes="512x512" data-media-slot="site-favicon" />
     <link rel="canonical" href="https://harbornavi.com/pilot-families" />
   </head>
@@ -40,11 +48,15 @@ import "../styles/pilot-families.css";
         <div class="pilot-hero-overlay"></div>
         <div class="pilot-hero-copy">
           <p class="eyebrow">HarborNavi Pilot Program</p>
-          <p class="pilot-spots" data-pilot-spots><span aria-hidden="true"></span> Only {pilotSpotCount} pilot spots</p>
-          <h1 id="pilot-title" data-pilot-title>Join the First {pilotSpotCount} Pilot Families</h1>
-          <p data-pilot-hero-copy>Pilot your home with HarborNavi. Two weeks. {pilotOfferAdvertisingCopy}</p>
-          <a class="pilot-primary" href="#apply" data-pilot-hero-cta>Apply to Join <span aria-hidden="true">→</span></a>
-          <form class="pilot-hero-waitlist" data-pilot-hero-waitlist hidden><input name="email" type="email" placeholder="Email address" autocomplete="email" required /><button class="pilot-primary" type="submit">Join the waitlist for early-bird pricing <span aria-hidden="true">→</span></button><p data-pilot-hero-message aria-live="polite"></p></form>
+          {pilotApplicationsOpen && <p class="pilot-spots" data-pilot-spots><span aria-hidden="true"></span> Only {pilotSpotCount} pilot spots</p>}
+          <h1 id="pilot-title" data-pilot-title>
+            {pilotApplicationsOpen ? <>Join the First {pilotSpotCount} Pilot Families</> : "Pilot Program has ended."}
+          </h1>
+          <p data-pilot-hero-copy>
+            {pilotApplicationsOpen ? <>Pilot your home with HarborNavi. Two weeks. {pilotOfferAdvertisingCopy}</> : "We will announce our upcoming schedule soon. Thank you for following HarborNavi."}
+          </p>
+          {pilotApplicationsOpen && <a class="pilot-primary" href="#apply" data-pilot-hero-cta>Apply to Join <span aria-hidden="true">→</span></a>}
+          <form class="pilot-hero-waitlist" data-pilot-hero-waitlist hidden={!pilotApplicationsOpen}><input name="email" type="email" placeholder="Email address" autocomplete="email" required /><button class="pilot-primary" type="submit">Join the waitlist for early-bird pricing <span aria-hidden="true">→</span></button><p data-pilot-hero-message aria-live="polite"></p></form>
         </div>
       </section>
 
@@ -57,17 +69,17 @@ import "../styles/pilot-families.css";
         <div class="section-shell pilot-urgency-inner">
           <div class="pilot-urgency-copy">
             <p class="eyebrow">Application window</p>
-            <h2 id="pilot-deadline-title">Applications close {pilotApplicationDeadlineShortLabel}.</h2>
-            <p>{pilotSpotCount} families will be selected for the first two-week home pilot. Apply before the deadline to be considered.</p>
+            <h2 id="pilot-deadline-title">{pilotApplicationsOpen ? <>Applications close {pilotApplicationDeadlineShortLabel}.</> : "Pilot applications are closed."}</h2>
+            <p>{pilotApplicationsOpen ? <>{pilotSpotCount} families will be selected for the first two-week home pilot. Apply before the deadline to be considered.</> : "The first home pilot is complete. Join the waitlist for future pilot news and launch updates."}</p>
             <time datetime={pilotApplicationDeadline}>{pilotApplicationDeadlineLabel}</time>
           </div>
-          <div class="pilot-countdown" role="timer" aria-label={`Time remaining until ${pilotApplicationDeadlineLabel}`}>
+          <div class="pilot-countdown" role="timer" aria-label={`Time remaining until ${pilotApplicationDeadlineLabel}`} hidden={!pilotApplicationsOpen}>
             <div><strong data-countdown-days>--</strong><span>Days</span></div>
             <div><strong data-countdown-hours>--</strong><span>Hours</span></div>
             <div><strong data-countdown-minutes>--</strong><span>Minutes</span></div>
             <div><strong data-countdown-seconds>--</strong><span>Seconds</span></div>
           </div>
-          <p class="pilot-countdown-status" data-countdown-status aria-live="polite"></p>
+          <p class="pilot-countdown-status" data-countdown-status aria-live="polite">{pilotApplicationsOpen ? "" : "Pilot applications are now closed."}</p>
         </div>
       </section>
 
@@ -213,6 +225,7 @@ import "../styles/pilot-families.css";
         </div>
       </section>
 
+      {pilotApplicationsOpen && (
       <section id="apply" class="pilot-application section-shell" data-pilot-application aria-labelledby="application-title">
         <div class="pilot-application-intro">
           <p class="eyebrow">Pilot application</p>
@@ -242,7 +255,8 @@ import "../styles/pilot-families.css";
           <button class="pilot-primary full-field" type="submit">Submit application <span aria-hidden="true">→</span></button>
         </form>
       </section>
-      <section id="pilot-waitlist" class="pilot-waitlist section-shell" data-pilot-waitlist hidden aria-labelledby="pilot-waitlist-title">
+      )}
+      <section id="pilot-waitlist" class="pilot-waitlist section-shell" data-pilot-waitlist hidden={pilotApplicationsOpen} aria-labelledby="pilot-waitlist-title">
         <div><p class="eyebrow">Pilot applications closed</p><h2 id="pilot-waitlist-title">Join the waitlist for surprise early-bird pricing.</h2><p>We will share HarborNavi news, the pilot experience vlog, and launch updates by email.</p></div>
         <form data-pilot-waitlist-form><label class="sr-only" for="pilot-waitlist-email">Email address</label><input id="pilot-waitlist-email" name="email" type="email" placeholder="Email address" autocomplete="email" required /><button class="pilot-primary" type="submit">Join the waitlist <span aria-hidden="true">→</span></button><p data-pilot-waitlist-message aria-live="polite"></p></form>
       </section>

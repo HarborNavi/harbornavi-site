@@ -121,6 +121,13 @@ test("the root renders the final homepage and public version aliases redirect ba
 
   assert.match(indexPage, /HomeV8Landing version="v9"/);
   assert.match(homePage, /HomeV8Landing version="v9"/);
+  assert.equal(vercel.trailingSlash, false);
+  assert.deepEqual(vercel.redirects[0], {
+    source: "/:path*",
+    has: [{ type: "host", value: "www.harbornavi.com" }],
+    destination: "https://harbornavi.com/:path*",
+    permanent: true
+  });
   assert.equal(redirects.has("/"), false);
   for (const route of [
     "/home",

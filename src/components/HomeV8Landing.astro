@@ -217,7 +217,7 @@ const structuredData = JSON.stringify({
             <a href="#compare">Compare</a>
             <a href="/about-harbor">About Harbor</a>
           </nav>
-          <a class="site-header-v7-cta" href="/pilot-families" data-pilot-entry hidden={!pilotApplicationsOpen}>Join the Pilot Program</a>
+          {pilotApplicationsOpen && <a class="site-header-v7-cta" href="/pilot-families" data-pilot-entry>Join the Pilot Program</a>}
           <button class="site-header-v7-menu" type="button" aria-label="Open navigation menu" aria-controls="site-header-v7-navigation" aria-expanded="false" data-header-menu>
             <span class="site-header-v7-menu-open" aria-hidden="true"><Menu size={20} strokeWidth={2} /></span>
             <span class="site-header-v7-menu-close" aria-hidden="true"><X size={20} strokeWidth={2} /></span>
@@ -233,7 +233,16 @@ const structuredData = JSON.stringify({
               <article class="hero-carousel-slide" data-carousel-slide data-pilot-slide={slide.highlight ? true : undefined} data-discord-slide={slide.isDiscord ? true : undefined} aria-hidden={index === 0 ? "false" : "true"} hidden={index !== 0}>
                 <img class="hero-carousel-background" src={slide.url} alt={slide.alt} width={slide.width} height={slide.height} loading={index === 0 ? "eager" : "lazy"} decoding="async" data-media-slot={index === 0 ? "home-carousel-pilot" : index === 1 ? "home-carousel-memory" : "home-carousel-movie"} />
                 {slide.isDiscord && <img class="hero-carousel-discord-lockup" src="/assets/harbor-inn-discord-lockup-v1.webp" alt="" width="594" height="220" loading="lazy" decoding="async" aria-hidden="true" />}
-                {slide.href ? (
+                {slide.highlight && !pilotApplicationsOpen ? (
+                  <a class="hero-carousel-link" href="/pilot-families#pilot-waitlist" aria-label="Join the HarborNavi waitlist">
+                    <div class="hero-carousel-overlay pilot-closed-banner-copy">
+                      <p>HarborNavi Pilot Program</p>
+                      <h2>Pilot Program has ended.</h2>
+                      <span>Join the waitlist for launch updates and the pilot experience vlog.</span>
+                      <strong>Join the waitlist →</strong>
+                    </div>
+                  </a>
+                ) : slide.href ? (
                   <a class="hero-carousel-link" href={slide.href} target={slide.isDiscord ? "_blank" : undefined} rel={slide.isDiscord ? "noreferrer" : undefined} data-discord-link={slide.isDiscord ? true : undefined} aria-label={`${slide.title}. ${slide.cta}`}>
                     <div class="hero-carousel-overlay">
                       <p>{slide.eyebrow}</p>

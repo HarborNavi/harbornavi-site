@@ -1,6 +1,7 @@
 ---
 import { Menu, X } from "@lucide/astro";
 import SiteHeaderMenu from "./SiteHeaderMenu.astro";
+import { arePilotApplicationsOpen } from "../data/pilotProgram";
 import "../styles/site-header-v7.css";
 
 interface Props {
@@ -9,9 +10,10 @@ interface Props {
   homeHref?: string;
 }
 
+const pilotApplicationsOpen = arePilotApplicationsOpen();
 const {
-  ctaHref = "/pilot-families",
-  ctaLabel = "Join the Pilot Program",
+  ctaHref = pilotApplicationsOpen ? "/pilot-families#apply" : "/pilot-families#pilot-waitlist",
+  ctaLabel = pilotApplicationsOpen ? "Join the Pilot Program" : "Join the waitlist",
   homeHref = "/"
 } = Astro.props;
 ---

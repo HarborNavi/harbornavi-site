@@ -4,9 +4,11 @@ import MetaPixel from "../components/MetaPixel.astro";
 import RedditPixel from "../components/RedditPixel.astro";
 import SiteHeader from "../components/SiteHeaderV7.astro";
 import SiteMediaLoader from "../components/SiteMediaLoader.astro";
-import { pilotOfferAdvertisingCopy, pilotSpotCount } from "../data/pilotProgram";
+import { arePilotApplicationsOpen, pilotOfferAdvertisingCopy, pilotSpotCount } from "../data/pilotProgram";
 import "../styles/global-v7.css";
 import "../styles/about-harbor.css";
+const aboutPilotApplicationsOpen = arePilotApplicationsOpen();
+const aboutPilotCtaHref = aboutPilotApplicationsOpen ? "/pilot-families#apply" : "/pilot-families#pilot-waitlist";
 ---
 
 <!doctype html>
@@ -23,7 +25,7 @@ import "../styles/about-harbor.css";
     <link rel="canonical" href="https://harbornavi.com/about-harbor" />
   </head>
   <body class="about-page" data-route="about-harbor">
-    <SiteHeader ctaHref="/pilot-families#apply" />
+    <SiteHeader ctaHref={aboutPilotCtaHref} ctaLabel={aboutPilotApplicationsOpen ? "Join the Pilot Program" : "Join the waitlist"} />
     <main>
       <section class="about-hero" aria-labelledby="about-title">
         <img src="/assets/home-v7-v8-memory-hero-id.webp" alt="A family sharing an everyday moment at home while HarborNavi keeps selected memories local" width="1536" height="1024" fetchpriority="high" data-media-slot="about-hero" />
@@ -124,8 +126,12 @@ import "../styles/about-harbor.css";
         <div class="section-shell">
           <p class="eyebrow">{pilotSpotCount} homes. One honest first step.</p>
           <h2 id="about-cta-title">Help us get HarborNavi right.</h2>
-          <p>We're looking for {pilotSpotCount} families. {pilotOfferAdvertisingCopy} If our story resonates, we'd love to hear yours.</p>
-          <a class="about-primary" href="/pilot-families#apply">Apply to Join the Pilot <span aria-hidden="true">→</span></a>
+          <p>{aboutPilotApplicationsOpen ? <>We're looking for {pilotSpotCount} families. {pilotOfferAdvertisingCopy} If our story resonates, we'd love to hear yours.</> : "The first home pilot is complete. Join the waitlist for launch updates and future pilot news."}</p>
+          {aboutPilotApplicationsOpen ? (
+            <a class="about-primary" href="/pilot-families#apply">Apply to Join the Pilot <span aria-hidden="true">→</span></a>
+          ) : (
+            <a class="about-primary" href="/pilot-families#pilot-waitlist">Join the waitlist <span aria-hidden="true">→</span></a>
+          )}
         </div>
       </section>
     </main>
