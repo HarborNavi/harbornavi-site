@@ -443,6 +443,21 @@
 .now-grid h3 { margin: 42px 0 14px; font-size: 25px; line-height: 1.16; }
 .now-grid p { margin-bottom: 0; color: var(--about-copy); line-height: 1.6; }
 
+.about-source-note {
+  max-width: 900px;
+  margin: 34px 0 0;
+  padding-top: 22px;
+  border-top: 1px solid var(--about-line);
+  color: var(--about-muted);
+  font-size: 13px;
+  line-height: 1.7;
+}
+
+.about-source-note a {
+  color: var(--about-purple);
+  font-weight: 720;
+}
+
 .about-cta {
   padding: 94px 0 100px;
   border-top: 1px solid var(--about-line);

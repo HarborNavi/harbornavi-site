@@ -366,6 +366,8 @@ body.home-v9-page {
 .home-v9-page .faq-list details { border-color: #2a2a38; }
 .home-v9-page .faq-list summary::after { color: #9b85f5; }
 .home-v9-page .faq-list p { color: #b9b9c4; }
+.home-v9-page .faq-source-note { border-color: #2a2a38; color: #858594; }
+.home-v9-page .faq-source-note a { color: #9b85f5; }
 
 .home-v9-page .final-section {
   border-color: #2a2a38;
@@ -374,6 +376,9 @@ body.home-v9-page {
 .home-v9-page .final-section > p:not(.eyebrow):not(.form-error):not(.form-note) { color: #b9b9c4; }
 .home-v9-page footer { border-color: #2a2a38; }
 .home-v9-page footer p { color: #858594; }
+.home-v9-page .footer-links a { color: #b9b9c4; }
+.home-v9-page .footer-links a:hover,
+.home-v9-page .footer-links a:focus-visible { color: #9b85f5; }
 .home-v9-page .footer-meta button { color: #b9b9c4; }
 .home-v9-page .footer-meta button:hover,
 .home-v9-page .footer-meta button:focus-visible { color: #9b85f5; }

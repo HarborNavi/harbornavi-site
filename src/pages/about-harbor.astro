@@ -18,7 +18,12 @@ const aboutStructuredData = buildSeoEntityGraph({
   description: aboutDescription,
   path: "/about-harbor",
   image: "/assets/home-v7-v8-memory-hero-id.png",
-  mainEntity: "organization"
+  mainEntity: "organization",
+  citations: [
+    "https://cdn-resource.spacemit.com/file/chip/K3/K3_brief_en.pdf",
+    "https://www.home-assistant.io/faq/is-my-data-private/",
+    "/facts"
+  ]
 });
 ---
 
@@ -135,6 +140,7 @@ const aboutStructuredData = buildSeoEntityGraph({
           <article><span>02</span><h3>Device interoperability matured</h3><p>Home Assistant made a broad, local device layer practical.</p></article>
           <article><span>03</span><h3>People started asking who listens</h3><p>Convenience no longer excuses sending a home's full history away.</p></article>
         </div>
+        <p class="about-source-note">Official references: <a href="https://cdn-resource.spacemit.com/file/chip/K3/K3_brief_en.pdf" target="_blank" rel="noreferrer">SpacemiT K3 product brief</a> and <a href="https://www.home-assistant.io/faq/is-my-data-private/" target="_blank" rel="noreferrer">Home Assistant's local-data explanation</a>. See the <a href="/facts">HarborNavi fact sheet</a> for scope and status.</p>
       </section>
 
       <section class="about-cta" aria-labelledby="about-cta-title">
@@ -150,7 +156,7 @@ const aboutStructuredData = buildSeoEntityGraph({
         </div>
       </section>
     </main>
-    <footer class="site-footer"><span>HarborNavi</span><a href="/">Home</a><a href="/pilot-families">Pilot Program</a><a href="/privacy">Privacy</a></footer>
+    <footer class="site-footer"><span>HarborNavi</span><a href="/">Home</a><a href="/facts">Facts</a><a href="/pilot-families">Pilot Program</a><a href="/privacy">Privacy</a></footer>
     <SiteMediaLoader />
   </body>
 </html>

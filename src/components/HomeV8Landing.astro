@@ -157,7 +157,7 @@ const faqItems = [
   ["Will it work with every device?", "No. We start with supported Home Assistant paths, selected RTSP / ONVIF cameras, and planned Zigbee and IR."],
   ["When is fingerprint confirmation used?", "HarborNavi can require a successful match at the box before adding a member, expanding permissions, pairing a device, or changing who can access private household context."],
   ["How does the fingerprint check work?", "The fingerprint is checked inside the fingerprint module. HarborNavi receives the match decision and applies it only to the sensitive change being requested."],
-  ["What does the security chip protect?", "The eSE chip keeps device identity, trusted credentials, and encryption keys separate from the main system. The eSE chip and its COS have achieved SOGIS CC EAL5+ certification; that certification applies to the selected security components, not HarborNavi as a complete product."],
+  ["What does the security chip protect?", "The eSE chip keeps device identity, trusted credentials, and encryption keys separate from the main system. Goodix reports SOGIS CC EAL6+ certification for its eSE family and SOGIS CC EAL5+ certification for its COS; those certifications apply to the components, not HarborNavi as a complete product."],
   ["Does it require cloud AI?", "Core household context, permissions, and device workflows stay local. External models are optional, and sensitive context can be reviewed before a request leaves home."],
   ["What is the difference between the waitlist and the Pilot Program?", "The waitlist is the quickest way to receive launch news and early-bird pricing updates. The Pilot Program is a separate application for a limited group of families to test HarborNavi at home for two weeks and share structured feedback. Joining the waitlist does not submit a Pilot Program application."]
 ];
@@ -170,7 +170,12 @@ const structuredData = buildSeoEntityGraph({
   path: isV9 ? "/" : "/home-v8",
   image: heroSocialImage,
   mainEntity: "product",
-  faqItems
+  faqItems,
+  citations: [
+    ...comparisonSources.map((source) => source.href),
+    "https://www.goodix.com/en/product/security_products/ese",
+    "/facts"
+  ]
 });
 ---
 
@@ -206,6 +211,7 @@ const structuredData = buildSeoEntityGraph({
             <a href="#compatibility">Compatibility</a>
             <a href="#hardware">Hardware</a>
             <a href="#compare">Compare</a>
+            <a href="/facts">Facts</a>
             <a href="/about-harbor">About Harbor</a>
           </nav>
           {pilotApplicationsOpen && <a class="site-header-v7-cta" href="/pilot-families" data-pilot-entry>Join the Pilot Program</a>}
@@ -393,11 +399,11 @@ const structuredData = buildSeoEntityGraph({
               </div>
               <div class="ese-certification" aria-label="Embedded Secure Element security certification">
                 <p class="fingerprint-label">Security-chip certification</p>
-                <strong class="ese-certification-level"><small>SOGIS</small>CC EAL5<span>+</span></strong>
+                <strong class="ese-certification-level"><small>SOGIS</small>COS CC EAL5<span>+</span></strong>
                 <h3>Independently evaluated security.</h3>
-                <p>The eSE chip and its COS have achieved SOGIS CC EAL5+ certification under Common Criteria, a widely recognized international framework for evaluating security products.</p>
-                <a href="https://www.goodix.com/en/product/security_products/ese" target="_blank" rel="noreferrer">Learn about the eSE technology <span aria-hidden="true">&nearr;</span></a>
-                <small class="certification-scope">Certification applies to the selected security chip, not HarborNavi as a complete product. Final hardware remains subject to validation, and secure software and access controls are still required.</small>
+                <p>Goodix reports SOGIS CC EAL6+ certification for its eSE family and SOGIS CC EAL5+ certification for its chip operating system.</p>
+                <a href="https://www.goodix.com/en/product/security_products/ese" target="_blank" rel="noreferrer">Source: Goodix eSE product overview <span aria-hidden="true">&nearr;</span></a>
+                <small class="certification-scope">Certification applies to the selected security components, not HarborNavi as a complete product. Final hardware remains subject to validation, and secure software and access controls are still required.</small>
               </div>
               <details class="fingerprint-technical-sequence">
                 <summary>For technical readers</summary>
@@ -466,7 +472,7 @@ const structuredData = buildSeoEntityGraph({
               <div><dt>Network and display</dt><dd>Dual 2.5GbE and HDMI output</dd></div>
               <div><dt>Device links</dt><dd>Home Assistant, selected camera paths, planned Zigbee, and planned IR</dd></div>
               <div><dt>Enclosure</dt><dd>11 &times; 8.5 &times; 4.5 cm; forged-carbon-fiber top, black-nickel logo, fingerprint ring, and front infrared window</dd></div>
-              <div><dt>Trust hardware</dt><dd>Match-on-chip fingerprint module; eSE chip and COS with SOGIS CC EAL5+ certification</dd></div>
+              <div><dt>Trust hardware</dt><dd>Match-on-chip fingerprint module; Goodix eSE family with SOGIS CC EAL6+ and COS with SOGIS CC EAL5+</dd></div>
             </dl>
           </details>
         </section>
@@ -536,6 +542,7 @@ const structuredData = buildSeoEntityGraph({
           <div class="faq-list">
             {faqItems.map(([question, answer]) => <details><summary>{question}</summary><p>{answer}</p></details>)}
           </div>
+          <p class="faq-source-note">For the concise product status, compatibility boundaries, and official technical references, read the <a href="/facts">HarborNavi fact sheet</a>.</p>
         </section>
 
         <section id="join" class="final-section" aria-labelledby="final-title">
@@ -560,6 +567,7 @@ const structuredData = buildSeoEntityGraph({
       <footer>
         <a class="brand" href="#top" aria-label="HarborNavi home"><span class="brand-mark" aria-hidden="true"><img src="/harbornavi-logo-mark.png" alt="" width="42" height="23" data-media-slot="site-header-logo" /></span><span>HarborNavi</span></a>
         <div class="footer-meta">
+          <nav class="footer-links" aria-label="Footer navigation"><a href="/facts">Facts</a><a href="/about-harbor">About</a><a href="/privacy">Privacy</a></nav>
           <p>A mind for the household. Finally at home.</p>
           {marketingConsentEnabled && <button type="button" data-cookie-settings-open>Cookie settings</button>}
         </div>

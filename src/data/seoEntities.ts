@@ -10,6 +10,8 @@ export interface SeoEntityGraphOptions {
   image: string;
   mainEntity?: "organization" | "product";
   faqItems?: readonly (SeoFaqItem | readonly [string, string])[];
+  citations?: readonly string[];
+  dateModified?: string;
 }
 
 export const harborSiteUrl = "https://harbornavi.com";
@@ -37,7 +39,9 @@ export function buildSeoEntityGraph({
   path,
   image,
   mainEntity,
-  faqItems = []
+  faqItems = [],
+  citations = [],
+  dateModified
 }: SeoEntityGraphOptions) {
   const pageUrl = harborAbsoluteUrl(path);
   const imageUrl = harborAbsoluteUrl(image);
@@ -105,6 +109,13 @@ export function buildSeoEntityGraph({
   if (mainEntity === "organization") webpage.mainEntity = { "@id": organizationId };
   if (mainEntity === "product") webpage.mainEntity = { "@id": productId };
   if (normalizedFaqItems.length) webpage.hasPart = { "@id": faqId };
+  if (citations.length) {
+    webpage.citation = citations.map((url) => ({
+      "@type": "CreativeWork",
+      url: harborAbsoluteUrl(url)
+    }));
+  }
+  if (dateModified) webpage.dateModified = dateModified;
 
   const graph: Record<string, unknown>[] = [organization, brand, website];
   if (mainEntity === "product") graph.push(product);

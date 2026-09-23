@@ -70,6 +70,7 @@ textarea {
   font-size: 0.9rem;
   font-weight: 720;
   text-transform: uppercase;
+  text-decoration: none;
 }
 
 .brand {
@@ -1173,6 +1174,20 @@ h3 {
   color: var(--accent-dark);
   font-weight: 700;
   text-decoration: none;
+}
+
+.faq-source-note {
+  margin: 28px 0 0;
+  padding-top: 22px;
+  border-top: 1px solid var(--line);
+  color: var(--muted);
+  font-size: 0.92rem;
+  line-height: 1.65;
+}
+
+.faq-source-note a {
+  color: var(--accent-dark);
+  font-weight: 720;
 }
 
 @media (max-width: 960px) {

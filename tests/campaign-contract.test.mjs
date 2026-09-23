@@ -425,11 +425,11 @@ test("home-v8 explains the match-on-chip and eSE security chain without overstat
   assert.match(homeV8, /Keep identity and keys protected/);
   assert.match(homeV8, /Approve only this change/);
   assert.match(homeV8, /One successful match never unlocks everything/);
-  assert.match(homeV8, /eSE chip and its COS have achieved SOGIS CC EAL5\+ certification under Common Criteria/);
-  assert.match(homeV8, /widely recognized international framework for evaluating security products/);
+  assert.match(homeV8, /Goodix reports SOGIS CC EAL6\+ certification for its eSE family and SOGIS CC EAL5\+ certification for its COS/);
+  assert.match(homeV8, /Source: Goodix eSE product overview/);
   assert.match(homeV8, /An eSE chip separates device identity, trusted credentials, and encryption keys from the main system/);
   assert.match(homeV8, /goodix\.com\/en\/product\/security_products\/ese/);
-  assert.match(homeV8, /Certification applies to the selected security chip, not HarborNavi as a complete product/);
+  assert.match(homeV8, /Certification applies to the selected security components, not HarborNavi as a complete product/);
   assert.match(homeV8, /Final hardware remains subject to validation/);
   assert.match(homeV8, /key_int/);
   assert.match(homeV8, /WAKEUP/);

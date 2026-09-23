@@ -61,7 +61,11 @@ const pilotStructuredData = buildSeoEntityGraph({
   description: pilotPageDescription,
   path: "/pilot-families",
   image: "/assets/home-v7-v8-pilot-families-id.png",
-  faqItems: pilotFaqItems
+  faqItems: pilotFaqItems,
+  citations: [
+    "https://www.ftc.gov/business-guidance/resources/disclosures-101-social-media-influencers",
+    "/facts"
+  ]
 });
 ---
 
@@ -284,7 +288,7 @@ const pilotStructuredData = buildSeoEntityGraph({
       </section>
       <div class="pilot-success-modal" data-pilot-success-modal hidden role="dialog" aria-modal="true" aria-labelledby="pilot-success-title"><button class="pilot-success-backdrop" type="button" tabindex="-1" aria-label="Close" data-pilot-success-close></button><div class="pilot-success-panel"><button class="pilot-success-close" type="button" aria-label="Close" data-pilot-success-close>×</button><p class="eyebrow">You're on the list</p><h2 id="pilot-success-title">Welcome to the HarborNavi waitlist.</h2><p>Your email has been added. No confirmation step is required.</p><div class="pilot-success-invite"><p class="survey-label">Optional · About 3–5 minutes</p><h3>Help us build HarborNavi around real homes.</h3><p>Tell us which devices you already use and what you would most want HarborNavi to help with. Your answers will guide compatibility testing and product priorities.</p></div><div class="pilot-success-actions"><a class="pilot-success-primary" href="https://www.surveymonkey.com/r/harbornavi" target="_blank" rel="noreferrer">Take the short survey →</a><a href="https://discord.com/invite/tC2bktRWWj" target="_blank" rel="noreferrer">Join the optional Discord discussion →</a></div></div></div>
     </main>
-    <footer class="site-footer"><span>HarborNavi</span><a href="/">Home</a><a href="/about-harbor">About Harbor</a><a href="/privacy">Privacy</a><button type="button" data-cookie-settings-open>Cookie settings</button></footer>
+    <footer class="site-footer"><span>HarborNavi</span><a href="/">Home</a><a href="/facts">Facts</a><a href="/about-harbor">About Harbor</a><a href="/privacy">Privacy</a><button type="button" data-cookie-settings-open>Cookie settings</button></footer>
 
     <MarketingConsent />
     <SiteMediaLoader />

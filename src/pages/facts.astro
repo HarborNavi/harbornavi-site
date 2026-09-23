@@ -1,0 +1,152 @@
+---
+import { ArrowRight, ExternalLink } from "@lucide/astro";
+import MetaPixel from "../components/MetaPixel.astro";
+import RedditPixel from "../components/RedditPixel.astro";
+import SeoHead from "../components/SeoHead.astro";
+import SiteHeader from "../components/SiteHeaderV7.astro";
+import SiteMediaLoader from "../components/SiteMediaLoader.astro";
+import {
+  factsLastReviewedIso,
+  factsLastReviewedLabel,
+  harborFactCitationUrls,
+  harborFactQuestions,
+  harborFactSources
+} from "../data/harborFacts";
+import { buildSeoEntityGraph } from "../data/seoEntities";
+import "../styles/global-v7.css";
+import "../styles/facts.css";
+
+const factsTitle = "HarborNavi Facts | Product Status, Privacy, and Compatibility";
+const factsDescription = "A sourced HarborNavi fact sheet covering product status, local-first design, camera and Home Assistant compatibility, planned integrations, and certification boundaries.";
+const factsStructuredData = buildSeoEntityGraph({
+  title: factsTitle,
+  description: factsDescription,
+  path: "/facts",
+  image: "/assets/home-v7-v8-hardware-id.png",
+  mainEntity: "product",
+  faqItems: harborFactQuestions,
+  citations: harborFactCitationUrls,
+  dateModified: factsLastReviewedIso
+});
+const sourceNumbers = new Map(harborFactSources.map((source, index) => [source.id, index + 1]));
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <RedditPixel />
+    <MetaPixel />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <SeoHead
+      title={factsTitle}
+      description={factsDescription}
+      path="/facts"
+      image="/assets/home-v7-v8-hardware-id.png"
+      imageAlt="HarborNavi local home hardware"
+      icon="/favicon.png"
+      type="article"
+      structuredData={factsStructuredData}
+    />
+  </head>
+  <body class="facts-page" data-route="facts">
+    <SiteHeader />
+    <main>
+      <section class="facts-hero" aria-labelledby="facts-title">
+        <div class="section-shell facts-hero-inner">
+          <p class="facts-kicker">HarborNavi fact sheet</p>
+          <h1 id="facts-title">Product facts, current status, and clear boundaries.</h1>
+          <p class="facts-definition">HarborNavi is a local-first household AI product in development by Harbor Innovations. It is designed to connect selected home signals into useful context and reviewable actions while keeping core household data at home.</p>
+          <p class="facts-reviewed">Last reviewed <time datetime={factsLastReviewedIso}>{factsLastReviewedLabel}</time></p>
+        </div>
+      </section>
+
+      <section class="facts-status" aria-labelledby="status-title">
+        <div class="section-shell">
+          <div class="facts-section-heading">
+            <p class="facts-kicker">Current status</p>
+            <h2 id="status-title">The short answer.</h2>
+          </div>
+          <dl>
+            <div><dt>Product stage</dt><dd>In development</dd></div>
+            <div><dt>Public purchase</dt><dd>Not open</dd></div>
+            <div><dt>First home pilot</dt><dd>Complete</dd></div>
+            <div><dt>Current public action</dt><dd><a href="/#join">Join the waitlist</a></dd></div>
+          </dl>
+        </div>
+      </section>
+
+      <section class="facts-answers section-shell" aria-labelledby="answers-title">
+        <div class="facts-section-heading facts-section-heading-wide">
+          <div>
+            <p class="facts-kicker">Direct answers</p>
+            <h2 id="answers-title">What HarborNavi is being built to do.</h2>
+          </div>
+          <p>Each answer separates the current public status from product direction and planned compatibility.</p>
+        </div>
+        <div class="facts-answer-list">
+          {harborFactQuestions.map((item, index) => (
+            <article id={item.id}>
+              <span class="facts-answer-index">{String(index + 1).padStart(2, "0")}</span>
+              <div>
+                <h3>{item.question}</h3>
+                <p>{item.answer}</p>
+                <p class="facts-evidence">
+                  Sources: {item.sourceIds.map((sourceId, sourceIndex) => {
+                    const sourceNumber = sourceNumbers.get(sourceId);
+                    return <>{sourceIndex > 0 && ", "}<a href={`#source-${sourceId}`}>[{sourceNumber}]</a></>;
+                  })}
+                </p>
+              </div>
+            </article>
+          ))}
+        </div>
+      </section>
+
+      <section class="facts-sources" aria-labelledby="sources-title">
+        <div class="section-shell facts-sources-inner">
+          <div class="facts-section-heading facts-section-heading-wide">
+            <div>
+              <p class="facts-kicker">Sources</p>
+              <h2 id="sources-title">First-party pages and official technical references.</h2>
+            </div>
+            <p>External technical references support protocol, platform, component, and processor facts. They do not certify HarborNavi as a complete product.</p>
+          </div>
+          <ol class="facts-source-list">
+            {harborFactSources.map((source) => (
+              <li id={`source-${source.id}`}>
+                <span>{source.publisher}</span>
+                <div>
+                  <h3>
+                    <a href={source.href} target={source.external ? "_blank" : undefined} rel={source.external ? "noreferrer" : undefined}>
+                      {source.title}
+                      {source.external && <ExternalLink size={15} strokeWidth={1.8} aria-hidden="true" />}
+                    </a>
+                  </h3>
+                  <p>{source.supports}</p>
+                </div>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      <section class="facts-related section-shell" aria-labelledby="related-title">
+        <div class="facts-section-heading">
+          <p class="facts-kicker">Related pages</p>
+          <h2 id="related-title">Read the detailed product context.</h2>
+        </div>
+        <nav aria-label="Related HarborNavi pages">
+          <a href="/package"><span>Package detection</span><ArrowRight size={18} strokeWidth={1.8} aria-hidden="true" /></a>
+          <a href="/pets"><span>Pet highlights</span><ArrowRight size={18} strokeWidth={1.8} aria-hidden="true" /></a>
+          <a href="/about-harbor"><span>About Harbor Innovations</span><ArrowRight size={18} strokeWidth={1.8} aria-hidden="true" /></a>
+          <a href="/pilot-families"><span>Pilot Program</span><ArrowRight size={18} strokeWidth={1.8} aria-hidden="true" /></a>
+          <a href="/privacy"><span>Website privacy</span><ArrowRight size={18} strokeWidth={1.8} aria-hidden="true" /></a>
+          <a href="/15-homes"><span>15 Homes field test</span><ArrowRight size={18} strokeWidth={1.8} aria-hidden="true" /></a>
+        </nav>
+      </section>
+    </main>
+    <footer class="site-footer"><span>HarborNavi</span><a href="/">Home</a><a href="/about-harbor">About Harbor</a><a href="/privacy">Privacy</a></footer>
+    <SiteMediaLoader />
+  </body>
+</html>

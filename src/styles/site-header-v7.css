@@ -114,6 +114,7 @@
 
 @media (max-width: 1120px) {
   .site-header-v7 { width: min(calc(100% - 40px), 1280px); }
+  .site-header-v7-nav { gap: 14px; }
 }
 
 @media (max-width: 900px) {

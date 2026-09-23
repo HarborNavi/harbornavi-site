@@ -38,7 +38,8 @@ const structuredData = buildSeoEntityGraph({
   path: page.path,
   image: heroAsset.url,
   mainEntity: "product",
-  faqItems
+  faqItems,
+  citations: ["/facts"]
 });
 ---
 
@@ -394,10 +395,14 @@ const structuredData = buildSeoEntityGraph({
             </details>
           ))}
         </div>
+        <p class="faq-source-note">See the <a href="/facts">HarborNavi fact sheet</a> for current product status, compatibility boundaries, and official protocol sources.</p>
       </section>
     </main>
     <footer class="site-footer">
       <span>HarborNavi</span>
+      <a href="/">Home</a>
+      <a href="/facts">Facts</a>
+      <a href="/about-harbor">About</a>
       <a href="/privacy">Privacy</a>
     </footer>
 
