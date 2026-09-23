@@ -4,6 +4,7 @@ import MetaPixel from "./MetaPixel.astro";
 import RedditPixel from "./RedditPixel.astro";
 import SeoHead from "./SeoHead.astro";
 import { campaign } from "../data/campaign";
+import { buildSeoEntityGraph } from "../data/seoEntities";
 import "../styles/fifteen-homes.css";
 
 const phaseCopy = {
@@ -12,6 +13,14 @@ const phaseCopy = {
   road_live: "The road field test is in progress. Follow the fixed live windows and daily recaps.",
   replay: "The drive is complete. Watch the replays and follow the final report."
 }[campaign.phase];
+const campaignTitle = `${campaign.name} | HarborNavi`;
+const campaignDescription = "HarborNavi will visit 15 homes across America for a public, real-home field test from New Haven through Los Angeles to Silicon Valley.";
+const campaignStructuredData = buildSeoEntityGraph({
+  title: campaignTitle,
+  description: campaignDescription,
+  path: "/15-homes",
+  image: "/assets/home-v7-v8-memory-hero-id.png"
+});
 ---
 
 <!doctype html>
@@ -22,12 +31,13 @@ const phaseCopy = {
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <SeoHead
-      title={`${campaign.name} | HarborNavi`}
-      description="HarborNavi will visit 15 homes across America for a public, real-home field test from New Haven through Los Angeles to Silicon Valley."
+      title={campaignTitle}
+      description={campaignDescription}
       path="/15-homes"
       image="/assets/home-v7-v8-memory-hero-id.png"
       imageAlt="A HarborNavi household memory scene used for the 15 Homes Across America field test"
       themeColor="#171427"
+      structuredData={campaignStructuredData}
     />
   </head>
   <body class="road-campaign" data-route="15-homes">

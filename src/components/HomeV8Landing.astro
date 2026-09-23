@@ -23,6 +23,7 @@ import SeoHead from "./SeoHead.astro";
 import SiteHeaderMenu from "./SiteHeaderMenu.astro";
 import SiteMediaLoader from "./SiteMediaLoader.astro";
 import { arePilotApplicationsOpen, pilotApplicationDeadline, pilotOfferAdvertisingCopy, pilotSpotCount } from "../data/pilotProgram";
+import { buildSeoEntityGraph } from "../data/seoEntities";
 import "../styles/site-header-v7.css";
 import "../styles/home-v7.css";
 import "../styles/home-v9.css";
@@ -34,7 +35,6 @@ interface Props {
 const { version = "v8" } = Astro.props;
 const isV9 = version === "v9";
 const route = isV9 ? "home-v9" : "home-v8";
-const pageUrl = isV9 ? "https://harbornavi.com" : "https://harbornavi.com/home-v8";
 
 const discordUrl = "https://discord.com/invite/tC2bktRWWj";
 const surveyUrl = "https://www.surveymonkey.com/r/harbornavi";
@@ -162,19 +162,15 @@ const faqItems = [
   ["What is the difference between the waitlist and the Pilot Program?", "The waitlist is the quickest way to receive launch news and early-bird pricing updates. The Pilot Program is a separate application for a limited group of families to test HarborNavi at home for two weeks and share structured feedback. Joining the waitlist does not submit a Pilot Program application."]
 ];
 
-const structuredData = JSON.stringify({
-  "@context": "https://schema.org",
-  "@type": "Product",
-  name: "HarborNavi",
-  category: "Local-first household intelligence",
-  slogan: "A mind for the household. Finally at home.",
-  description: "HarborNavi is local-first AI that understands household context, coordinates supported devices, remembers what matters, and keeps private data at home.",
-  url: pageUrl,
-  image: `https://harbornavi.com${heroSocialImage}`,
-  brand: {
-    "@type": "Brand",
-    name: "HarborNavi"
-  }
+const homeTitle = "HarborNavi | Private Local-First AI for the Smart Home";
+const homeDescription = "Local-first AI that understands household context, coordinates supported devices, remembers what matters, and keeps private data at home.";
+const structuredData = buildSeoEntityGraph({
+  title: homeTitle,
+  description: homeDescription,
+  path: isV9 ? "/" : "/home-v8",
+  image: heroSocialImage,
+  mainEntity: "product",
+  faqItems
 });
 ---
 
@@ -187,8 +183,8 @@ const structuredData = JSON.stringify({
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <SeoHead
-      title="HarborNavi | Private Local-First AI for the Smart Home"
-      description="Local-first AI that understands household context, coordinates supported devices, remembers what matters, and keeps private data at home."
+      title={homeTitle}
+      description={homeDescription}
       path={isV9 ? "/" : "/home-v8"}
       image={heroSocialImage}
       imageAlt="A family sharing an everyday moment at home while HarborNavi keeps selected memories local"

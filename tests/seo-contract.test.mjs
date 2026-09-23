@@ -49,9 +49,9 @@ test("public page titles follow the approved SEO direction", async () => {
     source("src/pages/pilot-families.astro")
   ]);
 
-  assert.match(home, /title="HarborNavi \| Private Local-First AI for the Smart Home"/);
+  assert.match(home, /const homeTitle = "HarborNavi \| Private Local-First AI for the Smart Home"/);
   assert.match(landingPages, /metaTitle: "AI Package Detection for Home Cameras"/);
   assert.match(landingPages, /metaTitle: "AI Pet Camera Highlights, Kept Local"/);
-  assert.match(about, /title="About Harbor Innovations \| Local AI for the Home"/);
+  assert.match(about, /const aboutTitle = "About Harbor Innovations \| Local AI for the Home"/);
   assert.match(pilot, /HarborNavi Pilot Program \| Waitlist and Field Test/);
 });

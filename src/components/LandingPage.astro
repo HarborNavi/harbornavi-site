@@ -6,6 +6,7 @@ import SeoHead from "./SeoHead.astro";
 import SiteHeader from "./SiteHeader.astro";
 import { landingAssets } from "../data/landingAssets";
 import { demoOptions, faqItems, type LandingPageContent } from "../data/landingPages";
+import { buildSeoEntityGraph } from "../data/seoEntities";
 import "../styles/global.css";
 
 interface Props {
@@ -30,12 +31,14 @@ const headlineParts = page.headline
   .map((part) => part.trim())
   .filter(Boolean)
   .map((part) => `${part}.`);
-const structuredData = JSON.stringify({
-  "@context": "https://schema.org",
-  "@type": "WebPage",
-  name: page.metaTitle,
+const pageTitle = `${page.metaTitle} | HarborNavi`;
+const structuredData = buildSeoEntityGraph({
+  title: pageTitle,
   description: page.metaDescription,
-  url: `https://harbornavi.com${page.path}`
+  path: page.path,
+  image: heroAsset.url,
+  mainEntity: "product",
+  faqItems
 });
 ---
 
@@ -48,7 +51,7 @@ const structuredData = JSON.stringify({
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <SeoHead
-      title={`${page.metaTitle} | HarborNavi`}
+      title={pageTitle}
       description={page.metaDescription}
       path={page.path}
       image={heroAsset.url}

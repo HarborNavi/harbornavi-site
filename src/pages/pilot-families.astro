@@ -6,6 +6,7 @@ import RedditPixel from "../components/RedditPixel.astro";
 import SeoHead from "../components/SeoHead.astro";
 import SiteHeader from "../components/SiteHeaderV7.astro";
 import SiteMediaLoader from "../components/SiteMediaLoader.astro";
+import { buildSeoEntityGraph } from "../data/seoEntities";
 import {
   arePilotApplicationsOpen,
   pilotApplicationDeadline,
@@ -25,6 +26,43 @@ const pilotPageTitle = pilotApplicationsOpen
 const pilotPageDescription = pilotApplicationsOpen
   ? `Apply for HarborNavi's two-week Pilot Families program. ${pilotOfferAdvertisingCopy} Lifetime subscription-free access is included for the pilot device.`
   : "Pilot applications for HarborNavi's first home pilot are closed. Join the waitlist for launch updates and the pilot experience vlog.";
+const pilotFaqItems = [
+  {
+    question: "What will my family need to do?",
+    answer: "Plan for a 30-minute guided setup, use HarborNavi in normal routines for two weeks, complete short feedback check-ins, and record one or two short vlogs. Any shared or published vlog must include the required benefit disclosure."
+  },
+  {
+    question: "How difficult is installation?",
+    answer: "Most pilot homes should finish setup in about 30 minutes. A HarborNavi team member will guide you live, step by step, with remote or in-person support depending on location."
+  },
+  {
+    question: "What equipment do I need?",
+    answer: "You need stable Wi-Fi and at least one compatible camera or Home Assistant device. We will confirm compatibility before selection is final."
+  },
+  {
+    question: "How long is the pilot program?",
+    answer: "The active home-use period is two weeks, plus a short setup session and final feedback check-in."
+  },
+  {
+    question: "Do I get to keep the device?",
+    answer: "Yes. Families that complete the pilot keep their HarborNavi device."
+  },
+  {
+    question: "What happens after the pilot?",
+    answer: `You keep the HarborNavi device and receive lifetime subscription-free access for that pilot device. ${pilotRewardAdvertisingCopy}`
+  },
+  {
+    question: "What must I disclose in a vlog, review, or post?",
+    answer: "Clearly disclose every HarborNavi benefit you received or may receive, including cash, a provided or free device, lifetime subscription-free access, or another benefit. Put the disclosure where it is easy to notice. For video, include it visibly and verbally in the video itself, not only in the caption or description."
+  }
+];
+const pilotStructuredData = buildSeoEntityGraph({
+  title: pilotPageTitle,
+  description: pilotPageDescription,
+  path: "/pilot-families",
+  image: "/assets/home-v7-v8-pilot-families-id.png",
+  faqItems: pilotFaqItems
+});
 ---
 
 <!doctype html>
@@ -43,6 +81,7 @@ const pilotPageDescription = pilotApplicationsOpen
       imageAlt="A family trying HarborNavi together during an early pilot experience"
       icon="/favicon.png"
       themeColor="#0c0c12"
+      structuredData={pilotStructuredData}
     />
   </head>
   <body class="pilot-page" data-route="pilot-families">
@@ -199,34 +238,12 @@ const pilotPageDescription = pilotApplicationsOpen
           <h2 id="pilot-faq-title">What families ask before joining.</h2>
         </div>
         <div class="pilot-faq-list">
-          <details>
-            <summary>What will my family need to do?</summary>
-            <p>Plan for a 30-minute guided setup, use HarborNavi in normal routines for two weeks, complete short feedback check-ins, and record one or two short vlogs. Any shared or published vlog must include the required benefit disclosure.</p>
-          </details>
-          <details>
-            <summary>How difficult is installation?</summary>
-            <p>Most pilot homes should finish setup in about 30 minutes. A HarborNavi team member will guide you live, step by step, with remote or in-person support depending on location.</p>
-          </details>
-          <details>
-            <summary>What equipment do I need?</summary>
-            <p>You need stable Wi-Fi and at least one compatible camera or Home Assistant device. We will confirm compatibility before selection is final.</p>
-          </details>
-          <details>
-            <summary>How long is the pilot program?</summary>
-            <p>The active home-use period is two weeks, plus a short setup session and final feedback check-in.</p>
-          </details>
-          <details>
-            <summary>Do I get to keep the device?</summary>
-            <p>Yes. Families that complete the pilot keep their HarborNavi device.</p>
-          </details>
-          <details>
-            <summary>What happens after the pilot?</summary>
-            <p>You keep the HarborNavi device and receive lifetime subscription-free access for that pilot device. {pilotRewardAdvertisingCopy}</p>
-          </details>
-          <details>
-            <summary>What must I disclose in a vlog, review, or post?</summary>
-            <p>Clearly disclose every HarborNavi benefit you received or may receive, including cash, a provided or free device, lifetime subscription-free access, or another benefit. Put the disclosure where it is easy to notice. For video, include it visibly and verbally in the video itself, not only in the caption or description.</p>
-          </details>
+          {pilotFaqItems.map(({ question, answer }) => (
+            <details>
+              <summary>{question}</summary>
+              <p>{answer}</p>
+            </details>
+          ))}
         </div>
       </section>
 

@@ -4,7 +4,17 @@ import RedditPixel from "../components/RedditPixel.astro";
 import SeoHead from "../components/SeoHead.astro";
 import SiteHeader from "../components/SiteHeaderV7.astro";
 import SiteMediaLoader from "../components/SiteMediaLoader.astro";
+import { buildSeoEntityGraph } from "../data/seoEntities";
 import "../styles/global.css";
+
+const privacyTitle = "Privacy | HarborNavi";
+const privacyDescription = "How HarborNavi handles launch-list email, Pilot Families applications, campaign analytics, Reddit and Meta advertising measurement, and 15 Homes application data.";
+const privacyStructuredData = buildSeoEntityGraph({
+  title: privacyTitle,
+  description: privacyDescription,
+  path: "/privacy",
+  image: "/assets/home-v7-v8-trust-boundary-id.png"
+});
 ---
 
 <!doctype html>
@@ -15,12 +25,13 @@ import "../styles/global.css";
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
     <SeoHead
-      title="Privacy | HarborNavi"
-      description="How HarborNavi handles launch-list email, Pilot Families applications, campaign analytics, Reddit and Meta advertising measurement, and 15 Homes application data."
+      title={privacyTitle}
+      description={privacyDescription}
       path="/privacy"
       image="/assets/home-v7-v8-trust-boundary-id.png"
       imageAlt="HarborNavi privacy boundary showing selected home data staying local"
       icon="/favicon.png"
+      structuredData={privacyStructuredData}
     />
   </head>
   <body data-route="privacy">

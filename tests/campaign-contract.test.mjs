@@ -198,7 +198,7 @@ test("versioned home routes and admin666 retain their route contracts", async ()
   assert.match(homeV7, /Home is where the heart is\. And where your memories live\./);
   assert.match(homeV8Page, /HomeV8Landing/);
   assert.match(homeV8, /const route = isV9 \? "home-v9" : "home-v8"/);
-  assert.match(homeV8, /const pageUrl = isV9 \? "https:\/\/harbornavi\.com" : "https:\/\/harbornavi\.com\/home-v8"/);
+  assert.match(homeV8, /path: isV9 \? "\/" : "\/home-v8"/);
   assert.match(homeV8, /Join the First \$\{pilotSpotCount\} Pilot Families/);
   assert.match(homeV8, /A mind for the household\./);
   assert.match(homeV8, /Finally at home\./);
