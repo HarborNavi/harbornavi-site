@@ -40,3 +40,18 @@ test("landing pages pass relative hero assets through the shared SEO head", asyn
   assert.match(page, /image=\{heroAsset\.url\}/);
   assert.match(page, /imageAlt=\{heroAsset\.alt\}/);
 });
+
+test("public page titles follow the approved SEO direction", async () => {
+  const [landingPages, home, about, pilot] = await Promise.all([
+    source("src/data/landingPages.ts"),
+    source("src/components/HomeV8Landing.astro"),
+    source("src/pages/about-harbor.astro"),
+    source("src/pages/pilot-families.astro")
+  ]);
+
+  assert.match(home, /title="HarborNavi \| Private Local-First AI for the Smart Home"/);
+  assert.match(landingPages, /metaTitle: "AI Package Detection for Home Cameras"/);
+  assert.match(landingPages, /metaTitle: "AI Pet Camera Highlights, Kept Local"/);
+  assert.match(about, /title="About Harbor Innovations \| Local AI for the Home"/);
+  assert.match(pilot, /HarborNavi Pilot Program \| Waitlist and Field Test/);
+});

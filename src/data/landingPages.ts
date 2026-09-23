@@ -322,7 +322,7 @@ export const pages: Record<RouteKey, LandingPageContent> = {
   package: {
     route: "package",
     path: "/package",
-    metaTitle: "Know when a package goes missing",
+    metaTitle: "AI Package Detection for Home Cameras",
     metaDescription:
       "Join the HarborNavi package alert beta list for local-first home video AI focused on front door package events.",
     heroAsset: "packageHero",
@@ -341,7 +341,7 @@ export const pages: Record<RouteKey, LandingPageContent> = {
   pets: {
     route: "pets",
     path: "/pets",
-    metaTitle: "Keep your pet's best moments automatically",
+    metaTitle: "AI Pet Camera Highlights, Kept Local",
     metaDescription:
       "Join the HarborNavi pet highlights beta list for local-first home video AI focused on moments worth keeping.",
     heroAsset: "petHero",
