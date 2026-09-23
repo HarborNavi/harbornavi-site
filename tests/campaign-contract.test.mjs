@@ -30,7 +30,8 @@ test("campaign dates and public route stay on the approved contract", async () =
 test("campaign pages declare their canonical URLs", async () => {
   const campaignPage = await source("src/components/FifteenHomesLanding.astro");
   const thanksPage = await source("src/pages/15-homes/thanks.astro");
-  assert.match(campaignPage, /rel="canonical" href="https:\/\/harbornavi\.com\/15-homes"/);
+  assert.match(campaignPage, /import SeoHead from "\.\/SeoHead\.astro"/);
+  assert.match(campaignPage, /path="\/15-homes"/);
   assert.match(thanksPage, /rel="canonical" href="https:\/\/harbornavi\.com\/15-homes\/thanks"/);
 });
 

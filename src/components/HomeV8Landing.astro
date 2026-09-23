@@ -19,6 +19,7 @@ import EnglishFormValidation from "./EnglishFormValidation.astro";
 import GoogleTagManager from "./GoogleTagManager.astro";
 import MarketingConsent from "./MarketingConsent.astro";
 import MetaPixel from "./MetaPixel.astro";
+import SeoHead from "./SeoHead.astro";
 import SiteHeaderMenu from "./SiteHeaderMenu.astro";
 import SiteMediaLoader from "./SiteMediaLoader.astro";
 import { arePilotApplicationsOpen, pilotApplicationDeadline, pilotOfferAdvertisingCopy, pilotSpotCount } from "../data/pilotProgram";
@@ -185,21 +186,15 @@ const structuredData = JSON.stringify({
     <MetaPixel />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="robots" content="index,follow" />
-    <title>HarborNavi - A mind for the household</title>
-    <meta name="description" content="Local-first AI that understands household context, coordinates supported devices, remembers what matters, and keeps private data at home." />
-    <link rel="canonical" href={pageUrl} />
-    <link rel="icon" href="/favicon.png" type="image/png" sizes="512x512" data-media-slot="site-favicon" />
-    <meta property="og:title" content="A mind for the household. Finally at home." />
-    <meta property="og:description" content="Local-first AI that understands household context, coordinates supported devices, remembers what matters, and keeps private data at home." />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content={pageUrl} />
-    <meta property="og:image" content={`https://harbornavi.com${heroSocialImage}`} />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="A mind for the household. Finally at home." />
-    <meta name="twitter:description" content="Local-first AI that understands household context, coordinates supported devices, remembers what matters, and keeps private data at home." />
-    <meta name="twitter:image" content={`https://harbornavi.com${heroSocialImage}`} />
-    <script is:inline type="application/ld+json" set:html={structuredData}></script>
+    <SeoHead
+      title="HarborNavi - A mind for the household"
+      description="Local-first AI that understands household context, coordinates supported devices, remembers what matters, and keeps private data at home."
+      path={isV9 ? "/" : "/home-v8"}
+      image={heroSocialImage}
+      imageAlt="A family sharing an everyday moment at home while HarborNavi keeps selected memories local"
+      icon="/favicon.png"
+      structuredData={structuredData}
+    />
   </head>
   <body class:list={["home-v6-page", { "home-v9-page": isV9 }]} data-route={route} data-pilot-deadline={pilotApplicationDeadline}>
     <div class="site-shell">

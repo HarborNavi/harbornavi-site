@@ -151,7 +151,7 @@ test("pilot campaign banner and form stay on the approved contract", async () =>
 
 test("about harbor presents the approved company story without fabricated names", async () => {
   const about = await source("src/pages/about-harbor.astro");
-  assert.match(about, /https:\/\/harbornavi\.com\/about-harbor/);
+  assert.match(about, /path="\/about-harbor"/);
   assert.match(about, /Harbor Innovations/);
   assert.match(about, /Our homes kept recording\. They still forgot us\./);
   assert.match(about, /What time will Alex be out tomorrow\?/);
@@ -209,7 +209,7 @@ test("pilot families uses the final black and purple visual system", async () =>
   const page = await source("src/pages/pilot-families.astro");
   const styles = await source("src/styles/pilot-families.css");
 
-  assert.match(page, /<meta name="theme-color" content="#0c0c12" \/>/);
+  assert.match(page, /themeColor="#0c0c12"/);
   for (const color of ["#0c0c12", "#15151e", "#1e1e2a", "#6d5bd0", "#9b85f5", "#e9c9a8", "#ececf3", "#9b9bac", "#2a2a38"]) {
     assert.match(styles, new RegExp(color));
   }

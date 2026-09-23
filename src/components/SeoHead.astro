@@ -1,0 +1,54 @@
+---
+interface Props {
+  title: string;
+  description: string;
+  path: string;
+  image: string;
+  imageAlt?: string;
+  type?: "website" | "article";
+  robots?: string;
+  icon?: string;
+  themeColor?: string;
+  structuredData?: Record<string, unknown> | string;
+}
+
+const siteUrl = "https://harbornavi.com";
+const {
+  title,
+  description,
+  path,
+  image,
+  imageAlt = description,
+  type = "website",
+  robots = "index,follow",
+  icon = "/favicon.svg",
+  themeColor,
+  structuredData
+} = Astro.props;
+
+const normalizedPath = path === "/" ? "" : `/${path.replace(/^\/+|\/+$/g, "")}`;
+const pageUrl = `${siteUrl}${normalizedPath}`;
+const imageUrl = /^https?:\/\//i.test(image) ? image : `${siteUrl}/${image.replace(/^\/+/, "")}`;
+const structuredDataJson = typeof structuredData === "string" ? structuredData : structuredData ? JSON.stringify(structuredData) : null;
+---
+
+<meta name="robots" content={robots} />
+<title>{title}</title>
+<meta name="description" content={description} />
+{themeColor && <meta name="theme-color" content={themeColor} />}
+<link rel="icon" href={icon} type={icon.endsWith(".png") ? "image/png" : "image/svg+xml"} />
+<link rel="canonical" href={pageUrl} />
+<meta property="og:locale" content="en_US" />
+<meta property="og:site_name" content="HarborNavi" />
+<meta property="og:title" content={title} />
+<meta property="og:description" content={description} />
+<meta property="og:type" content={type} />
+<meta property="og:url" content={pageUrl} />
+<meta property="og:image" content={imageUrl} />
+<meta property="og:image:alt" content={imageAlt} />
+<meta name="twitter:card" content="summary_large_image" />
+<meta name="twitter:title" content={title} />
+<meta name="twitter:description" content={description} />
+<meta name="twitter:image" content={imageUrl} />
+<meta name="twitter:image:alt" content={imageAlt} />
+{structuredDataJson && <script is:inline type="application/ld+json" set:html={structuredDataJson}></script>}

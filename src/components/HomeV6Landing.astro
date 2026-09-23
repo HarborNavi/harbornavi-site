@@ -1,6 +1,7 @@
 ---
 import EnglishFormValidation from "./EnglishFormValidation.astro";
 import MetaPixel from "./MetaPixel.astro";
+import SeoHead from "./SeoHead.astro";
 import RedditPixel from "./RedditPixel.astro";
 import "../styles/home-v6.css";
 
@@ -112,21 +113,14 @@ const structuredData = JSON.stringify({
     <MetaPixel />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="robots" content="index,follow" />
-    <title>HarborNavi - Home is where the heart is.</title>
-    <meta name="description" content="HarborNavi keeps the moments that define your home private and forever." />
-    <link rel="canonical" href="https://harbornavi.com/home-v6" />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <meta property="og:title" content="Home is where the heart is. And where your memories live." />
-    <meta property="og:description" content="HarborNavi keeps the moments that define your home private and forever." />
-    <meta property="og:type" content="website" />
-    <meta property="og:url" content="https://harbornavi.com/home-v6" />
-    <meta property="og:image" content={`https://harbornavi.com${heroSocialImage}`} />
-    <meta name="twitter:card" content="summary_large_image" />
-    <meta name="twitter:title" content="Home is where the heart is. And where your memories live." />
-    <meta name="twitter:description" content="HarborNavi keeps the moments that define your home private and forever." />
-    <meta name="twitter:image" content={`https://harbornavi.com${heroSocialImage}`} />
-    <script is:inline type="application/ld+json" set:html={structuredData}></script>
+    <SeoHead
+      title="HarborNavi - Home is where the heart is."
+      description="HarborNavi keeps the moments that define your home private and forever."
+      path="/home-v6"
+      image={heroSocialImage}
+      imageAlt="A family sharing an everyday moment at home while HarborNavi keeps selected memories local"
+      structuredData={structuredData}
+    />
   </head>
   <body class="home-v6-page" data-route="home-v6">
     <div class="site-shell">

@@ -2,6 +2,7 @@
 import { BellOff, Camera, ShieldAlert } from "@lucide/astro";
 import MetaPixel from "../components/MetaPixel.astro";
 import RedditPixel from "../components/RedditPixel.astro";
+import SeoHead from "../components/SeoHead.astro";
 import SiteHeader from "../components/SiteHeaderV7.astro";
 import SiteMediaLoader from "../components/SiteMediaLoader.astro";
 import { arePilotApplicationsOpen, pilotOfferAdvertisingCopy, pilotSpotCount } from "../data/pilotProgram";
@@ -18,11 +19,14 @@ const aboutPilotCtaHref = aboutPilotApplicationsOpen ? "/pilot-families#apply" :
     <MetaPixel />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <meta name="robots" content="index,follow" />
-    <title>About Harbor Innovations | HarborNavi</title>
-    <meta name="description" content="Why Harbor Innovations is building HarborNavi: a private, local memory and intelligence layer for the home." />
-    <link rel="icon" href="/favicon.png" type="image/png" sizes="512x512" data-media-slot="site-favicon" />
-    <link rel="canonical" href="https://harbornavi.com/about-harbor" />
+    <SeoHead
+      title="About Harbor Innovations | HarborNavi"
+      description="Why Harbor Innovations is building HarborNavi: a private, local memory and intelligence layer for the home."
+      path="/about-harbor"
+      image="/assets/home-v7-v8-memory-hero-id.png"
+      imageAlt="A family sharing an everyday moment at home while HarborNavi keeps selected memories local"
+      icon="/favicon.png"
+    />
   </head>
   <body class="about-page" data-route="about-harbor">
     <SiteHeader ctaHref={aboutPilotCtaHref} ctaLabel={aboutPilotApplicationsOpen ? "Join the Pilot Program" : "Join the waitlist"} />

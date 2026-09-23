@@ -2,6 +2,7 @@
 import CampaignAnalytics from "./CampaignAnalytics.astro";
 import MetaPixel from "./MetaPixel.astro";
 import RedditPixel from "./RedditPixel.astro";
+import SeoHead from "./SeoHead.astro";
 import { campaign } from "../data/campaign";
 import "../styles/fifteen-homes.css";
 
@@ -20,14 +21,14 @@ const phaseCopy = {
     <MetaPixel />
     <meta charset="utf-8" />
     <meta name="viewport" content="width=device-width, initial-scale=1" />
-    <title>{campaign.name} | HarborNavi</title>
-    <meta
-      name="description"
-      content="HarborNavi will visit 15 homes across America for a public, real-home field test from New Haven through Los Angeles to Silicon Valley."
+    <SeoHead
+      title={`${campaign.name} | HarborNavi`}
+      description="HarborNavi will visit 15 homes across America for a public, real-home field test from New Haven through Los Angeles to Silicon Valley."
+      path="/15-homes"
+      image="/assets/home-v7-v8-memory-hero-id.png"
+      imageAlt="A HarborNavi household memory scene used for the 15 Homes Across America field test"
+      themeColor="#171427"
     />
-    <meta name="theme-color" content="#171427" />
-    <link rel="icon" href="/favicon.svg" type="image/svg+xml" />
-    <link rel="canonical" href="https://harbornavi.com/15-homes" />
   </head>
   <body class="road-campaign" data-route="15-homes">
     <header class="road-header">
