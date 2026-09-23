@@ -3,6 +3,17 @@
   "trailingSlash": false,
   "redirects": [
     {
+      "source": "/",
+      "has": [
+        {
+          "type": "host",
+          "value": "www.harbornavi.com"
+        }
+      ],
+      "destination": "https://harbornavi.com/",
+      "permanent": true
+    },
+    {
       "source": "/:path*",
       "has": [
         {
