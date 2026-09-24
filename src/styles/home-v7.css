@@ -360,6 +360,7 @@ p { margin: 0; }
 .comparison-notes { display: grid; grid-template-columns: minmax(260px, 0.65fr) minmax(0, 1.35fr); gap: 56px; margin-top: 24px; color: var(--copy); font-size: 11px; line-height: 1.6; }
 .comparison-notes p { margin: 0; }
 .source-links a { color: var(--lavender-deep); }
+.comparison-full-link { display: inline-flex; align-items: center; gap: 8px; margin-top: 18px; color: var(--lavender-deep); font-size: 14px; font-weight: 760; }
 
 .faq-section { display: grid; grid-template-columns: minmax(300px, 0.7fr) minmax(0, 1.3fr); gap: 90px; padding: 96px max(32px, calc((100% - var(--max)) / 2)); background: var(--paper); }
 .faq-intro h2 { font-size: 36px; }

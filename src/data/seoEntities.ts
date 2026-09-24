@@ -8,9 +8,10 @@ export interface SeoEntityGraphOptions {
   description: string;
   path: string;
   image: string;
-  mainEntity?: "organization" | "product";
+  mainEntity?: "organization" | "product" | "article";
   faqItems?: readonly (SeoFaqItem | readonly [string, string])[];
   citations?: readonly string[];
+  datePublished?: string;
   dateModified?: string;
 }
 
@@ -41,6 +42,7 @@ export function buildSeoEntityGraph({
   mainEntity,
   faqItems = [],
   citations = [],
+  datePublished,
   dateModified
 }: SeoEntityGraphOptions) {
   const pageUrl = harborAbsoluteUrl(path);
@@ -48,6 +50,7 @@ export function buildSeoEntityGraph({
   const normalizedFaqItems = faqItems.map(normalizeFaqItem);
   const pageId = `${pageUrl}#webpage`;
   const faqId = `${pageUrl}#faq`;
+  const articleId = `${pageUrl}#article`;
 
   const organization = {
     "@type": "Organization",
@@ -89,6 +92,24 @@ export function buildSeoEntityGraph({
     manufacturer: { "@id": organizationId }
   };
 
+  const article = {
+    "@type": "TechArticle",
+    "@id": articleId,
+    url: pageUrl,
+    headline: title,
+    description,
+    image: imageUrl,
+    inLanguage: "en-US",
+    author: { "@id": organizationId },
+    publisher: { "@id": organizationId },
+    mainEntityOfPage: { "@id": pageId },
+    ...(datePublished ? { datePublished } : {}),
+    ...(dateModified ? { dateModified } : {}),
+    ...(citations.length
+      ? { citation: citations.map((url) => ({ "@type": "CreativeWork", url: harborAbsoluteUrl(url) })) }
+      : {})
+  };
+
   const webpage: Record<string, unknown> = {
     "@type": "WebPage",
     "@id": pageId,
@@ -108,6 +129,7 @@ export function buildSeoEntityGraph({
 
   if (mainEntity === "organization") webpage.mainEntity = { "@id": organizationId };
   if (mainEntity === "product") webpage.mainEntity = { "@id": productId };
+  if (mainEntity === "article") webpage.mainEntity = { "@id": articleId };
   if (normalizedFaqItems.length) webpage.hasPart = { "@id": faqId };
   if (citations.length) {
     webpage.citation = citations.map((url) => ({
@@ -120,6 +142,7 @@ export function buildSeoEntityGraph({
   const graph: Record<string, unknown>[] = [organization, brand, website];
   if (mainEntity === "product") graph.push(product);
   graph.push(webpage);
+  if (mainEntity === "article") graph.push(article);
 
   if (normalizedFaqItems.length) {
     graph.push({

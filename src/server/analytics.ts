@@ -5,6 +5,7 @@ import {
 } from "./waitlist-metrics.js";
 import { isAllowedAnalyticsEventName } from "./analytics-events.js";
 import { sanitizeAnalyticsProperties } from "./analytics-sanitize.js";
+import { classifyAiReferral } from "./geo-referrals.js";
 
 interface AnalyticsPayload {
   event_name?: unknown;
@@ -88,6 +89,9 @@ export async function recordAnalyticsEvent(payload: AnalyticsPayload, visitorId?
 
   await ensureAnalyticsTable();
   const db = sql();
+  const properties = sanitizeAnalyticsProperties(payload.properties);
+  const aiSource = classifyAiReferral(payload.referrer, payload.utm_source);
+  if (aiSource) properties.ai_source = aiSource;
   await db`
     insert into analytics_events (
       event_name,
@@ -117,7 +121,7 @@ export async function recordAnalyticsEvent(payload: AnalyticsPayload, visitorId?
       ${nullableText(payload.utm_campaign, 160)},
       ${nullableText(payload.utm_content, 160)},
       ${nullableText(payload.utm_term, 160)},
-      ${JSON.stringify(sanitizeAnalyticsProperties(payload.properties))}
+      ${JSON.stringify(properties)}
     )
   `;
 
@@ -306,6 +310,107 @@ export async function getAnalyticsDashboard(range: unknown) {
     limit 100
   `) as unknown as Array<Record<string, unknown>>;
 
+  const geoSummaryRows = (await db`
+    with geo_page_views as (
+      select
+        id,
+        session_id,
+        visitor_id,
+        coalesce(
+          nullif(properties->>'ai_source', ''),
+          case
+            when lower(coalesce(referrer, '')) like '%chatgpt.com%' or lower(coalesce(referrer, '')) like '%chat.openai.com%' or replace(lower(coalesce(utm_source, '')), '-', '_') in ('chatgpt', 'openai') then 'ChatGPT'
+            when lower(coalesce(referrer, '')) like '%perplexity.ai%' or replace(lower(coalesce(utm_source, '')), '-', '_') = 'perplexity' then 'Perplexity'
+            when lower(coalesce(referrer, '')) like '%gemini.google.com%' or replace(lower(coalesce(utm_source, '')), '-', '_') in ('gemini', 'google_ai') then 'Gemini'
+            when lower(coalesce(referrer, '')) like '%copilot.microsoft.com%' or replace(lower(coalesce(utm_source, '')), '-', '_') in ('copilot', 'microsoft_copilot') then 'Microsoft Copilot'
+            when lower(coalesce(referrer, '')) like '%claude.ai%' or replace(lower(coalesce(utm_source, '')), '-', '_') in ('claude', 'anthropic') then 'Claude'
+            when lower(coalesce(referrer, '')) like '%poe.com%' or replace(lower(coalesce(utm_source, '')), '-', '_') = 'poe' then 'Poe'
+            when lower(coalesce(referrer, '')) like '%you.com%' or replace(lower(coalesce(utm_source, '')), '-', '_') in ('you.com', 'youcom') then 'You.com'
+            else null
+          end
+        ) as ai_source
+      from analytics_events
+      where
+        event_name in ('page_view', 'page_view_home_v2')
+        and route in ('facts', 'compare', 'local-first-home-ai', 'home-assistant-local-ai', 'package', 'pets')
+        and (${days}::int = 0 or created_at >= (
+          (((now() at time zone ${ANALYTICS_TIME_ZONE})::date - (${days}::int - 1))::timestamp without time zone)
+          at time zone ${ANALYTICS_TIME_ZONE}
+        ))
+    )
+    select
+      count(distinct coalesce(nullif(visitor_id, ''), nullif(session_id, ''), id::text))::int as content_unique_visitors,
+      count(*)::int as content_page_views,
+      count(distinct coalesce(nullif(visitor_id, ''), nullif(session_id, ''), id::text)) filter (where ai_source is not null)::int as ai_unique_visitors,
+      count(*) filter (where ai_source is not null)::int as ai_page_views
+    from geo_page_views
+  `) as unknown as Array<{
+    content_unique_visitors: number;
+    content_page_views: number;
+    ai_unique_visitors: number;
+    ai_page_views: number;
+  }>;
+
+  const geoContentRows = (await db`
+    select
+      coalesce(route, 'unknown') as route,
+      coalesce(nullif(path, ''), concat('/', route)) as path,
+      count(distinct coalesce(nullif(visitor_id, ''), nullif(session_id, ''), id::text))::int as unique_visitors,
+      count(*)::int as page_views
+    from analytics_events
+    where
+      event_name in ('page_view', 'page_view_home_v2')
+      and route in ('facts', 'compare', 'local-first-home-ai', 'home-assistant-local-ai', 'package', 'pets')
+      and (${days}::int = 0 or created_at >= (
+        (((now() at time zone ${ANALYTICS_TIME_ZONE})::date - (${days}::int - 1))::timestamp without time zone)
+        at time zone ${ANALYTICS_TIME_ZONE}
+      ))
+    group by route, path
+    order by page_views desc, route asc
+  `) as unknown as Array<Record<string, unknown>>;
+
+  const geoReferralRows = (await db`
+    with classified as (
+      select
+        id,
+        route,
+        path,
+        session_id,
+        visitor_id,
+        coalesce(
+          nullif(properties->>'ai_source', ''),
+          case
+            when lower(coalesce(referrer, '')) like '%chatgpt.com%' or lower(coalesce(referrer, '')) like '%chat.openai.com%' or replace(lower(coalesce(utm_source, '')), '-', '_') in ('chatgpt', 'openai') then 'ChatGPT'
+            when lower(coalesce(referrer, '')) like '%perplexity.ai%' or replace(lower(coalesce(utm_source, '')), '-', '_') = 'perplexity' then 'Perplexity'
+            when lower(coalesce(referrer, '')) like '%gemini.google.com%' or replace(lower(coalesce(utm_source, '')), '-', '_') in ('gemini', 'google_ai') then 'Gemini'
+            when lower(coalesce(referrer, '')) like '%copilot.microsoft.com%' or replace(lower(coalesce(utm_source, '')), '-', '_') in ('copilot', 'microsoft_copilot') then 'Microsoft Copilot'
+            when lower(coalesce(referrer, '')) like '%claude.ai%' or replace(lower(coalesce(utm_source, '')), '-', '_') in ('claude', 'anthropic') then 'Claude'
+            when lower(coalesce(referrer, '')) like '%poe.com%' or replace(lower(coalesce(utm_source, '')), '-', '_') = 'poe' then 'Poe'
+            when lower(coalesce(referrer, '')) like '%you.com%' or replace(lower(coalesce(utm_source, '')), '-', '_') in ('you.com', 'youcom') then 'You.com'
+            else null
+          end
+        ) as ai_source
+      from analytics_events
+      where
+        event_name in ('page_view', 'page_view_home_v2')
+        and route in ('facts', 'compare', 'local-first-home-ai', 'home-assistant-local-ai', 'package', 'pets')
+        and (${days}::int = 0 or created_at >= (
+          (((now() at time zone ${ANALYTICS_TIME_ZONE})::date - (${days}::int - 1))::timestamp without time zone)
+          at time zone ${ANALYTICS_TIME_ZONE}
+        ))
+    )
+    select
+      ai_source as source,
+      coalesce(route, 'unknown') as route,
+      coalesce(nullif(path, ''), concat('/', route)) as path,
+      count(distinct coalesce(nullif(visitor_id, ''), nullif(session_id, ''), id::text))::int as unique_visitors,
+      count(*)::int as page_views
+    from classified
+    where ai_source is not null
+    group by ai_source, route, path
+    order by page_views desc, ai_source asc, route asc
+  `) as unknown as Array<Record<string, unknown>>;
+
   const eventRows = (await db`
     select
       event_name,
@@ -427,6 +532,12 @@ export async function getAnalyticsDashboard(range: unknown) {
     positive_price_profiles: 0,
     founder_reservations: 0
   };
+  const geoSummary = geoSummaryRows[0] || {
+    content_unique_visitors: 0,
+    content_page_views: 0,
+    ai_unique_visitors: 0,
+    ai_page_views: 0
+  };
   const waitlistConversionRate = waitlistSummary.unique_visitors > 0
     ? Math.round((waitlistSummary.saved_leads / waitlistSummary.unique_visitors) * 1000) / 10
     : 0;
@@ -468,6 +579,9 @@ export async function getAnalyticsDashboard(range: unknown) {
     funnel: addConversionRate(waitlistFunnelRows, "saved_leads"),
     waitlist_funnel: addConversionRate(waitlistFunnelRows, "saved_leads"),
     pilot_funnel: addConversionRate(pilotFunnelRows, "saved_applications"),
+    geo_summary: geoSummary,
+    geo_content: geoContentRows,
+    geo_referrals: geoReferralRows,
     events: eventRows,
     lead_interests: leadRows,
     camera_connections: connectionRows,

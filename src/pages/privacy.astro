@@ -120,6 +120,9 @@ const privacyStructuredData = buildSeoEntityGraph({
               First-party campaign analytics records page and link events with route, session, and attribution data. A
               one-year, HttpOnly, same-site anonymous visitor cookie is used to count unique visitors without relying on
               page-view totals. Historical events without that identifier fall back to session-level counting.
+              For GEO content reporting, HarborNavi derives an AI-service source label from the referring page or UTM
+              source when one is present. This reports identifiable referral visits, not unclicked citations, answer
+              impressions, or crawler requests.
               Email addresses, application answers, postal details, camera models, and household details are not sent
               as analytics event properties.
             </p>

@@ -180,8 +180,14 @@ test("public child pages use their requested home navigation target", async () =
   assert.match(header, /class="site-header-v7"/);
   assert.match(header, /width="42" height="23"/);
   assert.match(header, /homeHref = "\/"/);
-  assert.match(header, /\$\{homeHref\}#intelligence/);
-  assert.match(header, /\$\{homeHref\}#compare/);
+  assert.match(header, /SiteHeaderProductMenu homeHref=\{homeHref\}/);
+  assert.match(header, /href="\/compare"/);
+  const productMenu = await source("src/components/SiteHeaderProductMenu.astro");
+  assert.match(productMenu, />HarborNavi</);
+  assert.match(productMenu, /\$\{homeHref\}#intelligence/);
+  assert.match(productMenu, /\$\{homeHref\}#how-it-works/);
+  assert.match(productMenu, /\$\{homeHref\}#compatibility/);
+  assert.match(productMenu, /\$\{homeHref\}#hardware/);
   assert.match(header, /Join the Pilot Program/);
   assert.match(header, /data-header-menu/);
   assert.match(header, /aria-controls="site-header-v7-navigation"/);

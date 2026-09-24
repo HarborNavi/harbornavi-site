@@ -21,7 +21,9 @@ import MarketingConsent from "./MarketingConsent.astro";
 import MetaPixel from "./MetaPixel.astro";
 import SeoHead from "./SeoHead.astro";
 import SiteHeaderMenu from "./SiteHeaderMenu.astro";
+import SiteHeaderProductMenu from "./SiteHeaderProductMenu.astro";
 import SiteMediaLoader from "./SiteMediaLoader.astro";
+import { comparisonProducts, comparisonRows, comparisonSources } from "../data/comparison";
 import { arePilotApplicationsOpen, pilotApplicationDeadline, pilotOfferAdvertisingCopy, pilotSpotCount } from "../data/pilotProgram";
 import { buildSeoEntityGraph } from "../data/seoEntities";
 import "../styles/site-header-v7.css";
@@ -117,37 +119,6 @@ const hardwareValues = [
   ["Hardware trust", "Fingerprint confirmation for sensitive changes, with Match-on-Chip biometric comparison and an eSE chip protecting device identity and encryption keys."]
 ];
 
-const comparisonProducts = [
-  { name: "HarborNavi", note: "Private household intelligence", featured: true },
-  { name: "Camera AI", note: "Reolink, Tapo, eufy" },
-  { name: "Cloud home AI", note: "Google Home, Alexa+ + Ring" },
-  { name: "Local automation stacks", note: "Home Assistant + Frigate, Homey Pro" },
-  { name: "Professional whole-home", note: "Josh.ai, Control4" }
-];
-
-const comparisonRows = [
-  ["Built around", "Understanding home context, remembering what matters, and coordinating allowed actions", "Video and security events", "Conversation, summaries, and control inside an account ecosystem", "Devices, entities, rules, and owner-built automations", "Dealer-designed whole-home control"],
-  ["Who pieces it together", "HarborNavi keeps the household context together locally", "The camera vendor's event history", "The vendor cloud and supported services", "The owner or integrator", "The dealer or integrator"],
-  ["When the routine changes", "Clarify, wait, notify, or act from local household context", "Detect, search, or summarize video", "AI behavior inside supported services", "The owner adds conditions, helpers, and exceptions", "The dealer updates scenes and policies"],
-  ["Context and follow-up", "Local household context across events, devices, and conversations", "Footage and event history", "Account and service memory", "Possible with owner-built components", "System state and configured scenes"],
-  ["From understanding to action", "Conversation, clarification, permission, then coordinated action", "Alerts and vendor-specific responses", "Voice and actions inside supported ecosystems", "Broad actions through user-built automations", "Broad dealer-configured actions"],
-  ["Setup and maintenance", "Designed for self-install with supported paths made clear", "Vendor app", "Consumer account and cloud setup", "DIY or self-managed stack", "Professional installation"],
-  ["Data path and subscription", "Core local features without a required subscription", "Varies by vendor and model", "Advanced features and plans vary", "Local core is possible; add-ons vary", "Vendor, dealer, and service terms vary"]
-];
-
-const comparisonSources = [
-  { label: "Reolink", href: "https://reolink.com/blog/reolink-new-products-at-ces/" },
-  { label: "Tapo", href: "https://www.tp-link.com/us/home-networking/smart-hub/tapo-h500/" },
-  { label: "eufy", href: "https://www.eufy.com/products/t80301d1" },
-  { label: "Google Home", href: "https://store.google.com/us/product/google_home_speaker?hl=en_US" },
-  { label: "Alexa+", href: "https://www.aboutamazon.com/news/devices/amazon-new-echo-devices-alexa-plus" },
-  { label: "Home Assistant", href: "https://www.home-assistant.io/blog/2025/09/11/ai-in-home-assistant/" },
-  { label: "Frigate", href: "https://frigate.video/" },
-  { label: "Homey", href: "https://homey.app/en-us/homey-pro/" },
-  { label: "Josh.ai", href: "https://www.josh.ai/core/" },
-  { label: "Control4", href: "https://www.control4.com/solutions/voice-control" }
-];
-
 const faqItems = [
   ["Is HarborNavi just a memory box?", "No. Memory gives HarborNavi useful context. Its job is to understand what is happening, coordinate supported devices, and respond in plain words."],
   ["Is it another voice assistant?", "No. HarborNavi is local-first household intelligence, not a cloud voice layer. It connects selected home signals, devices, permissions, and conversations in one place at home."],
@@ -206,11 +177,8 @@ const structuredData = buildSeoEntityGraph({
             <span class="site-header-v7-brand-name">HarborNavi</span>
           </a>
           <nav id="site-header-v7-navigation" class="site-header-v7-nav" aria-label="Page sections">
-            <a href="#intelligence">Intelligence</a>
-            <a href="#how-it-works">How it works</a>
-            <a href="#compatibility">Compatibility</a>
-            <a href="#hardware">Hardware</a>
-            <a href="#compare">Compare</a>
+            <SiteHeaderProductMenu homeHref="" />
+            <a href="/compare">Compare</a>
             <a href="/facts">Facts</a>
             <a href="/about-harbor">About Harbor</a>
           </nav>
@@ -533,8 +501,9 @@ const structuredData = buildSeoEntityGraph({
           </div>
           <div class="comparison-notes">
             <p>Examples vary by model and plan. This comparison focuses on the job each category is usually built to do.</p>
-            <p class="source-links">Official sources, checked July 2026: {comparisonSources.map((source, index) => <>{index > 0 && <span aria-hidden="true"> &middot; </span>}<a href={source.href} target="_blank" rel="noreferrer">{source.label}</a></>)}</p>
+            <p class="source-links">Official sources, reviewed September 2026: {comparisonSources.map((source, index) => <>{index > 0 && <span aria-hidden="true"> &middot; </span>}<a href={source.href} target="_blank" rel="noreferrer">{source.label}</a></>)}</p>
           </div>
+          <a class="comparison-full-link" href="/compare">Read the full sourced comparison <ArrowRight size={17} strokeWidth={2} aria-hidden="true" /></a>
         </section>
 
         <section class="faq-section" aria-labelledby="faq-title">
@@ -567,7 +536,7 @@ const structuredData = buildSeoEntityGraph({
       <footer>
         <a class="brand" href="#top" aria-label="HarborNavi home"><span class="brand-mark" aria-hidden="true"><img src="/harbornavi-logo-mark.png" alt="" width="42" height="23" data-media-slot="site-header-logo" /></span><span>HarborNavi</span></a>
         <div class="footer-meta">
-          <nav class="footer-links" aria-label="Footer navigation"><a href="/facts">Facts</a><a href="/about-harbor">About</a><a href="/privacy">Privacy</a></nav>
+          <nav class="footer-links" aria-label="Footer navigation"><a href="/compare">Compare</a><a href="/facts">Facts</a><a href="/about-harbor">About</a><a href="/privacy">Privacy</a></nav>
           <p>A mind for the household. Finally at home.</p>
           {marketingConsentEnabled && <button type="button" data-cookie-settings-open>Cookie settings</button>}
         </div>

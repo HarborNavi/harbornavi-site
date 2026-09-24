@@ -1,5 +1,6 @@
 ---
 import { ArrowRight, ExternalLink } from "@lucide/astro";
+import CampaignAnalytics from "../components/CampaignAnalytics.astro";
 import MetaPixel from "../components/MetaPixel.astro";
 import RedditPixel from "../components/RedditPixel.astro";
 import SeoHead from "../components/SeoHead.astro";
@@ -137,6 +138,9 @@ const sourceNumbers = new Map(harborFactSources.map((source, index) => [source.i
           <h2 id="related-title">Read the detailed product context.</h2>
         </div>
         <nav aria-label="Related HarborNavi pages">
+          <a href="/compare"><span>Compare smart-home AI approaches</span><ArrowRight size={18} strokeWidth={1.8} aria-hidden="true" /></a>
+          <a href="/local-first-home-ai"><span>What is local-first home AI?</span><ArrowRight size={18} strokeWidth={1.8} aria-hidden="true" /></a>
+          <a href="/home-assistant-local-ai"><span>Home Assistant and local AI</span><ArrowRight size={18} strokeWidth={1.8} aria-hidden="true" /></a>
           <a href="/package"><span>Package detection</span><ArrowRight size={18} strokeWidth={1.8} aria-hidden="true" /></a>
           <a href="/pets"><span>Pet highlights</span><ArrowRight size={18} strokeWidth={1.8} aria-hidden="true" /></a>
           <a href="/about-harbor"><span>About Harbor Innovations</span><ArrowRight size={18} strokeWidth={1.8} aria-hidden="true" /></a>
@@ -146,7 +150,8 @@ const sourceNumbers = new Map(harborFactSources.map((source, index) => [source.i
         </nav>
       </section>
     </main>
-    <footer class="site-footer"><span>HarborNavi</span><a href="/">Home</a><a href="/about-harbor">About Harbor</a><a href="/privacy">Privacy</a></footer>
+    <footer class="site-footer"><span>HarborNavi</span><a href="/">Home</a><a href="/compare">Compare</a><a href="/about-harbor">About Harbor</a><a href="/privacy">Privacy</a></footer>
+    <CampaignAnalytics route="facts" />
     <SiteMediaLoader />
   </body>
 </html>

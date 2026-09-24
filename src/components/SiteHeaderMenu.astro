@@ -5,6 +5,7 @@
 
       const button = header.querySelector<HTMLButtonElement>("[data-header-menu]");
       const navigation = header.querySelector<HTMLElement>(".site-header-v7-nav");
+      const productMenu = header.querySelector<HTMLDetailsElement>("[data-header-product-menu]");
       if (!button || !navigation) return;
 
       header.dataset.menuReady = "true";
@@ -20,19 +21,32 @@
       });
 
       navigation.addEventListener("click", (event) => {
-        if ((event.target as Element).closest("a")) setOpen(false);
+        if ((event.target as Element).closest("a")) {
+          if (productMenu) productMenu.open = false;
+          setOpen(false);
+        }
       });
 
       document.addEventListener("click", (event) => {
         if (header.dataset.menuOpen === "true" && !header.contains(event.target as Node)) {
           setOpen(false);
         }
+        if (productMenu?.open && !productMenu.contains(event.target as Node)) {
+          productMenu.open = false;
+        }
       });
 
       document.addEventListener("keydown", (event) => {
-        if (event.key !== "Escape" || header.dataset.menuOpen !== "true") return;
-        setOpen(false);
-        button.focus();
+        if (event.key !== "Escape") return;
+        if (productMenu?.open) {
+          productMenu.open = false;
+          productMenu.querySelector<HTMLElement>("summary")?.focus();
+          return;
+        }
+        if (header.dataset.menuOpen === "true") {
+          setOpen(false);
+          button.focus();
+        }
       });
 
       window.matchMedia("(min-width: 901px)").addEventListener("change", (event) => {

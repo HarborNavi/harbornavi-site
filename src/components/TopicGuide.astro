@@ -1,0 +1,120 @@
+---
+import { ArrowRight, ExternalLink } from "@lucide/astro";
+import CampaignAnalytics from "./CampaignAnalytics.astro";
+import MetaPixel from "./MetaPixel.astro";
+import RedditPixel from "./RedditPixel.astro";
+import SeoHead from "./SeoHead.astro";
+import SiteHeader from "./SiteHeaderV7.astro";
+import SiteMediaLoader from "./SiteMediaLoader.astro";
+import type { GeoGuide } from "../data/geoGuides";
+import { buildSeoEntityGraph } from "../data/seoEntities";
+import "../styles/global-v7.css";
+import "../styles/geo-content.css";
+
+interface Props { guide: GeoGuide }
+const { guide } = Astro.props;
+const route = guide.route.slice(1);
+const sourceNumbers = new Map(guide.sources.map((source, index) => [source.id, index + 1]));
+const structuredData = buildSeoEntityGraph({
+  title: guide.metaTitle,
+  description: guide.description,
+  path: guide.route,
+  image: guide.socialImage,
+  mainEntity: "article",
+  faqItems: guide.faqs,
+  citations: guide.sources.map((source) => source.href),
+  datePublished: guide.reviewedIso,
+  dateModified: guide.reviewedIso
+});
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <RedditPixel />
+    <MetaPixel />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <SeoHead title={guide.metaTitle} description={guide.description} path={guide.route} image={guide.socialImage} imageAlt={guide.imageAlt} icon="/favicon.png" type="article" structuredData={structuredData} />
+  </head>
+  <body class="geo-content-page guide-page" data-route={route}>
+    <SiteHeader />
+    <main>
+      <article>
+        <header class="geo-hero guide-hero">
+          <img src={guide.image} alt={guide.imageAlt} width="1536" height="1024" loading="eager" fetchpriority="high" />
+          <div class="geo-hero-shade"></div>
+          <div class="geo-shell geo-hero-copy">
+            <p class="geo-kicker">{guide.label}</p>
+            <h1>{guide.title}</h1>
+            <p>{guide.lede}</p>
+            <p class="geo-reviewed">Last reviewed <time datetime={guide.reviewedIso}>{guide.reviewedLabel}</time></p>
+          </div>
+        </header>
+
+        <section class="geo-answer-band" aria-labelledby="direct-answer-title">
+          <div class="geo-shell geo-answer-grid">
+            <p class="geo-kicker">Direct answer</p>
+            <div><h2 id="direct-answer-title">In one paragraph.</h2><p>{guide.directAnswer}</p></div>
+          </div>
+        </section>
+
+        <section class="geo-shell geo-key-points" aria-label="Key points">
+          {guide.keyPoints.map((point) => <div><span>{point.label}</span><strong>{point.value}</strong></div>)}
+        </section>
+
+        <section class="geo-section geo-shell" aria-labelledby="model-title">
+          <div class="geo-heading-row"><div><p class="geo-kicker">Working model</p><h2 id="model-title">Three layers, with a visible boundary.</h2></div><p>This model describes the responsibilities in the workflow. It is not a claim that every integration or device is already supported.</p></div>
+          <ol class="geo-stage-list">{guide.stages.map((stage) => <li><span>{stage.label}</span><h3>{stage.title}</h3><p>{stage.body}</p></li>)}</ol>
+        </section>
+
+        <div class="geo-article-layout geo-shell">
+          <aside class="geo-toc" aria-label="On this page">
+            <p>On this page</p>
+            <nav>{guide.sections.map((section) => <a href={`#${section.id}`}>{section.title}</a>)}<a href="#guide-faq">FAQ</a><a href="#guide-sources">Sources</a></nav>
+          </aside>
+          <div class="geo-article-body">
+            {guide.sections.map((section) => (
+              <section id={section.id} class="geo-article-section">
+                <p class="geo-kicker">{section.eyebrow}</p>
+                <h2>{section.title}</h2>
+                {section.paragraphs.map((paragraph) => <p>{paragraph}</p>)}
+                {section.points?.length && <ul>{section.points.map((point) => <li>{point}</li>)}</ul>}
+                <p class="geo-inline-sources">Sources: {section.sourceIds.map((sourceId, index) => <>{index > 0 && ", "}<a href={`#source-${sourceId}`}>[{sourceNumbers.get(sourceId)}]</a></>)}</p>
+              </section>
+            ))}
+          </div>
+        </div>
+
+        <section id="guide-faq" class="geo-section geo-shell geo-faq" aria-labelledby="guide-faq-title">
+          <div><p class="geo-kicker">Questions</p><h2 id="guide-faq-title">Practical answers.</h2></div>
+          <div>{guide.faqs.map((item) => <details><summary>{item.question}</summary><p>{item.answer}</p><p class="geo-inline-sources">Sources: {item.sourceIds.map((sourceId, index) => <>{index > 0 && ", "}<a href={`#source-${sourceId}`}>[{sourceNumbers.get(sourceId)}]</a></>)}</p></details>)}</div>
+        </section>
+
+        <section id="guide-sources" class="geo-section geo-source-band" aria-labelledby="guide-sources-title">
+          <div class="geo-shell">
+            <div class="geo-heading-row"><div><p class="geo-kicker">Sources</p><h2 id="guide-sources-title">First-party pages and official documentation.</h2></div><p>These references support the statements above. They do not certify HarborNavi as a complete product.</p></div>
+            <ol class="geo-source-list">
+              {guide.sources.map((source, index) => (
+                <li id={`source-${source.id}`}>
+                  <span>{String(index + 1).padStart(2, "0")}</span>
+                  <div><p>{source.publisher}</p><h3><a href={source.href} target={source.external ? "_blank" : undefined} rel={source.external ? "noreferrer" : undefined}>{source.title}{source.external && <ExternalLink size={15} strokeWidth={1.8} aria-hidden="true" />}</a></h3><p>{source.supports}</p></div>
+                </li>
+              ))}
+            </ol>
+          </div>
+        </section>
+
+        <section class="geo-section geo-related-band" aria-labelledby="guide-related-title">
+          <div class="geo-shell">
+            <p class="geo-kicker">Related reading</p><h2 id="guide-related-title">Continue with the evidence.</h2>
+            <nav class="geo-related" aria-label="Related HarborNavi pages">{guide.related.map((item) => <a href={item.href}><span>{item.label}</span><ArrowRight size={18} strokeWidth={1.8} aria-hidden="true" /></a>)}</nav>
+          </div>
+        </section>
+      </article>
+    </main>
+    <footer class="geo-footer"><span>HarborNavi</span><a href="/">Home</a><a href="/compare">Compare</a><a href="/facts">Facts</a><a href="/about-harbor">About Harbor</a><a href="/privacy">Privacy</a></footer>
+    <CampaignAnalytics route={route} />
+    <SiteMediaLoader />
+  </body>
+</html>

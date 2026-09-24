@@ -24,7 +24,9 @@ test("all public indexable pages use the shared SEO head", async () => {
     "src/components/HomeV6Landing.astro",
     "src/components/HomeV7Landing.astro",
     "src/components/HomeV8Landing.astro",
+    "src/components/TopicGuide.astro",
     "src/pages/about-harbor.astro",
+    "src/pages/compare.astro",
     "src/pages/facts.astro",
     "src/pages/privacy.astro",
     "src/pages/pilot-families.astro"

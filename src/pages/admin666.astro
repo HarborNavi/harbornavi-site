@@ -337,6 +337,40 @@ const mediaPageGroups = Array.from(
             </div>
           </section>
 
+          <section class="analytics-funnel" aria-labelledby="geo-monitor-title">
+            <div class="analytics-funnel-heading">
+              <div><p class="admin-eyebrow">GEO visibility</p><h2 id="geo-monitor-title">Answer-engine content and referral traffic</h2></div>
+              <p>Tracks first-party visits to GEO content pages and identifiable AI-service referrals.</p>
+            </div>
+            <div class="metric-grid analytics-metrics" aria-label="GEO visibility metrics">
+              <article><span>Content visitors</span><strong data-geo-content-visitors>0</strong></article>
+              <article><span>Content views</span><strong data-geo-content-views>0</strong></article>
+              <article><span>AI referral visitors</span><strong data-geo-ai-visitors>0</strong></article>
+              <article><span>AI referral views</span><strong data-geo-ai-views>0</strong></article>
+            </div>
+            <p class="analytics-definition">AI referral traffic counts visits whose referrer or UTM source identifies an AI service. It does not count unclicked citations, answer impressions, or crawler fetches.</p>
+            <div class="dashboard-grid">
+              <article class="admin-panel">
+                <h3>GEO content performance</h3>
+                <div class="lead-table-wrap">
+                  <table class="compact-table">
+                    <thead><tr><th>Route</th><th>Path</th><th>Visitors</th><th>Views</th></tr></thead>
+                    <tbody data-geo-content-body><tr><td colspan="4">No GEO content data yet.</td></tr></tbody>
+                  </table>
+                </div>
+              </article>
+              <article class="admin-panel">
+                <h3>AI referral landings</h3>
+                <div class="lead-table-wrap">
+                  <table class="compact-table">
+                    <thead><tr><th>AI source</th><th>Route</th><th>Path</th><th>Visitors</th><th>Views</th></tr></thead>
+                    <tbody data-geo-referrals-body><tr><td colspan="5">No identifiable AI referral data yet.</td></tr></tbody>
+                  </table>
+                </div>
+              </article>
+            </div>
+          </section>
+
           <p class="analytics-definition">Unique visitors use the first-party HarborNavi visitor ID. Historical events without one fall back to session ID.</p>
 
           <div class="metric-grid analytics-metrics analytics-support-metrics" aria-label="Supporting growth metrics">
@@ -1143,6 +1177,7 @@ const mediaPageGroups = Array.from(
         const summary = analytics?.summary || {};
         const waitlistSummary = analytics?.waitlist_summary || summary;
         const pilotSummary = analytics?.pilot_summary || {};
+        const geoSummary = analytics?.geo_summary || {};
         document.querySelector("[data-private-waitlist-people]").textContent = analytics?.private_waitlist?.configured
           ? String(analytics.private_waitlist.waitlist_people)
           : "Unavailable";
@@ -1166,6 +1201,10 @@ const mediaPageGroups = Array.from(
         document.querySelector("[data-pilot-funnel-form-submits]").textContent = String(pilotSummary.form_submits || 0);
         document.querySelector("[data-pilot-funnel-saved]").textContent = String(pilotSummary.saved_applications || 0);
         document.querySelector("[data-pilot-funnel-conversion]").textContent = `${pilotSummary.conversion_rate || 0}%`;
+        document.querySelector("[data-geo-content-visitors]").textContent = String(geoSummary.content_unique_visitors || 0);
+        document.querySelector("[data-geo-content-views]").textContent = String(geoSummary.content_page_views || 0);
+        document.querySelector("[data-geo-ai-visitors]").textContent = String(geoSummary.ai_unique_visitors || 0);
+        document.querySelector("[data-geo-ai-views]").textContent = String(geoSummary.ai_page_views || 0);
         document.querySelector("[data-analytics-discord]").textContent = String(summary.discord_clicks || 0);
         document.querySelector("[data-analytics-compatibility]").textContent = String(summary.compatibility_completes || 0);
         document.querySelector("[data-analytics-price-rate]").textContent = `${summary.positive_price_rate || 0}%`;
@@ -1181,6 +1220,18 @@ const mediaPageGroups = Array.from(
           analytics?.pilot_funnel || [],
           ["route", "source", "campaign", "unique_visitors", "page_views", "form_starts", "form_submits", "saved_applications", "conversion_rate"],
           "No Pilot funnel data yet."
+        );
+        renderRows(
+          document.querySelector("[data-geo-content-body]"),
+          analytics?.geo_content || [],
+          ["route", "path", "unique_visitors", "page_views"],
+          "No GEO content data in this range."
+        );
+        renderRows(
+          document.querySelector("[data-geo-referrals-body]"),
+          analytics?.geo_referrals || [],
+          ["source", "route", "path", "unique_visitors", "page_views"],
+          "No identifiable AI referral data in this range."
         );
         renderRows(
           document.querySelector("[data-events-body]"),

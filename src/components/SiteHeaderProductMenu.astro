@@ -1,0 +1,22 @@
+---
+import { ChevronDown } from "@lucide/astro";
+
+interface Props {
+  homeHref?: string;
+}
+
+const { homeHref = "/" } = Astro.props;
+---
+
+<details class="site-header-v7-product-menu" data-header-product-menu>
+  <summary>
+    <span>HarborNavi</span>
+    <ChevronDown size={15} strokeWidth={2} aria-hidden="true" />
+  </summary>
+  <div class="site-header-v7-product-links">
+    <a href={`${homeHref}#intelligence`}>Intelligence</a>
+    <a href={`${homeHref}#how-it-works`}>How it works</a>
+    <a href={`${homeHref}#compatibility`}>Compatibility</a>
+    <a href={`${homeHref}#hardware`}>Hardware</a>
+  </div>
+</details>

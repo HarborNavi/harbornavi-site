@@ -1,0 +1,185 @@
+---
+import { ArrowRight, ExternalLink } from "@lucide/astro";
+import CampaignAnalytics from "../components/CampaignAnalytics.astro";
+import MetaPixel from "../components/MetaPixel.astro";
+import RedditPixel from "../components/RedditPixel.astro";
+import SeoHead from "../components/SeoHead.astro";
+import SiteHeader from "../components/SiteHeaderV7.astro";
+import SiteMediaLoader from "../components/SiteMediaLoader.astro";
+import {
+  comparisonCitationUrls,
+  comparisonFaqItems,
+  comparisonLastReviewedIso,
+  comparisonLastReviewedLabel,
+  comparisonProducts,
+  comparisonRows,
+  comparisonSources
+} from "../data/comparison";
+import { buildSeoEntityGraph, harborAbsoluteUrl } from "../data/seoEntities";
+import "../styles/global-v7.css";
+import "../styles/geo-content.css";
+
+const title = "HarborNavi vs. Smart-Home AI Alternatives | Comparison";
+const description = "Compare HarborNavi with camera AI, cloud home assistants, local automation stacks, and professional whole-home systems using sourced product-category criteria.";
+const structuredData = buildSeoEntityGraph({
+  title,
+  description,
+  path: "/compare",
+  image: "/assets/home-v7-v8-hardware-id.png",
+  mainEntity: "product",
+  faqItems: comparisonFaqItems,
+  citations: ["/facts", ...comparisonCitationUrls],
+  dateModified: comparisonLastReviewedIso
+});
+
+structuredData["@graph"].push({
+  "@type": "ItemList",
+  "@id": `${harborAbsoluteUrl("/compare")}#approaches`,
+  name: "Smart-home AI approaches compared",
+  numberOfItems: comparisonProducts.length,
+  itemListElement: comparisonProducts.map((product, index) => ({
+    "@type": "ListItem",
+    position: index + 1,
+    name: product.name,
+    description: product.bestFor
+  }))
+});
+---
+
+<!doctype html>
+<html lang="en">
+  <head>
+    <RedditPixel />
+    <MetaPixel />
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <SeoHead
+      title={title}
+      description={description}
+      path="/compare"
+      image="/assets/home-v7-v8-hardware-id.png"
+      imageAlt="HarborNavi local household AI hardware"
+      icon="/favicon.png"
+      type="article"
+      structuredData={structuredData}
+    />
+  </head>
+  <body class="geo-content-page comparison-page" data-route="compare">
+    <SiteHeader />
+    <main>
+      <section class="geo-hero" aria-labelledby="comparison-title">
+        <img src="/assets/home-v7-v8-hardware-id.webp" alt="HarborNavi local household AI hardware in a home setting" width="1536" height="1024" loading="eager" fetchpriority="high" />
+        <div class="geo-hero-shade"></div>
+        <div class="geo-shell geo-hero-copy">
+          <p class="geo-kicker">Sourced product comparison</p>
+          <h1 id="comparison-title">HarborNavi vs. smart-home AI alternatives.</h1>
+          <p>Five approaches solve different jobs. Compare what each is built around, who maintains it, how it acts, and where household context lives.</p>
+          <p class="geo-reviewed">Last reviewed <time datetime={comparisonLastReviewedIso}>{comparisonLastReviewedLabel}</time></p>
+        </div>
+      </section>
+
+      <section class="geo-answer-band" aria-labelledby="comparison-answer-title">
+        <div class="geo-shell geo-answer-grid">
+          <p class="geo-kicker">Direct answer</p>
+          <div>
+            <h2 id="comparison-answer-title">The main difference is the job each system organizes around.</h2>
+            <p>Camera AI organizes around footage and security events. Cloud home AI organizes around an account ecosystem and online services. Local automation stacks organize around devices, entities, and owner-built rules. Professional systems organize around integrator-designed control. HarborNavi is being developed around local household context, permissions, conversation, and coordinated responses across selected inputs.</p>
+            <p class="geo-boundary">HarborNavi is still in development. This comparison describes product approaches, not a certification that one complete system is universally more private, compatible, or capable.</p>
+          </div>
+        </div>
+      </section>
+
+      <section class="geo-shell geo-status-grid" aria-label="Comparison status">
+        <div><span>Approaches</span><strong>{comparisonProducts.length}</strong></div>
+        <div><span>Comparison criteria</span><strong>{comparisonRows.length}</strong></div>
+        <div><span>Official sources</span><strong>{comparisonSources.length}</strong></div>
+        <div><span>HarborNavi status</span><strong>In development</strong></div>
+      </section>
+
+      <section class="geo-section geo-shell" aria-labelledby="comparison-table-title">
+        <div class="geo-heading-row">
+          <div><p class="geo-kicker">Side-by-side</p><h2 id="comparison-table-title">Compare the operating model, not just the feature list.</h2></div>
+          <p>Individual products and plans vary. The table describes the primary model of each category and links to first-party evidence below.</p>
+        </div>
+        <div class="comparison-table-wrap" role="region" aria-label="Smart-home AI approach comparison" tabindex="0">
+          <table>
+            <caption class="sr-only">HarborNavi and smart-home AI approach comparison</caption>
+            <thead><tr><th scope="col">Criterion</th>{comparisonProducts.map((product) => <th class:list={{ featured: product.featured }} scope="col"><strong>{product.name}</strong><span>{product.note}</span></th>)}</tr></thead>
+            <tbody>{comparisonRows.map(([criterion, ...values]) => <tr><th scope="row">{criterion}</th>{values.map((value, index) => <td class:list={{ featured: comparisonProducts[index]?.featured }}>{value}</td>)}</tr>)}</tbody>
+          </table>
+        </div>
+        <div class="comparison-mobile-list">
+          {comparisonProducts.map((product, productIndex) => (
+            <details open={product.featured}>
+              <summary><span>{product.name}</span><small>{product.note}</small></summary>
+              <dl>{comparisonRows.map(([criterion, ...values]) => <div><dt>{criterion}</dt><dd>{values[productIndex]}</dd></div>)}</dl>
+            </details>
+          ))}
+        </div>
+      </section>
+
+      <section class="geo-section geo-fit-band" aria-labelledby="fit-title">
+        <div class="geo-shell">
+          <div class="geo-heading-row">
+            <div><p class="geo-kicker">Choose by job</p><h2 id="fit-title">Which approach is the better fit?</h2></div>
+            <p>No single category is the right answer for every home. Start with the problem, then verify the exact model, data path, integrations, and maintenance responsibility.</p>
+          </div>
+          <div class="comparison-fit-list">
+            {comparisonProducts.map((product, index) => (
+              <article class:list={{ featured: product.featured }}>
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <div><p>{product.examples}</p><h3>{product.name}</h3><p>{product.bestFor}</p></div>
+              </article>
+            ))}
+          </div>
+        </div>
+      </section>
+
+      <section class="geo-section geo-shell geo-method" aria-labelledby="method-title">
+        <div><p class="geo-kicker">Method and limits</p><h2 id="method-title">How to read this comparison.</h2></div>
+        <div class="geo-method-list">
+          <article><h3>Category, not every SKU</h3><p>The table compares the job each approach is primarily designed to do. Exact features, pricing, regions, and subscriptions can differ within a category.</p></article>
+          <article><h3>First-party evidence</h3><p>Claims about other products are based on their official pages or documentation. Vendor statements are evidence of positioning and documented features, not independent performance tests.</p></article>
+          <article><h3>Current HarborNavi boundary</h3><p>HarborNavi is in development. Planned integration and product-direction statements are kept separate from available, tested, or universally compatible features.</p></article>
+        </div>
+      </section>
+
+      <section class="geo-section geo-source-band" aria-labelledby="comparison-sources-title">
+        <div class="geo-shell">
+          <div class="geo-heading-row">
+            <div><p class="geo-kicker">Sources</p><h2 id="comparison-sources-title">Official product pages and documentation.</h2></div>
+            <p>Reviewed on {comparisonLastReviewedLabel}. External pages can change after review.</p>
+          </div>
+          <ol class="geo-source-list">
+            {comparisonSources.map((source, index) => (
+              <li>
+                <span>{String(index + 1).padStart(2, "0")}</span>
+                <div><p>{source.publisher}</p><h3><a href={source.href} target="_blank" rel="noreferrer">{source.label}<ExternalLink size={15} strokeWidth={1.8} aria-hidden="true" /></a></h3><p>{source.supports}</p></div>
+              </li>
+            ))}
+          </ol>
+        </div>
+      </section>
+
+      <section id="faq" class="geo-section geo-shell geo-faq" aria-labelledby="comparison-faq-title">
+        <div><p class="geo-kicker">Questions</p><h2 id="comparison-faq-title">Comparison FAQ.</h2></div>
+        <div>{comparisonFaqItems.map(([question, answer]) => <details><summary>{question}</summary><p>{answer}</p></details>)}</div>
+      </section>
+
+      <section class="geo-section geo-related-band" aria-labelledby="comparison-related-title">
+        <div class="geo-shell">
+          <p class="geo-kicker">Continue reading</p>
+          <h2 id="comparison-related-title">Verify the facts and understand the layers.</h2>
+          <nav class="geo-related" aria-label="Related HarborNavi pages">
+            <a href="/facts"><span>HarborNavi product facts</span><ArrowRight size={18} strokeWidth={1.8} aria-hidden="true" /></a>
+            <a href="/local-first-home-ai"><span>What is local-first home AI?</span><ArrowRight size={18} strokeWidth={1.8} aria-hidden="true" /></a>
+            <a href="/home-assistant-local-ai"><span>Home Assistant and local AI</span><ArrowRight size={18} strokeWidth={1.8} aria-hidden="true" /></a>
+          </nav>
+        </div>
+      </section>
+    </main>
+    <footer class="geo-footer"><span>HarborNavi</span><a href="/">Home</a><a href="/facts">Facts</a><a href="/about-harbor">About Harbor</a><a href="/privacy">Privacy</a></footer>
+    <CampaignAnalytics route="compare" />
+    <SiteMediaLoader />
+  </body>
+</html>
