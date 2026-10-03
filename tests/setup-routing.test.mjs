@@ -9,6 +9,7 @@ test('setup routes cannot redirect against global trailing-slash normalization',
   assert.equal(config.trailingSlash, false);
   assert.equal(config.redirects.some(rule => rule.source === '/setup' && rule.destination === '/setup/'), false);
   assert.equal(config.rewrites.find(rule => rule.source === '/setup')?.destination, '/setup/index.html');
+  assert.ok(config.headers.some(rule => rule.source === '/setup/:path*'), 'Privacy headers must cover /setup without a trailing slash');
 });
 
 test('factory QR host root serves setup and has its own privacy headers', () => {
