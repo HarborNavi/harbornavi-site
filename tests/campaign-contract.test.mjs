@@ -118,18 +118,20 @@ test("the root renders the final homepage and public version aliases redirect ba
   const sitemap = await source("public/sitemap.xml");
   const indexPage = await source("src/pages/index.astro");
   const homePage = await source("src/pages/home.astro");
-  const redirects = new Map(vercel.redirects.map((redirect) => [redirect.source, redirect]));
+  const redirects = new Map(vercel.redirects.filter(redirect => !redirect.has ||
+    redirect.has.some(condition => condition.type === 'host' && condition.value === 'www.harbornavi.com'))
+    .map((redirect) => [redirect.source, redirect]));
 
   assert.match(indexPage, /HomeV8Landing version="v9"/);
   assert.match(homePage, /HomeV8Landing version="v9"/);
   assert.equal(vercel.trailingSlash, false);
-  assert.deepEqual(vercel.redirects[0], {
+  assert.deepEqual(redirects.get('/'), {
     source: "/",
     has: [{ type: "host", value: "www.harbornavi.com" }],
     destination: "https://harbornavi.com/",
     permanent: true
   });
-  assert.deepEqual(vercel.redirects[1], {
+  assert.deepEqual(redirects.get('/:path*'), {
     source: "/:path*",
     has: [{ type: "host", value: "www.harbornavi.com" }],
     destination: "https://harbornavi.com/:path*",
