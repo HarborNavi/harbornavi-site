@@ -4,6 +4,12 @@
   "redirects": [
     {
       "source": "/",
+      "has": [{"type": "host", "value": "setup.harbornavi.com"}],
+      "destination": "/setup",
+      "permanent": false
+    },
+    {
+      "source": "/",
       "has": [
         {
           "type": "host",
@@ -71,16 +77,6 @@
     }
   ],
   "rewrites": [
-    {
-      "source": "/",
-      "has": [
-        {
-          "type": "host",
-          "value": "setup.harbornavi.com"
-        }
-      ],
-      "destination": "/setup/index.html"
-    },
     {
       "source": "/api/assets",
       "destination": "/api/admin/health?action=assets"

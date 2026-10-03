@@ -12,9 +12,12 @@ test('setup routes cannot redirect against global trailing-slash normalization',
   assert.ok(config.headers.some(rule => rule.source === '/setup/:path*'), 'Privacy headers must cover /setup without a trailing slash');
 });
 
-test('factory QR host root serves setup and has its own privacy headers', () => {
+test('factory QR host root redirects before static homepage resolution', () => {
   const applies = rule => rule.has?.some(condition => condition.type === 'host' && condition.value === 'setup.harbornavi.com');
-  assert.equal(config.rewrites.find(rule => rule.source === '/' && applies(rule))?.destination, '/setup/index.html');
+  const redirect = config.redirects.find(rule => rule.source === '/' && applies(rule));
+  assert.equal(redirect?.destination, '/setup');
+  assert.equal(redirect?.permanent, false);
+  assert.equal(config.rewrites.some(rule => rule.source === '/' && applies(rule)), false);
   const headers = config.headers.find(applies)?.headers;
   assert.equal(headers?.find(header => header.key === 'Referrer-Policy')?.value, 'no-referrer');
   assert.match(headers?.find(header => header.key === 'Content-Security-Policy')?.value, /connect-src 'none'/);
